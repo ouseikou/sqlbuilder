@@ -2,11 +2,12 @@ package repository
 
 import (
 	"fmt"
+	"time"
+
+	"github.com/ouseikou/sqlbuilder/connect"
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"sql-builder/connect"
-	"time"
 )
 
 func InitPostgres() (db *gorm.DB) {

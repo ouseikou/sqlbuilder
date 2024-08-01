@@ -1,7 +1,7 @@
 package clause
 
 import (
-	"sql-builder/common"
+	"github.com/ouseikou/sqlbuilder/common"
 )
 
 type DeepWrapper struct {

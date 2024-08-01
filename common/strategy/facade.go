@@ -2,9 +2,10 @@ package strategy
 
 import (
 	"errors"
-	"sql-builder/common"
-	"sql-builder/common/clause"
-	"sql-builder/common/strategy/dialect"
+
+	"github.com/ouseikou/sqlbuilder/common"
+	"github.com/ouseikou/sqlbuilder/common/clause"
+	"github.com/ouseikou/sqlbuilder/common/strategy/dialect"
 )
 
 func BuilderModelSql(builder clause.BuilderRequest) (string, error) {

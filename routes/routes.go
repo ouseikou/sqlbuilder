@@ -2,8 +2,8 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"sql-builder/controller"
-	"sql-builder/demo"
+	"github.com/ouseikou/sqlbuilder/controller"
+	"github.com/ouseikou/sqlbuilder/demo"
 )
 
 func SetupRoutes(router *gin.Engine) {

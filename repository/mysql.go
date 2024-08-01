@@ -11,7 +11,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
-	"sql-builder/connect"
+	"github.com/ouseikou/sqlbuilder/connect"
 )
 
 type BitBool bool

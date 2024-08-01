@@ -2,12 +2,13 @@ package strategy
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/forhsd/logger"
+	"github.com/ouseikou/sqlbuilder/connect"
+	"github.com/ouseikou/sqlbuilder/demo"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"sql-builder/connect"
-	"sql-builder/demo"
-	"testing"
 )
 
 // assertEqual 是一个辅助函数，用于比较实际值和预期值，如果不相等则输出错误信息

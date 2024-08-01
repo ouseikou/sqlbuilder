@@ -2,11 +2,12 @@ package demo
 
 import (
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/forhsd/logger"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"sql-builder/common"
-	"strconv"
+	"github.com/ouseikou/sqlbuilder/common"
 )
 
 func GetGenerateSql(c *gin.Context) {

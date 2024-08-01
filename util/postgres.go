@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"sql-builder/common"
-	"sql-builder/common/clause"
 	"strings"
+
+	"github.com/ouseikou/sqlbuilder/common"
+	"github.com/ouseikou/sqlbuilder/common/clause"
 	xorm "xorm.io/builder"
 )
 

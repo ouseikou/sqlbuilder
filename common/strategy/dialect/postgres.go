@@ -2,8 +2,8 @@ package dialect
 
 import (
 	"github.com/forhsd/logger"
-	"sql-builder/common/clause"
-	"sql-builder/util"
+	"github.com/ouseikou/sqlbuilder/common/clause"
+	"github.com/ouseikou/sqlbuilder/util"
 )
 
 func BuildModelSql(request clause.BuilderRequest) (string, error) {

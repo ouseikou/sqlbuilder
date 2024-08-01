@@ -1,11 +1,12 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
-	"sql-builder/common"
-	"sql-builder/common/clause"
-	"sql-builder/service"
+
+	"github.com/gin-gonic/gin"
+	"github.com/ouseikou/sqlbuilder/common"
+	"github.com/ouseikou/sqlbuilder/common/clause"
+	"github.com/ouseikou/sqlbuilder/service"
 )
 
 func GenerateHBQL(c *gin.Context) {

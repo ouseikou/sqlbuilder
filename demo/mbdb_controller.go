@@ -1,13 +1,14 @@
 package demo
 
 import (
-	"github.com/forhsd/logger"
 	"net/http"
+
+	"github.com/forhsd/logger"
 
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
 
-	"sql-builder/common"
+	"github.com/ouseikou/sqlbuilder/common"
 )
 
 func GetDatabase(c *gin.Context) {

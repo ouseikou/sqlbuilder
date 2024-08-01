@@ -3,11 +3,12 @@ package strategy
 
 import (
 	"fmt"
-	"github.com/forhsd/logger"
-	"sql-builder/common"
-	"sql-builder/common/clause"
-	"sql-builder/util"
 	"testing"
+
+	"github.com/forhsd/logger"
+	"github.com/ouseikou/sqlbuilder/common"
+	"github.com/ouseikou/sqlbuilder/common/clause"
+	"github.com/ouseikou/sqlbuilder/util"
 
 	xorm "xorm.io/builder"
 )

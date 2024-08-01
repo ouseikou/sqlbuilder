@@ -1,8 +1,9 @@
 package demo
 
 import (
-	"sql-builder/repository"
 	"time"
+
+	"github.com/ouseikou/sqlbuilder/repository"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

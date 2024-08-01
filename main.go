@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/forhsd/logger"
 	"github.com/gin-gonic/gin"
+	"github.com/ouseikou/sqlbuilder/config"
+	"github.com/ouseikou/sqlbuilder/routes"
 	"github.com/spf13/viper"
-	"sql-builder/config"
-	"sql-builder/routes"
 )
 
 func main() {

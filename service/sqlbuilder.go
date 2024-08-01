@@ -2,9 +2,10 @@ package service
 
 import (
 	"errors"
-	"sql-builder/common"
-	"sql-builder/common/clause"
-	"sql-builder/common/strategy"
+
+	"github.com/ouseikou/sqlbuilder/common"
+	"github.com/ouseikou/sqlbuilder/common/clause"
+	"github.com/ouseikou/sqlbuilder/common/strategy"
 )
 
 func BuildSql(builder clause.BuilderRequest) (string, error) {
