@@ -1,6 +1,6 @@
 module github.com/ouseikou/sqlbuilder
 
-go 1.22
+go 1.22.6
 
 require (
 	github.com/forhsd/logger v0.0.0-20240402053253-cae71d268779
@@ -17,12 +17,7 @@ require (
 	gorm.io/gorm v1.25.7-0.20240204074919-46816ad31dde
 )
 
-require (
-	github.com/golang/protobuf v1.5.4 // indirect
-	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
-	google.golang.org/genproto v0.0.0-20240213162025-012b6fc9bca9 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240725223205-93522f1f2a9f // indirect
-)
+require google.golang.org/genproto/googleapis/rpc v0.0.0-20240725223205-93522f1f2a9f // indirect
 
 require (
 	github.com/bytedance/sonic v1.11.9 // indirect
