@@ -9,28 +9,30 @@ const (
 	Max      AggFunc = "max"
 	Min      AggFunc = "min"
 	Distinct AggFunc = "distinct"
-
-	//CountAs    AggFunc = "countAs"
-	//SumAs      AggFunc = "sumAs"
-	//AvgAs      AggFunc = "avgAs"
-	//MaxAs      AggFunc = "maxAs"
-	//MinAs      AggFunc = "minAs"
-	//DistinctAs AggFunc = "distinctAs"
+	// Stddev pg 总体标准差
+	Stddev AggFunc = "stddev"
+	// Variance pg 方差
+	Variance AggFunc = "variance"
 )
 
 const (
-	CountFormat      = `count(%s)`
-	CountAsFormat    = `count(%s) as "%s"`
-	SumFormat        = `sum(%s)`
-	SumAsFormat      = `sum(%s) as "%s"`
-	AvgFormat        = `avg(%s)`
-	AvgAsFormat      = `avg(%s) as "%s"`
-	MaxFormat        = `max(%s)`
-	MaxAsFormat      = `max(%s) as "%s"`
-	MinFormat        = `min(%s)`
-	MinAsFormat      = `min(%s) as "%s"`
-	DistinctFormat   = `distinct(%s)`
-	DistinctAsFormat = `distinct(%s) as "%s"`
+	CountFormat    = `count(%s)`
+	SumFormat      = `sum(%s)`
+	AvgFormat      = `avg(%s)`
+	MaxFormat      = `max(%s)`
+	MinFormat      = `min(%s)`
+	DistinctFormat = `distinct(%s)`
+	StddevFormat   = `stddev(%s)`
+	VarianceFormat = `variance(%s)`
+
+	PGCountAsFormat    = `count(%s) as "%s"`
+	PGSumAsFormat      = `sum(%s) as "%s"`
+	PGAvgAsFormat      = `avg(%s) as "%s"`
+	PGMaxAsFormat      = `max(%s) as "%s"`
+	PGMinAsFormat      = `min(%s) as "%s"`
+	PGDistinctAsFormat = `distinct(%s) as "%s"`
+	PGStddevFormatAs   = `stddev(%s) as "%s"`
+	PGVarianceFormatAs = `variance(%s) as "%s"`
 )
 
 // AggregationFuncFormatMap 映射聚合函数
@@ -42,15 +44,19 @@ var (
 		Max:      MaxFormat,
 		Min:      MinFormat,
 		Distinct: DistinctFormat,
+		Stddev:   StddevFormat,
+		Variance: VarianceFormat,
 	}
 
-	AggregationAsFuncFormatMap = map[AggFunc]string{
-		Count:    CountAsFormat,
-		Sum:      SumAsFormat,
-		Avg:      AvgAsFormat,
-		Max:      MaxAsFormat,
-		Min:      MinAsFormat,
-		Distinct: DistinctAsFormat,
+	PGAggregationAsFuncFormatMap = map[AggFunc]string{
+		Count:    PGCountAsFormat,
+		Sum:      PGSumAsFormat,
+		Avg:      PGAvgAsFormat,
+		Max:      PGMaxAsFormat,
+		Min:      PGMinAsFormat,
+		Distinct: PGDistinctAsFormat,
+		Stddev:   PGStddevFormatAs,
+		Variance: PGVarianceFormatAs,
 	}
 )
 

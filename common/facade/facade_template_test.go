@@ -1,4 +1,4 @@
-package strategy
+package facade
 
 import (
 	"bytes"
@@ -239,11 +239,9 @@ func TestTemplateDashboard230(t *testing.T) {
 	var a CCC
 	a = &BBB{}
 	switch a.(type) {
-
 	case *BBB:
 		fmt.Printf("bbb")
 	case *AAA:
 		fmt.Println("bbb")
-
 	}
 }

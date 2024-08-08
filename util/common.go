@@ -1,6 +1,15 @@
 package util
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"google.golang.org/protobuf/encoding/protojson"
+)
+
+// ProtoJsonOperate proto 序列化保留零值和枚举零值
+var ProtoJsonOperate = protojson.MarshalOptions{
+	EmitUnpopulated: true,
+	// UseEnumNumbers:  true,
+}
 
 func Serialize(data interface{}) ([]byte, error) {
 	serialized, err := json.Marshal(data)
@@ -18,7 +27,7 @@ func Deserialize(serialized []byte, target interface{}) error {
 	return nil
 }
 
-func ternary(condition bool, trueVal, falseVal interface{}) interface{} {
+func Ternary(condition bool, trueVal, falseVal interface{}) interface{} {
 	if condition {
 		return trueVal
 	}

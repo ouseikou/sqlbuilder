@@ -17,17 +17,18 @@ func SetupRoutes(router *gin.Engine) {
 	apiDemo := router.Group("/api/demo")
 
 	{
-		// golang 练习
-		apiDemo.GET("/database/:id", demo.GetDatabase)
-		// curl -X GET 'localhost:7077/api/demo/sqlbuilder/gen?limit=10' | jq
-		apiDemo.GET("/sqlbuilder/gen", demo.GetGenerateSql)
-		// sudo apt install jq
-		// curl -X POST localhost:7077/api/demo/sqlbuilder/product -d '{"category":""}' -H "Content-Type: application/json" -s | jq
-		// curl -X POST localhost:7077/api/demo/sqlbuilder/product -d '{"category":"Doohickey"}' -H "Content-Type: application/json" -s | jq
-		apiDemo.POST("/sqlbuilder/product", demo.GetGenProduct)
+		{
+			// golang 练习
+			apiDemo.GET("/database/:id", demo.GetDatabase)
+			// curl -X GET 'localhost:7077/api/demo/sqlbuilder/gen?limit=10' | jq
+			apiDemo.GET("/sqlbuilder/gen", demo.GetGenerateSql)
+			// sudo apt install jq
+			// curl -X POST localhost:7077/api/demo/sqlbuilder/product -d '{"category":""}' -H "Content-Type: application/json" -s | jq
+			// curl -X POST localhost:7077/api/demo/sqlbuilder/product -d '{"category":"Doohickey"}' -H "Content-Type: application/json" -s | jq
+			apiDemo.POST("/sqlbuilder/product", demo.GetGenProduct)
+		}
 
 		// 暴露接口
-
-		apiV1.POST("/sqlbuilder/model", controller.GenerateHBQL)
+		apiV1.POST("/sqlbuilder", controller.GenerateHBQL)
 	}
 }

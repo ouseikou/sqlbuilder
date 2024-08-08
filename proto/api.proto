@@ -1,0 +1,137 @@
+﻿syntax = "proto3";
+
+package proto;
+option go_package = "./proto;proto";
+option java_multiple_files = false;
+option java_package = "com.holder.sqlbuilder.proto";
+option java_outer_classname = "SqlBuilderApiProto";
+import "google/api/annotations.proto";
+
+service SqlBuilderApi {
+
+  rpc Generate (BuilderRequest) returns (Response) {
+    option (google.api.http) = {
+      post: "/api/v1/sqlbuilder",
+      body: "*"
+    };
+  }
+}
+
+enum Driver {
+  DRIVER_UNSPECIFIED = 0;
+  DRIVER_POSTGRES = 1;
+  DRIVER_MYSQL = 2;
+  DRIVER_DORIS = 3;
+}
+
+enum BuilderStrategy {
+  STRATEGY_UNSPECIFIED = 0;
+  STRATEGY_MODEL = 1;
+  STRATEGY_TEMPLATE = 2;
+}
+
+enum CallType {
+  CALL_TYPE_UNSPECIFIED = 0;
+  CALL_TYPE_AGG = 1;
+  CALL_TYPE_INNER = 2;
+  CALL_TYPE_CUSTOM = 3;
+}
+
+
+message BuilderRequest {
+  repeated DeepWrapper builders = 1;
+  Driver driver = 2;
+  BuilderStrategy strategy = 3;
+}
+
+message DeepWrapper {
+  int32 deep = 1;
+  MixSql sql = 2;
+}
+
+message Expression {
+  string call = 1;
+  CallType callType = 2;
+  repeated MixVars vars= 3;
+  string callAs = 4;
+  bool useAs = 5;
+}
+
+message Column {
+  string field = 1;
+  string table = 2;
+  string schema = 3;
+  string alias = 4;
+  bool aggAble = 5;
+  bool useAs = 6;
+}
+
+message MixSql {
+  oneof ref {
+    SQLReference model = 1;
+    SQLText template = 2;
+  }
+}
+
+message MixVars {
+  oneof vars {
+    Column column = 1;
+    Expression expression = 2;
+    string context = 3;
+    int64 number = 4;
+  }
+}
+
+message MixField {
+  oneof mix {
+    Column column = 1;
+    Expression expression = 2;
+  }
+}
+
+message SQLText {
+  string text = 1;
+}
+
+message SQLReference {
+  Table from = 1;
+  repeated Join join = 2;
+  repeated Expression where = 3;
+  // GroupBy 可以是 Column 或 Expression
+  repeated MixField groupBy = 4;
+  repeated Expression aggregation = 5;
+  // Select 可以是 Column 或 Expression
+  repeated MixField select = 6;
+  repeated OrderBy orderBy = 7;
+  optional Limit limit = 8;
+}
+
+message Response {
+  int32 Code = 1;
+  string Msg = 2;
+  map<string, string> Data = 3;
+}
+
+message Table {
+  string tableName = 1;
+  string tableSchema = 2;
+  string tableAlias = 3;
+}
+
+message Join {
+  string type = 1;
+  Table table = 2;
+  string left = 3;
+  string right = 4;
+  string on = 5;
+}
+
+message OrderBy {
+  string dependent = 1;
+  string order = 2;
+}
+
+message Limit {
+  int32 limitN = 1;
+  int32 offset = 2;
+}

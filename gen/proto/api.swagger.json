@@ -1,0 +1,361 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "proto/api.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "SqlBuilderApi"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/sqlbuilder": {
+      "post": {
+        "operationId": "SqlBuilderApi_Generate",
+        "responses": {
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protoBuilderRequest"
+            }
+          }
+        ],
+        "tags": [
+          "SqlBuilderApi"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protoBuilderRequest": {
+      "type": "object",
+      "properties": {
+        "builders": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protoDeepWrapper"
+          }
+        },
+        "driver": {
+          "$ref": "#/definitions/protoDriver"
+        },
+        "strategy": {
+          "$ref": "#/definitions/protoBuilderStrategy"
+        }
+      }
+    },
+    "protoBuilderStrategy": {
+      "type": "string",
+      "enum": [
+        "STRATEGY_UNSPECIFIED",
+        "STRATEGY_MODEL",
+        "STRATEGY_TEMPLATE"
+      ],
+      "default": "STRATEGY_UNSPECIFIED"
+    },
+    "protoCallType": {
+      "type": "string",
+      "enum": [
+        "CALL_TYPE_UNSPECIFIED",
+        "CALL_TYPE_AGG",
+        "CALL_TYPE_INNER",
+        "CALL_TYPE_CUSTOM"
+      ],
+      "default": "CALL_TYPE_UNSPECIFIED"
+    },
+    "protoColumn": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "type": "string"
+        },
+        "table": {
+          "type": "string"
+        },
+        "schema": {
+          "type": "string"
+        },
+        "alias": {
+          "type": "string"
+        },
+        "aggAble": {
+          "type": "boolean"
+        },
+        "useAs": {
+          "type": "boolean"
+        }
+      }
+    },
+    "protoDeepWrapper": {
+      "type": "object",
+      "properties": {
+        "deep": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sql": {
+          "$ref": "#/definitions/protoMixSql"
+        }
+      }
+    },
+    "protoDriver": {
+      "type": "string",
+      "enum": [
+        "DRIVER_UNSPECIFIED",
+        "DRIVER_POSTGRES",
+        "DRIVER_MYSQL",
+        "DRIVER_DORIS"
+      ],
+      "default": "DRIVER_UNSPECIFIED"
+    },
+    "protoExpression": {
+      "type": "object",
+      "properties": {
+        "call": {
+          "type": "string"
+        },
+        "callType": {
+          "$ref": "#/definitions/protoCallType"
+        },
+        "vars": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protoMixVars"
+          }
+        },
+        "callAs": {
+          "type": "string"
+        },
+        "useAs": {
+          "type": "boolean"
+        }
+      }
+    },
+    "protoJoin": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "table": {
+          "$ref": "#/definitions/protoTable"
+        },
+        "left": {
+          "type": "string"
+        },
+        "right": {
+          "type": "string"
+        },
+        "on": {
+          "type": "string"
+        }
+      }
+    },
+    "protoLimit": {
+      "type": "object",
+      "properties": {
+        "limitN": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "protoMixField": {
+      "type": "object",
+      "properties": {
+        "column": {
+          "$ref": "#/definitions/protoColumn"
+        },
+        "expression": {
+          "$ref": "#/definitions/protoExpression"
+        }
+      }
+    },
+    "protoMixSql": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "$ref": "#/definitions/protoSQLReference"
+        },
+        "template": {
+          "$ref": "#/definitions/protoSQLText"
+        }
+      }
+    },
+    "protoMixVars": {
+      "type": "object",
+      "properties": {
+        "column": {
+          "$ref": "#/definitions/protoColumn"
+        },
+        "expression": {
+          "$ref": "#/definitions/protoExpression"
+        },
+        "context": {
+          "type": "string"
+        },
+        "number": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "protoOrderBy": {
+      "type": "object",
+      "properties": {
+        "dependent": {
+          "type": "string"
+        },
+        "order": {
+          "type": "string"
+        }
+      }
+    },
+    "protoResponse": {
+      "type": "object",
+      "properties": {
+        "Code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Msg": {
+          "type": "string"
+        },
+        "Data": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "protoSQLReference": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "$ref": "#/definitions/protoTable"
+        },
+        "join": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protoJoin"
+          }
+        },
+        "where": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protoExpression"
+          }
+        },
+        "groupBy": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protoMixField"
+          },
+          "title": "GroupBy 可以是 Column 或 Expression"
+        },
+        "aggregation": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protoExpression"
+          }
+        },
+        "select": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protoMixField"
+          },
+          "title": "Select 可以是 Column 或 Expression"
+        },
+        "orderBy": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protoOrderBy"
+          }
+        },
+        "limit": {
+          "$ref": "#/definitions/protoLimit"
+        }
+      }
+    },
+    "protoSQLText": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "protoTable": {
+      "type": "object",
+      "properties": {
+        "tableName": {
+          "type": "string"
+        },
+        "tableSchema": {
+          "type": "string"
+        },
+        "tableAlias": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,12 +1,10 @@
-// 怎么将 args 插入 sql 语句
-package strategy
+package facade
 
 import (
 	"fmt"
 	"testing"
 
 	"github.com/forhsd/logger"
-	"github.com/ouseikou/sqlbuilder/common"
 	"github.com/ouseikou/sqlbuilder/common/clause"
 	"github.com/ouseikou/sqlbuilder/util"
 
@@ -220,7 +218,7 @@ func TestXORMSQLBuilder(t *testing.T) {
 		Select(`DATE_TRUNC('month', "t1"."created_at") as created_at`, `"t1"."category"`, `sum("t1"."price")`).
 		From(`"sample_data"."products"`, "t1").
 		GroupBy(`DATE_TRUNC('month', "t1"."created_at"), "t1"."category"`).
-		OrderBy(`DATE_TRUNC('month', "t1"."created_at"), "t1"."category"`)
+		OrderBy(`DATE_TRUNC('month', "t1"."created_at") asc, "t1"."category" desc`)
 
 	boundSQL, _ := builder.ToBoundSQL()
 	t.Log(boundSQL)
@@ -316,15 +314,15 @@ func TestXORMSQLBuilderSelect(t *testing.T) {
 	}
 
 	request := clause.BuilderRequest{
-		Driver:      common.DriverPostgres,
-		Strategy:    common.ModelStrategy,
+		Driver:      clause.DriverPostgres,
+		Strategy:    clause.ModelStrategy,
 		SQLBuilders: []clause.DeepWrapper{{Deep: 0, Sql: sqlRef}},
 	}
 
 	serialize, _ := util.Serialize(request)
 	fmt.Println(string(serialize))
 
-	builder, bErr := util.RunBuilder(request)
+	builder, bErr := RunBuilder(request)
 	if bErr != nil {
 		logger.Error(bErr)
 	}

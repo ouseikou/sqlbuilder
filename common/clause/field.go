@@ -1,13 +1,15 @@
 package clause
 
 const (
-	StringLiteral       = `%s`
-	AnyLiteral          = `%v`
-	SchemaTable         = `"%s"."%s"`
-	TableColumn         = `"%s"."%s"`
-	TableColumnAs       = `"%s"."%s" as "%s"`
-	SchemaTableColumn   = `"%s"."%s"."%s"`
-	SchemaTableColumnAs = `"%s"."%s"."%s" as "%s"`
+	StringLiteral         = `%s`
+	DoubleStringLiteral   = `%s %s`
+	PGStringLiteralSafe   = `"%s"`
+	AnyLiteral            = `%v`
+	PGSchemaTable         = `"%s"."%s"`
+	PGTableColumn         = `"%s"."%s"`
+	PGTableColumnAs       = `"%s"."%s" as "%s"`
+	PGSchemaTableColumn   = `"%s"."%s"."%s"`
+	PGSchemaTableColumnAs = `"%s"."%s"."%s" as "%s"`
 )
 
 // FieldClause 使用需要断言
@@ -50,9 +52,6 @@ type Column struct {
 	//// 字段归属方程序值?, 物理表别名或者子查询别名, 用于拼接sql的字符串
 	//RawDependent string `json:"rawDependent"`
 }
-
-//func (a *Column) mix() {
-//}
 
 // todo 表达式类型字段暂不实现
 //type JoinField struct {

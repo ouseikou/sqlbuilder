@@ -1,4 +1,4 @@
-package strategy
+package demo
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 
 	"github.com/forhsd/logger"
 	"github.com/ouseikou/sqlbuilder/connect"
-	"github.com/ouseikou/sqlbuilder/demo"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -20,12 +19,12 @@ func assertEqual(t *testing.T, actual, expected interface{}, message string) {
 
 func TestFacadeGen(t *testing.T) {
 	db := connect.PostgresConn()
-	_ = demo.Gen(db, 10)
+	_ = Gen(db, 10)
 }
 
 func TestFacadeGenProduct(t *testing.T) {
 	db := connect.PostgresConn()
-	_ = demo.GenProductSql(db, "")
+	_ = GenProductSql(db, "")
 }
 
 func TestFacadeGenProductJoin(t *testing.T) {
