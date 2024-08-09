@@ -101,7 +101,7 @@ func makeGroupBy() []*proto.MixField {
 }
 
 func TestBuilderRequest_Descriptor(t *testing.T) {
-	sql := &proto.SQLReference{
+	sql := &proto.SqlReference{
 		From:        &proto.Table{TableName: "products", TableSchema: "sample_data", TableAlias: "products"},
 		Join:        []*proto.Join{},
 		Where:       []*proto.Expression{},
@@ -118,7 +118,7 @@ func TestBuilderRequest_Descriptor(t *testing.T) {
 
 	request := &proto.BuilderRequest{
 		Driver:   proto.Driver_DRIVER_POSTGRES,
-		Strategy: proto.BuilderStrategy_STRATEGY_MODEL,
+		Strategy: proto.BuilderStrategy_BUILDER_STRATEGY_MODEL,
 		Builders: []*proto.DeepWrapper{deep0},
 	}
 

@@ -7,8 +7,9 @@ import (
 	pb "github.com/ouseikou/sqlbuilder/gen/proto"
 )
 
+// todo 1. java Object传参顺序问题影响SQL生成和结果 2. schema.table.column 参考MB 3.format在占位符写死了,根据方言决定 "" 或``
+
 func BuildModelSqlByJson(request clause.BuilderRequest) (string, error) {
-	// todo 1. java Object传参顺序问题影响SQL生成和结果 2. schema.table.column 参考MB 3.format在占位符写死了,根据方言决定 "" 或``
 	builder, bErr := facade.RunBuilder(request)
 
 	defer func() {
@@ -34,17 +35,17 @@ func BuildTemplateSqlByJson(request clause.BuilderRequest) (string, error) {
 
 // BuildSqlByModelProto 使用 proto 解决 http 传输联合类型接收为 map 的元组类型擦除问题
 func BuildSqlByModelProto(request *pb.BuilderRequest) (string, error) {
-
+	// 根据方言创建facade
 	f, err := facade.CreateModelBuilderFacade(request.Driver)
 	if err != nil {
 		return "", err
 	}
-
+	// 构建 xormBuilder
 	xormBuilder, err := f.BuildSQL(request)
 	if err != nil {
 		return "", err
 	}
-
+	// builder -> sql
 	boundSQL, err := xormBuilder.ToBoundSQL()
 	if err != nil {
 		return "", err

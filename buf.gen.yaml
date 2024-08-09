@@ -23,9 +23,9 @@ plugins:
       - disable_default_responses=true
       - json_names_for_fields=false
 
-  - remote: buf.build/protocolbuffers/java
-    out: gen/java
-  - remote: buf.build/grpc/java
-    out: gen/java
+#  - remote: buf.build/protocolbuffers/java
+#    out: gen/java
+#  - remote: buf.build/grpc/java
+#    out: gen/java
 inputs:
   - directory: .

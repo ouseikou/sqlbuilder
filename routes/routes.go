@@ -30,5 +30,6 @@ func SetupRoutes(router *gin.Engine) {
 
 		// 暴露接口
 		apiV1.POST("/sqlbuilder", controller.GenerateHBQL)
+		apiV1.POST("/sqlbuilder/proto", controller.GenerateHBQLByProto)
 	}
 }

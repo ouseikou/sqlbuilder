@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -47,23 +46,20 @@ func GenerateHBQLByProto(c *gin.Context) {
 	req := &pb.BuilderRequest{}
 	bodyBuff, err := c.GetRawData()
 	if err != nil {
-		fmt.Println(err)
+		errorResponse(c, err)
+		return
 	}
 
 	err = protojson.Unmarshal(bodyBuff, req)
 	if err != nil {
-		fmt.Println(err)
+		errorResponse(c, err)
+		return
 	}
 
 	buildSql, err := service.BuildSqlByProto(req)
 
 	if err != nil {
-		resp := common.Response{
-			Code: http.StatusInternalServerError,
-			Msg:  err.Error(),
-			Data: nil,
-		}
-		c.JSON(http.StatusInternalServerError, resp)
+		errorResponse(c, err)
 		return
 	}
 
@@ -75,4 +71,13 @@ func GenerateHBQLByProto(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, resp)
+}
+
+func errorResponse(c *gin.Context, err error) {
+	resp := common.Response{
+		Code: http.StatusInternalServerError,
+		Msg:  err.Error(),
+		Data: nil,
+	}
+	c.JSON(http.StatusInternalServerError, resp)
 }

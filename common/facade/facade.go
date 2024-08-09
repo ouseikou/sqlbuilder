@@ -52,10 +52,10 @@ func (f *AbstractModelBuilderFacade) BuildDialect(request *pb.BuilderRequest) (*
 	}
 }
 
-func (f *AbstractModelBuilderFacade) BuildBasic(dialectBuilder *xorm.Builder, sqlRef *pb.SQLReference) *xorm.Builder {
+func (f *AbstractModelBuilderFacade) BuildBasic(dialectBuilder *xorm.Builder, sqlRef *pb.SqlReference) *xorm.Builder {
 	return &xorm.Builder{}
 }
 
-func (f *AbstractModelBuilderFacade) BuildOther(builder *xorm.Builder, sqlRef *pb.SQLReference) *xorm.Builder {
+func (f *AbstractModelBuilderFacade) BuildOther(builder *xorm.Builder, sqlRef *pb.SqlReference) *xorm.Builder {
 	return &xorm.Builder{}
 }

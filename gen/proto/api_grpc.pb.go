@@ -26,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SqlBuilderApiClient interface {
-	Generate(ctx context.Context, in *BuilderRequest, opts ...grpc.CallOption) (*Response, error)
+	Generate(ctx context.Context, in *BuilderRequest, opts ...grpc.CallOption) (*CommonResponse, error)
 }
 
 type sqlBuilderApiClient struct {
@@ -37,9 +37,9 @@ func NewSqlBuilderApiClient(cc grpc.ClientConnInterface) SqlBuilderApiClient {
 	return &sqlBuilderApiClient{cc}
 }
 
-func (c *sqlBuilderApiClient) Generate(ctx context.Context, in *BuilderRequest, opts ...grpc.CallOption) (*Response, error) {
+func (c *sqlBuilderApiClient) Generate(ctx context.Context, in *BuilderRequest, opts ...grpc.CallOption) (*CommonResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Response)
+	out := new(CommonResponse)
 	err := c.cc.Invoke(ctx, SqlBuilderApi_Generate_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (c *sqlBuilderApiClient) Generate(ctx context.Context, in *BuilderRequest, 
 // All implementations must embed UnimplementedSqlBuilderApiServer
 // for forward compatibility.
 type SqlBuilderApiServer interface {
-	Generate(context.Context, *BuilderRequest) (*Response, error)
+	Generate(context.Context, *BuilderRequest) (*CommonResponse, error)
 	mustEmbedUnimplementedSqlBuilderApiServer()
 }
 
@@ -62,7 +62,7 @@ type SqlBuilderApiServer interface {
 // pointer dereference when methods are called.
 type UnimplementedSqlBuilderApiServer struct{}
 
-func (UnimplementedSqlBuilderApiServer) Generate(context.Context, *BuilderRequest) (*Response, error) {
+func (UnimplementedSqlBuilderApiServer) Generate(context.Context, *BuilderRequest) (*CommonResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Generate not implemented")
 }
 func (UnimplementedSqlBuilderApiServer) mustEmbedUnimplementedSqlBuilderApiServer() {}

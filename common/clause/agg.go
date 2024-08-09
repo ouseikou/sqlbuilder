@@ -3,11 +3,12 @@ package clause
 type AggFunc string // count, sum, avg, max, min, distinct; 数据库的聚合函数不支持嵌套调用
 
 const (
-	Count         AggFunc = "count"
-	Sum           AggFunc = "sum"
-	Avg           AggFunc = "avg"
-	Max           AggFunc = "max"
-	Min           AggFunc = "min"
+	Count AggFunc = "count"
+	Sum   AggFunc = "sum"
+	Avg   AggFunc = "avg"
+	Max   AggFunc = "max"
+	Min   AggFunc = "min"
+	// CountDistinct 不建议一个字符串拼接塞两个表达式的设计, 应该算作n个表达式归纳为自定义表达式的设计
 	CountDistinct AggFunc = "countDistinct"
 	// Stddev pg 总体标准差
 	Stddev AggFunc = "stddev"

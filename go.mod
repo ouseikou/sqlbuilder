@@ -6,11 +6,9 @@ require (
 	github.com/forhsd/logger v0.0.0-20240402053253-cae71d268779
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-redis/redis/v8 v8.11.5
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.21.0
 	github.com/pganalyze/pg_query_go/v5 v5.1.0
 	github.com/spf13/viper v1.19.0
 	github.com/unknwon/com v1.0.1
-	google.golang.org/genproto/googleapis/api v0.0.0-20240730163845-b1a4ccb954bf
 	google.golang.org/grpc v1.64.1
 	gorm.io/driver/mysql v1.5.4
 	gorm.io/driver/postgres v1.5.7
