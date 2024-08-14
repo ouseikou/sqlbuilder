@@ -3,12 +3,12 @@ package clause
 type InnerFunc string // count, sum, avg, max, min, distinct; 数据库的聚合函数不支持嵌套调用
 
 const (
-	CallDateTrunc InnerFunc = "DATE_TRUNC"
+	CallDateTrunc InnerFunc = "date_trunc"
 )
 
 const (
-	DateTruncFormat   = `DATE_TRUNC('%v', %s)`
-	DateTruncAsFormat = `DATE_TRUNC('%v', %s) as "%s"`
+	DateTruncFormat   = `date_trunc('%v', %s)`
+	DateTruncAsFormat = `date_trunc('%v', %s) as "%s"`
 )
 
 // InnerFuncFormatMap 内置函数名称和SQL片段 映射
