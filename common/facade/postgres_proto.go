@@ -177,6 +177,13 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression) []interface{} {
 	vars := expr.Vars
 	// 表达式参数: int, string, clause.Column
 	var expressions []interface{}
+
+	// 如果函数是 count1, 只用填充别名
+	if expr.Call == string(clause.Count1) {
+		expressions = append(expressions, expr.CallAs)
+		return expressions
+	}
+
 	for _, varItem := range vars {
 		switch v := varItem.GetVars().(type) {
 		case *pb.MixVars_Column:

@@ -3,11 +3,12 @@ package clause
 type AggFunc string // count, sum, avg, max, min, distinct; 数据库的聚合函数不支持嵌套调用
 
 const (
-	Count AggFunc = "count"
-	Sum   AggFunc = "sum"
-	Avg   AggFunc = "avg"
-	Max   AggFunc = "max"
-	Min   AggFunc = "min"
+	Count  AggFunc = "count"
+	Count1 AggFunc = "count1"
+	Sum    AggFunc = "sum"
+	Avg    AggFunc = "avg"
+	Max    AggFunc = "max"
+	Min    AggFunc = "min"
 	// CountDistinct 不建议一个字符串拼接塞两个表达式的设计, 应该算作n个表达式归纳为自定义表达式的设计
 	CountDistinct AggFunc = "countDistinct"
 	// Stddev pg 总体标准差
@@ -18,6 +19,7 @@ const (
 
 const (
 	CountFormat         = `count(%s)`
+	Count1Format        = `count(1)`
 	SumFormat           = `sum(%s)`
 	AvgFormat           = `avg(%s)`
 	MaxFormat           = `max(%s)`
@@ -27,6 +29,7 @@ const (
 	VarianceFormat      = `variance(%s)`
 
 	PGCountAsFormat         = `count(%s) as "%s"`
+	PGCount1AsFormat        = `count(1) as "%s"`
 	PGSumAsFormat           = `sum(%s) as "%s"`
 	PGAvgAsFormat           = `avg(%s) as "%s"`
 	PGMaxAsFormat           = `max(%s) as "%s"`
@@ -40,6 +43,7 @@ const (
 var (
 	AggregationFuncFormatMap = map[AggFunc]string{
 		Count:         CountFormat,
+		Count1:        Count1Format,
 		Sum:           SumFormat,
 		Avg:           AvgFormat,
 		Max:           MaxFormat,
@@ -51,6 +55,7 @@ var (
 
 	PGAggregationAsFuncFormatMap = map[AggFunc]string{
 		Count:         PGCountAsFormat,
+		Count1:        PGCount1AsFormat,
 		Sum:           PGSumAsFormat,
 		Avg:           PGAvgAsFormat,
 		Max:           PGMaxAsFormat,
