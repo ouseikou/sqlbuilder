@@ -40,23 +40,17 @@ func BuildSqlByModelProto(request *pb.BuilderRequest) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// 构建 xormBuilder
-	xormBuilder, err := f.BuildSQL(request)
+	// 构建 xormBuilder -> sql
+	boundSQL, err := f.BuildSQL(request)
 	if err != nil {
 		return "", err
 	}
-	// builder -> sql
-	boundSQL, err := xormBuilder.ToBoundSQL()
-	if err != nil {
-		return "", err
-	}
-
-	logger.Debug("执行模型模式SQL构建策略, SQL: \n %s", boundSQL)
+	logger.Debug("执行模型模式SQL构建策略, SQL:\n%s", boundSQL)
 
 	return boundSQL, nil
 }
 
 func BuildSqlByTemplateProto(request *pb.BuilderRequest) (string, error) {
-	logger.Debug("执行模板模式SQL构建策略, pg方言SQL: %s", "SELECT 模板")
+	logger.Debug("执行模板模式SQL构建策略, pg方言SQL:\n%s", "SELECT 模板")
 	return "", nil
 }

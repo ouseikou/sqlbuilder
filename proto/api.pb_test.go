@@ -100,11 +100,83 @@ func makeGroupBy() []*proto.MixField {
 	return selects
 }
 
+func makeWhere() []*proto.MixWhere {
+	wheres := make([]*proto.MixWhere, 0)
+
+	condition1 := makeWhereCondition1Eq()
+	condition2 := makeWhereCondition2Gt()
+	condition3 := makeWhereCondition3In()
+	condition4 := makeWhereCondition4Between()
+
+	wheres = append(wheres, &proto.MixWhere{Filter: condition1}, &proto.MixWhere{Filter: condition2}, &proto.MixWhere{Filter: condition3}, &proto.MixWhere{Filter: condition4})
+
+	return wheres
+}
+
+func makeWhereCondition1Eq() *proto.MixWhere_Condition {
+	conditionCol1 := &proto.MixField_Column{
+		Column: &proto.Column{Schema: "sample_data", Table: "products", Field: "category", Alias: "分类", AggAble: false, UseAs: false},
+	}
+
+	args := make([]*proto.BasicData, 0)
+	args = append(args, &proto.BasicData{Data: &proto.BasicData_StrVal{StrVal: "Doohickey"}})
+
+	condition1 := &proto.MixWhere_Condition{
+		Condition: &proto.Condition{Field: &proto.MixField{Mix: conditionCol1}, Operator: proto.Op_OP_EQ, Args: args, Logic: proto.Logic_LOGIC_AND},
+	}
+	return condition1
+}
+
+func makeWhereCondition2Gt() *proto.MixWhere_Condition {
+	conditionCol1 := &proto.MixField_Column{
+		Column: &proto.Column{Schema: "sample_data", Table: "products", Field: "price", Alias: "价格", AggAble: false, UseAs: false},
+	}
+
+	args := make([]*proto.BasicData, 0)
+	args = append(args, &proto.BasicData{Data: &proto.BasicData_IntVal{IntVal: 3}})
+
+	condition1 := &proto.MixWhere_Condition{
+		Condition: &proto.Condition{Field: &proto.MixField{Mix: conditionCol1}, Operator: proto.Op_OP_GT, Args: args, Logic: proto.Logic_LOGIC_AND},
+	}
+	return condition1
+}
+
+func makeWhereCondition3In() *proto.MixWhere_Condition {
+	conditionCol1 := &proto.MixField_Column{
+		Column: &proto.Column{Schema: "sample_data", Table: "products", Field: "id", Alias: "主键", AggAble: false, UseAs: false},
+	}
+
+	args := make([]*proto.BasicData, 0)
+	args = append(args, &proto.BasicData{Data: &proto.BasicData_IntVal{IntVal: 3}})
+	args = append(args, &proto.BasicData{Data: &proto.BasicData_IntVal{IntVal: 4}})
+	args = append(args, &proto.BasicData{Data: &proto.BasicData_IntVal{IntVal: 10}})
+
+	condition1 := &proto.MixWhere_Condition{
+		Condition: &proto.Condition{Field: &proto.MixField{Mix: conditionCol1}, Operator: proto.Op_OP_IN, Args: args, Logic: proto.Logic_LOGIC_AND},
+	}
+	return condition1
+}
+
+func makeWhereCondition4Between() *proto.MixWhere_Condition {
+	conditionCol1 := &proto.MixField_Column{
+		Column: &proto.Column{Schema: "sample_data", Table: "products", Field: "created_at", Alias: "主键", AggAble: false, UseAs: false},
+	}
+
+	args := make([]*proto.BasicData, 0)
+	args = append(args, &proto.BasicData{Data: &proto.BasicData_StrVal{StrVal: "2017-07-19 00:00:00.000"}})
+	args = append(args, &proto.BasicData{Data: &proto.BasicData_StrVal{StrVal: "2017-09-14 00:00:00.000"}})
+
+	condition1 := &proto.MixWhere_Condition{
+		Condition: &proto.Condition{Field: &proto.MixField{Mix: conditionCol1}, Operator: proto.Op_OP_BETWEEN, Args: args, Logic: proto.Logic_LOGIC_AND},
+	}
+	return condition1
+}
+
 func TestBuilderRequest_Descriptor(t *testing.T) {
 	sql := &proto.SqlReference{
 		From:        &proto.Table{TableName: "products", TableSchema: "sample_data", TableAlias: "products"},
 		Join:        []*proto.Join{},
-		Where:       []*proto.Expression{},
+		Where:       makeWhere(),
 		GroupBy:     makeGroupBy(),
 		Aggregation: []*proto.Expression{},
 		Select:      makeSelect(),

@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ouseikou/sqlbuilder/config"
 	"github.com/ouseikou/sqlbuilder/routes"
+	"github.com/ouseikou/sqlbuilder/util"
 	"github.com/spf13/viper"
 )
 
@@ -33,6 +34,9 @@ func main() {
 
 	// 配置路由
 	routes.SetupRoutes(router)
+
+	// 设置日志打印的文件所在绝对路径
+	logger.SetLogPathTrim(util.SourceCodeSubstringPath(`sqlbuilder.*?/`))
 
 	// 启动 HTTP 服务器
 	port := viper.GetString("server.port")

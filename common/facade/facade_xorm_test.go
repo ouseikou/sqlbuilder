@@ -1,13 +1,9 @@
 package facade
 
 import (
-	"fmt"
 	"testing"
 
-	"github.com/forhsd/logger"
-	"github.com/ouseikou/sqlbuilder/common/clause"
-	"github.com/ouseikou/sqlbuilder/util"
-
+	"github.com/stretchr/testify/assert"
 	xorm "xorm.io/builder"
 )
 
@@ -50,283 +46,65 @@ func TestXORMSQLBuilderSub(t *testing.T) {
 
 }
 
-/**
-SELECT
-    DATE_TRUNC('month', "t1"."created_at") as created_at,
-    "t1"."category",
-    sum("t1"."price")
-FROM "sample_data"."products" t1
-GROUP BY DATE_TRUNC('month', "t1"."created_at"), "t1"."category"
-ORDER BY DATE_TRUNC('month', "t1"."created_at") ASC, "t1"."category" ASC
-*/
-
-/**
-SELECT
-    DATE_TRUNC('month', CAST("sample_data"."products"."created_at" AS timestamp)) AS "created_at",
-    "sample_data"."products"."category" AS "category",
-    "order"."id" AS "order__id",
-    SUM("sample_data"."products"."price") AS "sum"
-FROM "sample_data"."products"
-LEFT JOIN "sample_data"."order" AS "order" ON "sample_data"."products"."id" = "order"."product_id"
-GROUP BY DATE_TRUNC('month', CAST("sample_data"."products"."created_at" AS timestamp)), "sample_data"."products"."category", "order"."id"
-ORDER BY DATE_TRUNC('month', CAST("sample_data"."products"."created_at" AS timestamp)) ASC, "sample_data"."products"."category" ASC, "order"."id" ASC
-*/
-
-/**
-{
-    "strategy": 0,
-    "driver": 0,
-    "sqlBuilders": [
-        {
-            "deep": 0,
-            "sql": {
-                "from": {
-                    "tableName": "tableName",
-                    "tableSchema": "tableSchema",
-                    "tableAlias": "tableAlias"
-                },
-                "join": {
-                    "type": "left join",
-                    "table": {
-                        "tableName": "tableName",
-                        "tableSchema": "tableSchema",
-                        "tableAlias": "tableAlias"
-                    },
-                    "left": {
-                        "field":"field",
-                        "table":"tableName",
-                        "schema":"schema",
-                        "alias":"alias",
-                        "hasAgg":false
-                    },
-                    "right":{
-                        "field":"field",
-                        "table":"tableName",
-                        "schema":"schema",
-                        "alias":"alias",
-                        "hasAgg":false
-                    },
-                    "on": "="
-                },
-                "where": {
-                    "call": "=",
-                    "vars": [
-                        {
-                            "field": "field",
-                            "table": "tableName",
-                            "schema": "schema",
-                            "alias": "alias",
-                            "hasAgg": false
-                        },
-                        1
-                    ]
-                },
-                // 类型断言: Column 或者 Expression
-                "groupBy": [
-                    {
-                        "field": "field",
-                        "table": "tableName",
-                        "schema": "schema",
-                        "alias": "alias",
-                        "hasAgg": false
-                    },
-                    {
-                        "call": "DATE_TRUNC",
-                        "vars": [
-                            "month",
-                            {
-                                "field": "field",
-                                "table": "tableName",
-                                "schema": "schema",
-                                "alias": "alias",
-                                "hasAgg": false
-                            }
-                        ]
-                    }
-                ],
-                // Aggregation 会加入 Select 片段
-                "agg": [
-                    {
-                        "call": "SUM",
-                        "vars": [
-                            {
-                                "field": "field",
-                                "table": "tableName",
-                                "schema": "schema",
-                                "alias": "alias",
-                                "hasAgg": false
-                            }
-                        ]
-                    }
-                ],
-                // 类型断言: Column 或者 Expression
-                "select": [
-                    {
-                        "field": "field",
-                        "table": "tableName",
-                        "schema": "schema",
-                        "alias": "alias",
-                        "hasAgg": false
-                    }
-                ],
-                // dependent 类型断言: Column 或者 Expression
-                "orderBy": [
-                    {
-                        "order":"asc",
-                        "dependent": {
-                            "field": "field",
-                            "table": "tableName",
-                            "schema": "schema",
-                            "alias": "alias",
-                            "hasAgg": false
-                        }
-                    },
-                    {
-                        "order":"asc",
-                        "dependent": {
-                            "call": "DATE_TRUNC",
-                            "vars": [
-                                "month",
-                                {
-                                    "field": "field",
-                                    "table": "tableName",
-                                    "schema": "schema",
-                                    "alias": "alias",
-                                    "hasAgg": false
-                                }
-                            ]
-                        }
-                    }
-                ],
-                "limit": {
-                    "limit": 10,
-                    "offset": 0
-                }
-            }
-        }
-    ]
-}
-
-// .InnerJoin("table3", "table2.id = table3.tid")
-// .LeftJoin("table2", Eq{"table1.id": 1}.And(Lt{"table2.id": 3})).
-// .Where(Eq{"a": 1})
-
-*/
-
 func TestXORMSQLBuilder(t *testing.T) {
-	builder := xorm.Dialect(xorm.POSTGRES).
-		Select(`DATE_TRUNC('month', "t1"."created_at") as created_at`, `"t1"."category"`, `sum("t1"."price")`).
-		From(`"sample_data"."products"`, "t1").
-		GroupBy(`DATE_TRUNC('month', "t1"."created_at"), "t1"."category"`).
-		OrderBy(`DATE_TRUNC('month', "t1"."created_at") asc, "t1"."category" desc`)
-
-	boundSQL, _ := builder.ToBoundSQL()
-	t.Log(boundSQL)
+	//builder := xorm.Dialect(xorm.POSTGRES).
+	//	Select(`DATE_TRUNC('month', "t1"."created_at") as created_at`, `"t1"."category"`, `sum("t1"."price")`).
+	//	From(`"sample_data"."products"`, "t1").
+	//	GroupBy(`DATE_TRUNC('month', "t1"."created_at"), "t1"."category"`).
+	//	OrderBy(`DATE_TRUNC('month', "t1"."created_at") asc, "t1"."category" desc`)
+	//
+	//boundSQL, _ := builder.ToBoundSQL()
+	//t.Log(boundSQL)
 
 	// SELECT c FROM table1 ORDER BY CASE WHEN owner_name LIKE 'a' THEN 0 ELSE 1 END
 	//sqlB, _ := xorm.Select("c").From("table1").OrderBy(xorm.Expr("CASE WHEN owner_name LIKE ? THEN 0 ELSE 1 END", "a")).ToBoundSQL()
 	//fmt.Println(sqlB)
+
+	builderWhere := xorm.Dialect(xorm.POSTGRES).
+		Select(`"t1"."category"`).
+		From(`"sample_data"."products"`, "t1").
+		//Where(xorm.Or(xorm.Eq{"c": 3, "a": "asda"}, xorm.Eq{"d": 4}))
+		//Where(xorm.Expr("c >1 and d = 6 or (q between 1 and 3)")) // expr 允许一切原生写法
+		//Where(xorm.Expr("c >1 and d = ? or (q between 1 and 3)", "asd")) // expr 还有 fmt.Sprintf() 效果
+		//Where(xorm.In("col1", []int{1, 2, 10})) // kv中v是数组
+		//Where(xorm.Between{Col: "col1", LessVal: 1, MoreVal: 10}) // betweenObj
+		//Where(xorm.Eq{"id": 1}).And(xorm.Eq{"aaa": 1}).Or(xorm.Lte{"qqq": 100}).And(xorm.Eq{"ddd": "qwe"}) // and/or 会将当前视作右和前面所有视为左整体圆括号圈定
+		//Where(xorm.Eq{"id": 1}).And(xorm.Eq{"aaa": 1}).And(xorm.Lte{"qqq": 100}).And(xorm.Eq{"ddd": "qwe"}) //所有都是and不会加圆括号
+		//Where(xorm.Eq{"id": 1, "category": "Doohickey", "price": 10}) // 按照key排序, 且共用一个操作符
+		//Where(xorm.Eq{`"product"."id"`: 1}).Where(xorm.Eq{`"product"."category"`: "Doohickey"}) // 默认将多个where按照and粘合
+		//And(xorm.Eq{`"product"."id"`: 1}).Or(xorm.Eq{`"product"."category"`: "Doohickey"}) // 可以不申明where, 会自动在前面拼接where关键字
+		Where(xorm.And(xorm.Eq{`"product"."id"`: 1}).Or(xorm.Eq{`"product"."category"`: "Doohickey"})) // 在第一个不申明条件前拼接where关键字不影响
+
+	whereBoundSQL, _ := builderWhere.ToBoundSQL()
+	t.Log(whereBoundSQL)
+
+	//// 使用 expr 实现下面效果
+	//// (a=1 AND b LIKE '%c%') OR (a=2 AND b LIKE '%g%')
+	//segment := xorm.Eq{"a": 1}.And(xorm.Like{"b", "c"}).Or(xorm.Eq{"a": 2}.And(xorm.Like{"b", "g"})).
+	//	And(xorm.Expr("c >? or (q between 1 and 3)", 10))
+	//segmentBoundSQL, _ := xorm.ToBoundSQL(segment)
+	//t.Log(segmentBoundSQL)
 }
 
 // result := fmt.Sprintf(template, name, accountNumber)
 
-func TestXORMSQLBuilderSelect(t *testing.T) {
-	fromTable := clause.Table{TableName: "products", TableSchema: "sample_data", TableAlias: "products"}
+func TestExprCond(t *testing.T) {
+	// 两个where之间默认填充 AND, 如果希望一个字符串包含多个表达式使用 Expr, 内置表达式使用对应 type
 
-	selects := []interface{}{
-		clause.Column{
-			Field:   "category",
-			Table:   "products",
-			Schema:  "sample_data",
-			Alias:   "分类",
-			AggAble: false,
-			UseAs:   true,
-		},
-		clause.Expression{
-			Call:     "sum",
-			CallType: "agg",
-			Vars: []interface{}{
-				//"products",
-				//"price",
-				clause.Column{
-					Field:   "price",
-					Table:   "products",
-					Schema:  "sample_data",
-					Alias:   "price表达式内部as",
-					AggAble: false,
-					UseAs:   false,
-				},
-			},
-			CallAs: "合计价格",
-			UseAs:  true,
-		},
-		clause.Expression{
-			Call:     "DATE_TRUNC",
-			CallType: "inner",
-			Vars: []interface{}{
-				"month",
-				clause.Column{
-					Field:   "created_at",
-					Table:   "products",
-					Schema:  "sample_data",
-					Alias:   "created_at表达式内部as",
-					AggAble: false,
-					UseAs:   false,
-				},
-			},
-			//CallAs: "date_trunc__products_created_at",
-			CallAs: "离散日期(月)",
-			UseAs:  true,
-		},
-	}
+	b := xorm.Select("id").
+		From("table1").
+		Where(xorm.Expr("a=? OR b=?", 1, 2)).
+		Where(xorm.Or(xorm.Eq{"c": 3}, xorm.Eq{"d": 4}))
+	sql, args, err := b.ToSQL()
+	assert.NoError(t, err)
+	assert.EqualValues(t, "table1", b.TableName())
+	assert.EqualValues(t, "SELECT id FROM table1 WHERE (a=? OR b=?) AND (c=? OR d=?)", sql)
+	assert.EqualValues(t, []interface{}{1, 2, 3, 4}, args)
 
-	groupBy := []interface{}{
-		clause.Expression{
-			Call:     "DATE_TRUNC",
-			CallType: "inner",
-			Vars: []interface{}{
-				"month",
-				clause.Column{
-					Field:   "created_at",
-					Table:   "products",
-					Schema:  "sample_data",
-					Alias:   "created_at表达式G内部as",
-					AggAble: false,
-				},
-			},
-			CallAs: "离散日期(月)",
-			UseAs:  false,
-		},
-		clause.Column{
-			Field:   "category",
-			Table:   "products",
-			Schema:  "sample_data",
-			Alias:   "分类",
-			AggAble: false,
-			UseAs:   false,
-		},
-	}
+	// 下面示例只能结合 Expression 和 Condition 表达:
+	// Expression.Vars{Condition无next, Condition有1next}
+	logicNest := xorm.Or(xorm.Eq{"a": 3}, xorm.And(xorm.Eq{"b": 1}, xorm.Eq{"c": 2}))
+	logicSql, err := xorm.ToBoundSQL(logicNest)
+	assert.EqualValues(t, "a=3 OR (b=1 AND c=2)", logicSql)
 
-	sqlRef := clause.SQLReference{
-		From:    fromTable,
-		Select:  selects,
-		GroupBy: groupBy,
-	}
-
-	request := clause.BuilderRequest{
-		Driver:      clause.DriverPostgres,
-		Strategy:    clause.ModelStrategy,
-		SQLBuilders: []clause.DeepWrapper{{Deep: 0, Sql: sqlRef}},
-	}
-
-	serialize, _ := util.Serialize(request)
-	fmt.Println(string(serialize))
-
-	builder, bErr := RunBuilder(request)
-	if bErr != nil {
-		logger.Error(bErr)
-	}
-	boundSQL, sqlErr := builder.ToBoundSQL()
-	fmt.Println(boundSQL)
-	fmt.Println(sqlErr)
 }

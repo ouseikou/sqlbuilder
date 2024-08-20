@@ -2,6 +2,10 @@ package util
 
 import (
 	"encoding/json"
+	"fmt"
+	"regexp"
+	"runtime"
+
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -32,4 +36,30 @@ func Ternary(condition bool, trueVal, falseVal interface{}) interface{} {
 		return trueVal
 	}
 	return falseVal
+}
+
+// SourceCodeSubstringPath 获取执行时源码的绝对路径
+func SourceCodeSubstringPath(regx string) string {
+	_, file, _, ok := runtime.Caller(0)
+	if !ok {
+		fmt.Println("Error retrieving caller information")
+		return ""
+	}
+
+	fmt.Printf("Current file: %s\n", file)
+
+	// 编译正则表达式
+	re, err := regexp.Compile(regx)
+	if err != nil {
+		fmt.Println("Error compiling regex:", err)
+		return ""
+	}
+
+	matches := re.FindAllString(file, -1)
+	if matches == nil {
+		fmt.Println("No matches found")
+		return ""
+	}
+
+	return matches[0]
 }

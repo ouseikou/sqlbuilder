@@ -17,6 +17,27 @@
   ],
   "paths": {},
   "definitions": {
+    "protoBasicData": {
+      "type": "object",
+      "properties": {
+        "intVal": {
+          "type": "string",
+          "format": "int64",
+          "title": "覆盖 int23"
+        },
+        "doubleVal": {
+          "type": "number",
+          "format": "double",
+          "title": "覆盖 float"
+        },
+        "strVal": {
+          "type": "string"
+        },
+        "logic": {
+          "type": "boolean"
+        }
+      }
+    },
     "protoBuilderStrategy": {
       "type": "string",
       "enum": [
@@ -77,6 +98,29 @@
         }
       }
     },
+    "protoCondition": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "$ref": "#/definitions/protoMixField",
+          "title": "暂时不考虑 where 1=1, where true; MixField.Expression 覆盖 WHERE ARRAY_LENGTH(my_array, 1) \u003e 5 场景"
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protoBasicData"
+          }
+        },
+        "operator": {
+          "$ref": "#/definitions/protoOp"
+        },
+        "logic": {
+          "$ref": "#/definitions/protoLogic",
+          "title": "和上一个条件的逻辑关系, 默认 and, 可选or"
+        }
+      }
+    },
     "protoDeepWrapper": {
       "type": "object",
       "properties": {
@@ -127,21 +171,33 @@
       "type": "object",
       "properties": {
         "type": {
-          "type": "string"
+          "$ref": "#/definitions/protoJoinType"
         },
         "table": {
           "$ref": "#/definitions/protoTable"
         },
         "left": {
-          "type": "string"
+          "$ref": "#/definitions/protoCondition"
         },
         "right": {
-          "type": "string"
+          "$ref": "#/definitions/protoCondition"
         },
         "on": {
-          "type": "string"
+          "$ref": "#/definitions/protoOp"
         }
       }
+    },
+    "protoJoinType": {
+      "type": "string",
+      "enum": [
+        "JOIN_TYPE_UNSPECIFIED",
+        "JOIN_TYPE_LEFT",
+        "JOIN_TYPE_RIGHT",
+        "JOIN_TYPE_INNER",
+        "JOIN_TYPE_FULL",
+        "JOIN_TYPE_CROSS"
+      ],
+      "default": "JOIN_TYPE_UNSPECIFIED"
     },
     "protoLimit": {
       "type": "object",
@@ -156,6 +212,15 @@
         }
       }
     },
+    "protoLogic": {
+      "type": "string",
+      "enum": [
+        "LOGIC_UNSPECIFIED",
+        "LOGIC_AND",
+        "LOGIC_OR"
+      ],
+      "default": "LOGIC_UNSPECIFIED"
+    },
     "protoMixField": {
       "type": "object",
       "properties": {
@@ -165,7 +230,8 @@
         "expression": {
           "$ref": "#/definitions/protoExpression"
         }
-      }
+      },
+      "title": "todo  未处理: 添加 Condition 会导致递归嵌套\nSELECT array_length(array_column, 1) \u003e 0 FROM my_table; SELECT NOT column_name FROM my_table; =\u003e Condition"
     },
     "protoMixSql": {
       "type": "object",
@@ -193,8 +259,46 @@
         "number": {
           "type": "string",
           "format": "int64"
+        },
+        "doubleNum": {
+          "type": "number",
+          "format": "double"
         }
       }
+    },
+    "protoMixWhere": {
+      "type": "object",
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/protoCondition"
+        },
+        "expression": {
+          "$ref": "#/definitions/protoExpression",
+          "title": "e.g. WHERE ARRAY_CONTAINS(tags, 'urgent')"
+        }
+      }
+    },
+    "protoOp": {
+      "type": "string",
+      "enum": [
+        "OP_UNSPECIFIED",
+        "OP_EQ",
+        "OP_NEQ",
+        "OP_LT",
+        "OP_LTE",
+        "OP_GT",
+        "OP_GTE",
+        "OP_LIKE",
+        "OP_BETWEEN",
+        "OP_IN",
+        "OP_NOT_IN",
+        "OP_IS_NULL",
+        "OP_IS_NOT_NULL",
+        "OP_AND",
+        "OP_OR"
+      ],
+      "default": "OP_UNSPECIFIED",
+      "title": "- OP_UNSPECIFIED: 默认值或未定义状态\n - OP_EQ: \"=\"\n - OP_NEQ: \"\u003c\u003e\"\n - OP_LT: \"\u003c\"\n - OP_LTE: \"\u003c=\"\n - OP_GT: \"\u003e\"\n - OP_GTE: \"\u003e=\"\n - OP_LIKE: \"like\"\n - OP_BETWEEN: \"between\"\n - OP_IN: \"in\"\n - OP_NOT_IN: \"not in\"\n - OP_IS_NULL: \"is null\"\n - OP_IS_NOT_NULL: \"is not null\"\n - OP_AND: \"or\"\n - OP_OR: \"and\""
     },
     "protoOrderBy": {
       "type": "object",
@@ -224,7 +328,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/protoExpression"
+            "$ref": "#/definitions/protoMixWhere"
           }
         },
         "group_by": {

@@ -32,9 +32,10 @@ type BuilderRequest struct {
 
 // SQLReference todo Select缺少自定义字段
 type SQLReference struct {
-	From  Table        `json:"from"`
-	Join  []Join       `json:"join"`
-	Where []Expression `json:"where"`
+	From Table  `json:"from"`
+	Join []Join `json:"join"`
+	// 类型断言: Condition 或者 Expression (返回值是bool的函数)
+	Where []interface{} `json:"where"`
 	// 类型断言: Column 或者 Expression
 	GroupBy []interface{} `json:"groupBy"`
 	// Aggregation 会加入 Select 片段

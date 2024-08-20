@@ -8,7 +8,10 @@ const (
 	CallTypeCustom ExpressionCallType = "custom"
 )
 
-// Expression e.g. `DATE_TRUNC('month', "t1"."created_at") as created_at`
+// Expression 函数表达式
+// e.g.
+// `DATE_TRUNC('month', "t1"."created_at") as ""created_at`
+// `sum("p"."price") as "合计价格"`
 type Expression struct {
 	// interface{}? 表达式 = 其他表达式 + 通用聚合 e.g. count, sum, avg, max, min, distinct
 	Call string `json:"call"`
