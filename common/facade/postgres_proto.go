@@ -123,7 +123,9 @@ func buildNestBasicByProto(
 	// 类型断言: Column 或者 Expression
 	selects := extraColumnOrExpressionStringsByProto(sqlRef.GetSelect())
 
-	nestBasicBuilder := dialectBuilder.Select(selects...).From(appendBuilder, sqlRef.GetFrom().GetTableAlias())
+	nestBasicBuilder := dialectBuilder.
+		Select(selects...).
+		From(appendBuilder, fmt.Sprintf(clause.PGStringLiteralSafe, sqlRef.GetFrom().GetTableAlias()))
 
 	return nestBasicBuilder
 }
