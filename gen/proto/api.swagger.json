@@ -20,17 +20,17 @@
     "protoBasicData": {
       "type": "object",
       "properties": {
-        "intVal": {
+        "int_val": {
           "type": "string",
           "format": "int64",
           "title": "覆盖 int23"
         },
-        "doubleVal": {
+        "double_val": {
           "type": "number",
           "format": "double",
           "title": "覆盖 float"
         },
-        "strVal": {
+        "str_val": {
           "type": "string"
         },
         "logic": {
@@ -118,6 +118,10 @@
         "logic": {
           "$ref": "#/definitions/protoLogic",
           "title": "和上一个条件的逻辑关系, 默认 and, 可选or"
+        },
+        "reverse": {
+          "type": "boolean",
+          "title": "是否对该条件取反(NOT)"
         }
       }
     },
@@ -260,7 +264,7 @@
           "type": "string",
           "format": "int64"
         },
-        "doubleNum": {
+        "double_num": {
           "type": "number",
           "format": "double"
         }

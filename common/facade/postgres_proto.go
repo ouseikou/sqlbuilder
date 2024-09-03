@@ -385,7 +385,9 @@ func buildWhereByProto(builder *xorm.Builder, sqlRef *pb.SqlReference) *xorm.Bui
 // 返回值:
 //   - 返回更新后的xorm条件对象
 func buildWhereConditions(xormCond xorm.Cond, condition *pb.Condition) xorm.Cond {
-	currentCondition := buildWhereConditionItem(condition)
+	currentCondTemp := buildWhereConditionItem(condition)
+	// 通过 reverse 判断是否对当前条件取反
+	currentCondition := refreshReverseWhereConditionItem(condition, currentCondTemp)
 	if nil == xormCond {
 		// 没有where条件, 作为第一个条件
 		return currentCondition
@@ -395,6 +397,21 @@ func buildWhereConditions(xormCond xorm.Cond, condition *pb.Condition) xorm.Cond
 		return xorm.And(xormCond, currentCondition)
 	}
 	return xorm.Or(xormCond, currentCondition)
+}
+
+// refreshReverseWhereConditionItem 构建WHERE条件
+// 通过 reverse 判断是否对当前条件取反
+// 参数:
+//   - pbCond: protobuf定义的条件对象，用于构建新的条件
+//   - builderCond: 已经构建的新条件
+//
+// 返回值:
+//   - 返回更新后的xorm条件对象
+func refreshReverseWhereConditionItem(pbCond *pb.Condition, builderCond xorm.Cond) xorm.Cond {
+	if pbCond.GetReverse() {
+		return xorm.Not{builderCond}
+	}
+	return builderCond
 }
 
 // buildWhereConditionItem 根据提供的Condition对象构建xorm的条件表达式

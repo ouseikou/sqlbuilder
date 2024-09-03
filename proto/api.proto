@@ -153,7 +153,7 @@ message MixVars {
     Expression expression = 2;
     string context = 3;
     int64 number = 4;
-    double doubleNum = 5;
+    double double_num = 5;
   }
 }
 
@@ -181,6 +181,7 @@ message Condition {
   repeated BasicData args = 2;
   Op operator = 3;
   Logic logic = 4; // 和上一个条件的逻辑关系, 默认 and, 可选or
+  bool reverse = 5; // 是否对该条件取反(NOT)
 }
 
 enum Logic {
@@ -213,9 +214,9 @@ enum Op {
 
 message BasicData {
   oneof data {
-    int64 intVal = 1; // 覆盖 int23
-    double doubleVal = 2; // 覆盖 float
-    string strVal = 3;
+    int64 int_val = 1; // 覆盖 int23
+    double double_val = 2; // 覆盖 float
+    string str_val = 3;
     bool logic = 4;
   }
 }
