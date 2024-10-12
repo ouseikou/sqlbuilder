@@ -35,6 +35,6 @@ func SetupRoutes(router *gin.Engine) {
 		// proto协议生成sql
 		apiV1.POST("/sqlbuilder/proto", controller.GenerateHBQLByProto)
 		// 解析主从模板
-		apiV1.POST("/sqlbuilder/template-analyze", controller.AnalyzeTemplatesByJson)
+		apiV1.POST("/sqlbuilder/template-analyze", controller.AnalyzeTemplatesByProto)
 	}
 }
