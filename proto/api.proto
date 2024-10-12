@@ -17,6 +17,13 @@ service SqlBuilderApi {
     //      body: "*"
     //    };
   }
+
+  rpc AnalyzeTemplate (AnalyzeTemplateRequest) returns (CommonResponse) {
+    //    option (google.api.http) = {
+    //      post: "/api/v1/sqlbuilder/template-analyze",
+    //      body: "*"
+    //    };
+  }
 }
 
 // -----------------------------------------------   响应体  -----------------------------------------------------
@@ -71,6 +78,7 @@ message MixSql {
 
 message SqlText {
   string text = 1;
+  map<string, TemplateArg> args = 2;
 }
 
 message SqlReference {
@@ -222,4 +230,23 @@ message BasicData {
 }
 // -----------------------------------------------   以上 Where  -----------------------------------------------------
 
+
+message BasicDataArr {
+  repeated BasicData args = 1;
+}
+
+message TemplateArg {
+  oneof data {
+    int64 int_val = 1; // 覆盖 int23
+    double double_val = 2; // 覆盖 float
+    string str_val = 3;
+    bool bool_val = 4;
+    BasicDataArr val_items = 5;
+  }
+}
+
+message AnalyzeTemplateRequest {
+  string tmpl = 1;
+  map<string, TemplateArg> args = 2;
+}
 

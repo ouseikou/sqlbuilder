@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ouseikou/sqlbuilder/common"
 	"github.com/ouseikou/sqlbuilder/common/clause"
+	"github.com/ouseikou/sqlbuilder/common/facade"
 	pb "github.com/ouseikou/sqlbuilder/gen/proto"
 	"github.com/ouseikou/sqlbuilder/service"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -80,4 +81,70 @@ func errorResponse(c *gin.Context, err error) {
 		Data: nil,
 	}
 	c.JSON(http.StatusInternalServerError, resp)
+}
+
+// AnalyzeTemplatesByJson : controller层, 根据http协议解析模板字符串, 提取子模板和主模板
+// 参数:
+//   - req: 解析请求体
+//
+// 返回值:
+//   - 返回一个 模板上下文对象
+//   - 返回一个 异常
+func AnalyzeTemplatesByJson(c *gin.Context) {
+	var req facade.AnalyzeTemplateRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	templateMap, err := service.AnalyzeTemplatesByJson(req)
+
+	if err != nil {
+		errorResponse(c, err)
+		return
+	}
+
+	resp := common.Response{
+		Code: http.StatusOK,
+		Data: templateMap,
+	}
+
+	c.JSON(http.StatusOK, resp)
+}
+
+// AnalyzeTemplatesByProto : controller层, 根据proto协议解析模板字符串, 提取子模板和主模板
+// 参数:
+//   - req: 解析请求体
+//
+// 返回值:
+//   - 返回一个 模板上下文对象
+//   - 返回一个 异常
+func AnalyzeTemplatesByProto(c *gin.Context) {
+	req := &pb.AnalyzeTemplateRequest{}
+	bodyBuff, err := c.GetRawData()
+	if err != nil {
+		errorResponse(c, err)
+		return
+	}
+
+	err = protojson.Unmarshal(bodyBuff, req)
+	if err != nil {
+		errorResponse(c, err)
+		return
+	}
+
+	templateMap, err := service.AnalyzeTemplatesByProto(req)
+
+	if err != nil {
+		errorResponse(c, err)
+		return
+	}
+
+	resp := common.Response{
+		Code: http.StatusOK,
+		Data: templateMap,
+	}
+
+	c.JSON(http.StatusOK, resp)
+
 }

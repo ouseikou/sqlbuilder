@@ -7,6 +7,8 @@ import (
 	xorm "xorm.io/builder"
 )
 
+// -----------------------------------------------   facade: 通过模型构建sql  --------------------------------------------
+
 // CreateModelBuilderFacade 工厂方法根据Driver选择具体Facade
 // 参数:
 //   - driver: 驱动
@@ -88,4 +90,17 @@ func (f *AbstractModelBuilderFacade) BuildBasic(appendBuilder *xorm.Builder, dia
 //   - 返回一个 xorm.Builder 对象
 func (f *AbstractModelBuilderFacade) BuildOther(builder *xorm.Builder, sqlRef *pb.SqlReference) *xorm.Builder {
 	return &xorm.Builder{}
+}
+
+// -----------------------------------------------   facade: 通过模板构建sql  --------------------------------------------
+
+// BuildSqlByTemplate : 根据模板语法构建sql
+// 参数:
+//   - request: sqlbuilder 请求体
+//
+// 返回值:
+//   - 返回 sql
+//   - 返回 错误信息
+func BuildSqlByTemplate(request *pb.BuilderRequest) (string, error) {
+	return RenderMasterTemplate(request.GetBuilders()[0].GetSql().GetTemplate())
 }

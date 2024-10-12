@@ -50,7 +50,37 @@ func BuildSqlByModelProto(request *pb.BuilderRequest) (string, error) {
 	return boundSQL, nil
 }
 
+// BuildSqlByTemplateProto 根据proto协议请求和模板语法构建sql门面接口的实现
+// 参数:
+//   - request: proto 请求对象
+//
+// 返回值:
+//   - 返回 sql
+//   - 异常
 func BuildSqlByTemplateProto(request *pb.BuilderRequest) (string, error) {
-	logger.Debug("执行模板模式SQL构建策略, pg方言SQL:\n%s", "SELECT 模板")
-	return "", nil
+	sql, err := facade.BuildSqlByTemplate(request)
+	logger.Debug("执行template模式SQL构建策略, SQL:\n%s", sql)
+	return sql, err
+}
+
+// AnalyzeTemplatesByJson : flow 层, 根据http协议解析模板字符串, 提取子模板和主模板
+// 参数:
+//   - req: 解析请求体
+//
+// 返回值:
+//   - 返回一个 模板上下文对象
+//   - 返回一个 异常
+func AnalyzeTemplatesByJson(req facade.AnalyzeTemplateRequest) (*facade.TemplateCtx, error) {
+	return facade.AnalyzeTemplatesByJson(req)
+}
+
+// AnalyzeTemplatesByProto : flow 层, 根据proto协议解析模板字符串, 提取子模板和主模板
+// 参数:
+//   - req: 解析请求体
+//
+// 返回值:
+//   - 返回一个 模板上下文对象
+//   - 返回一个 异常
+func AnalyzeTemplatesByProto(req *pb.AnalyzeTemplateRequest) (*facade.TemplateCtx, error) {
+	return facade.AnalyzeTemplatesByProto(req)
 }

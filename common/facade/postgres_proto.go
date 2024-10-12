@@ -427,29 +427,29 @@ func buildWhereConditionItem(cond *pb.Condition) xorm.Cond {
 	//column op arg[0]
 	case pb.Op_OP_EQ:
 		field := extraConditionOpField(cond)
-		return &xorm.Eq{field: extraArgItemValue(cond.Args[0])}
+		return &xorm.Eq{field: ExtraArgItemValue(cond.Args[0])}
 	case pb.Op_OP_NEQ:
 		field := extraConditionOpField(cond)
-		return &xorm.Neq{field: extraArgItemValue(cond.Args[0])}
+		return &xorm.Neq{field: ExtraArgItemValue(cond.Args[0])}
 	case pb.Op_OP_LT:
 		field := extraConditionOpField(cond)
-		return &xorm.Lt{field: extraArgItemValue(cond.Args[0])}
+		return &xorm.Lt{field: ExtraArgItemValue(cond.Args[0])}
 	case pb.Op_OP_LTE:
 		field := extraConditionOpField(cond)
-		return xorm.Lte{field: extraArgItemValue(cond.Args[0])}
+		return xorm.Lte{field: ExtraArgItemValue(cond.Args[0])}
 	case pb.Op_OP_GT:
 		field := extraConditionOpField(cond)
-		return xorm.Gt{field: extraArgItemValue(cond.Args[0])}
+		return xorm.Gt{field: ExtraArgItemValue(cond.Args[0])}
 	case pb.Op_OP_GTE:
 		field := extraConditionOpField(cond)
-		return xorm.Gte{field: extraArgItemValue(cond.Args[0])}
+		return xorm.Gte{field: ExtraArgItemValue(cond.Args[0])}
 	case pb.Op_OP_LIKE:
 		field := extraConditionOpField(cond)
-		return xorm.Like{field, extraArgItemValue(cond.Args[0]).(string)}
+		return xorm.Like{field, ExtraArgItemValue(cond.Args[0]).(string)}
 		// column op ...arg
 	case pb.Op_OP_BETWEEN:
 		field := extraConditionOpField(cond)
-		return xorm.Between{Col: field, LessVal: extraArgItemValue(cond.Args[0]), MoreVal: extraArgItemValue(cond.Args[1])}
+		return xorm.Between{Col: field, LessVal: ExtraArgItemValue(cond.Args[0]), MoreVal: ExtraArgItemValue(cond.Args[1])}
 	case pb.Op_OP_IN:
 		field := extraConditionOpField(cond)
 		inArgs := extraConditionArgsSlice(cond)
@@ -489,13 +489,13 @@ func extraConditionOpField(cond *pb.Condition) string {
 	return processMixFieldItemByProto(cond.GetField())
 }
 
-// extraArgItemValue 根据BasicData中的不同类型返回相应的值。
+// ExtraArgItemValue 根据BasicData中的不同类型返回相应的值。
 // 参数:
 //   - item: 指向BasicData的指针作为参数，并根据BasicData中封装的实际数据类型
 //
 // 返回值:
 //   - 返回一个接口类型值，可以是字符串、整数、浮点数或布尔值
-func extraArgItemValue(item *pb.BasicData) interface{} {
+func ExtraArgItemValue(item *pb.BasicData) interface{} {
 	switch elem := item.GetData().(type) {
 	case *pb.BasicData_StrVal:
 		return elem.StrVal

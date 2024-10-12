@@ -38,6 +38,18 @@
         }
       }
     },
+    "protoBasicDataArr": {
+      "type": "object",
+      "properties": {
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protoBasicData"
+          }
+        }
+      }
+    },
     "protoBuilderStrategy": {
       "type": "string",
       "enum": [
@@ -375,6 +387,12 @@
       "properties": {
         "text": {
           "type": "string"
+        },
+        "args": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/protoTemplateArg"
+          }
         }
       }
     },
@@ -389,6 +407,30 @@
         },
         "table_alias": {
           "type": "string"
+        }
+      }
+    },
+    "protoTemplateArg": {
+      "type": "object",
+      "properties": {
+        "int_val": {
+          "type": "string",
+          "format": "int64",
+          "title": "覆盖 int23"
+        },
+        "double_val": {
+          "type": "number",
+          "format": "double",
+          "title": "覆盖 float"
+        },
+        "str_val": {
+          "type": "string"
+        },
+        "bool_val": {
+          "type": "boolean"
+        },
+        "val_items": {
+          "$ref": "#/definitions/protoBasicDataArr"
         }
       }
     },

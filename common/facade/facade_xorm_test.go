@@ -73,7 +73,9 @@ func TestXORMSQLBuilder(t *testing.T) {
 		//Where(xorm.Eq{"id": 1, "category": "Doohickey", "price": 10}) // 按照key排序, 且共用一个操作符
 		//Where(xorm.Eq{`"product"."id"`: 1}).Where(xorm.Eq{`"product"."category"`: "Doohickey"}) // 默认将多个where按照and粘合
 		//And(xorm.Eq{`"product"."id"`: 1}).Or(xorm.Eq{`"product"."category"`: "Doohickey"}) // 可以不申明where, 会自动在前面拼接where关键字
-		Where(xorm.And(xorm.Eq{`"product"."id"`: 1}).Or(xorm.Eq{`"product"."category"`: "Doohickey"})) // 在第一个不申明条件前拼接where关键字不影响
+		//Where(xorm.And(xorm.Eq{`"product"."id"`: 1}).Or(xorm.Eq{`"product"."category"`: "Doohickey"})) // 在第一个不申明条件前拼接where关键字不影响
+		//Where(xorm.Not{xorm.Between{Col: "created_at", LessVal: "2017-07-19", MoreVal: "2017-09-14"}}) // 取反
+		Where(xorm.Like{"created_at", "www"}) // like 默认全模糊
 
 	whereBoundSQL, _ := builderWhere.ToBoundSQL()
 	t.Log(whereBoundSQL)
@@ -81,7 +83,7 @@ func TestXORMSQLBuilder(t *testing.T) {
 	//// 使用 expr 实现下面效果
 	//// (a=1 AND b LIKE '%c%') OR (a=2 AND b LIKE '%g%')
 	//segment := xorm.Eq{"a": 1}.And(xorm.Like{"b", "c"}).Or(xorm.Eq{"a": 2}.And(xorm.Like{"b", "g"})).
-	//	And(xorm.Expr("c >? or (q between 1 and 3)", 10))
+	//	And(xorm.Expr("c >? or (q between 1 and 3)", 10)) // like 默认全模糊
 	//segmentBoundSQL, _ := xorm.ToBoundSQL(segment)
 	//t.Log(segmentBoundSQL)
 }

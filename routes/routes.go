@@ -29,7 +29,12 @@ func SetupRoutes(router *gin.Engine) {
 		}
 
 		// 暴露接口
+
+		// http协议生成sql
 		apiV1.POST("/sqlbuilder", controller.GenerateHBQL)
+		// proto协议生成sql
 		apiV1.POST("/sqlbuilder/proto", controller.GenerateHBQLByProto)
+		// 解析主从模板
+		apiV1.POST("/sqlbuilder/template-analyze", controller.AnalyzeTemplatesByJson)
 	}
 }

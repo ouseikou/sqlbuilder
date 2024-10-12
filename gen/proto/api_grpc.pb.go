@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	SqlBuilderApi_Generate_FullMethodName = "/proto.SqlBuilderApi/Generate"
+	SqlBuilderApi_Generate_FullMethodName        = "/proto.SqlBuilderApi/Generate"
+	SqlBuilderApi_AnalyzeTemplate_FullMethodName = "/proto.SqlBuilderApi/AnalyzeTemplate"
 )
 
 // SqlBuilderApiClient is the client API for SqlBuilderApi service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SqlBuilderApiClient interface {
 	Generate(ctx context.Context, in *BuilderRequest, opts ...grpc.CallOption) (*CommonResponse, error)
+	AnalyzeTemplate(ctx context.Context, in *AnalyzeTemplateRequest, opts ...grpc.CallOption) (*CommonResponse, error)
 }
 
 type sqlBuilderApiClient struct {
@@ -47,11 +49,22 @@ func (c *sqlBuilderApiClient) Generate(ctx context.Context, in *BuilderRequest, 
 	return out, nil
 }
 
+func (c *sqlBuilderApiClient) AnalyzeTemplate(ctx context.Context, in *AnalyzeTemplateRequest, opts ...grpc.CallOption) (*CommonResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CommonResponse)
+	err := c.cc.Invoke(ctx, SqlBuilderApi_AnalyzeTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SqlBuilderApiServer is the server API for SqlBuilderApi service.
 // All implementations must embed UnimplementedSqlBuilderApiServer
 // for forward compatibility.
 type SqlBuilderApiServer interface {
 	Generate(context.Context, *BuilderRequest) (*CommonResponse, error)
+	AnalyzeTemplate(context.Context, *AnalyzeTemplateRequest) (*CommonResponse, error)
 	mustEmbedUnimplementedSqlBuilderApiServer()
 }
 
@@ -64,6 +77,9 @@ type UnimplementedSqlBuilderApiServer struct{}
 
 func (UnimplementedSqlBuilderApiServer) Generate(context.Context, *BuilderRequest) (*CommonResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Generate not implemented")
+}
+func (UnimplementedSqlBuilderApiServer) AnalyzeTemplate(context.Context, *AnalyzeTemplateRequest) (*CommonResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AnalyzeTemplate not implemented")
 }
 func (UnimplementedSqlBuilderApiServer) mustEmbedUnimplementedSqlBuilderApiServer() {}
 func (UnimplementedSqlBuilderApiServer) testEmbeddedByValue()                       {}
@@ -104,6 +120,24 @@ func _SqlBuilderApi_Generate_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SqlBuilderApi_AnalyzeTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AnalyzeTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SqlBuilderApiServer).AnalyzeTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SqlBuilderApi_AnalyzeTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SqlBuilderApiServer).AnalyzeTemplate(ctx, req.(*AnalyzeTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SqlBuilderApi_ServiceDesc is the grpc.ServiceDesc for SqlBuilderApi service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +148,10 @@ var SqlBuilderApi_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Generate",
 			Handler:    _SqlBuilderApi_Generate_Handler,
+		},
+		{
+			MethodName: "AnalyzeTemplate",
+			Handler:    _SqlBuilderApi_AnalyzeTemplate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
