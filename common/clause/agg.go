@@ -15,7 +15,6 @@ const (
 	Stddev AggFunc = "stddev"
 	// Variance pg 方差
 	Variance AggFunc = "variance"
-	Round    AggFunc = "round"
 )
 
 const (
@@ -28,7 +27,6 @@ const (
 	CountDistinctFormat = `count(distinct(%s))`
 	StddevFormat        = `stddev(%s)`
 	VarianceFormat      = `variance(%s)`
-	RoundFormat         = `round(%s, %s)`
 
 	PGCountAsFormat         = `count(%s) as "%s"`
 	PGCount1AsFormat        = `count(1) as "%s"`
@@ -39,7 +37,6 @@ const (
 	PGCountDistinctAsFormat = `count(distinct(%s)) as "%s"`
 	PGStddevFormatAs        = `stddev(%s) as "%s"`
 	PGVarianceFormatAs      = `variance(%s) as "%s"`
-	PGRoundFormatAs         = `round(%s, %s) as "%s"`
 )
 
 // AggregationFuncFormatMap 映射聚合函数
@@ -54,7 +51,6 @@ var (
 		CountDistinct: CountDistinctFormat,
 		Stddev:        StddevFormat,
 		Variance:      VarianceFormat,
-		Round:         RoundFormat,
 	}
 
 	PGAggregationAsFuncFormatMap = map[AggFunc]string{
@@ -67,7 +63,6 @@ var (
 		CountDistinct: PGCountDistinctAsFormat,
 		Stddev:        PGStddevFormatAs,
 		Variance:      PGVarianceFormatAs,
-		Round:         PGRoundFormatAs,
 	}
 )
 
