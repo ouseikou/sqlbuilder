@@ -58,6 +58,7 @@ func BuildSqlByModelProto(request *pb.BuilderRequest) (string, error) {
 //   - 返回 sql
 //   - 异常
 func BuildSqlByTemplateProto(request *pb.BuilderRequest) (string, error) {
+	// 对于模板语法构建SQL策略来说, 不存在方言一说, SQL语法方言由写SQL的人控制, 因此直接调用模板引擎即可
 	sql, err := facade.BuildSqlByTemplate(request)
 	logger.Debug("执行template模式SQL构建策略, SQL:\n%s", sql)
 	return sql, err

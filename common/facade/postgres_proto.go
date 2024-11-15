@@ -299,6 +299,10 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression) []interface{} {
 		case *pb.MixVars_DoubleNum:
 			exprDouble := v.DoubleNum
 			expressions = append(expressions, fmt.Sprintf(clause.AnyLiteral, exprDouble))
+		case *pb.MixVars_Expression:
+			exprVarExpression := v.Expression
+			varExpItemStr := formatExpressionByProto(exprVarExpression)
+			expressions = append(expressions, varExpItemStr)
 		default:
 			continue
 		}
