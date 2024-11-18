@@ -6,6 +6,8 @@ const (
 	CallDateTrunc InnerFunc = "date_trunc"
 	CallPGToChar  InnerFunc = "to_char"
 	CallRound     InnerFunc = "round"
+	CallCeiling   InnerFunc = "ceiling"
+	CallFloor     InnerFunc = "floor"
 )
 
 const (
@@ -19,6 +21,12 @@ const (
 
 	RoundFormat   = `round(%s, %s)`
 	RoundFormatAs = `round(%s, %s) as "%s"`
+
+	CeilingFormat   = `ceiling(%s)`
+	CeilingFormatAs = `ceiling(%s) as "%s"`
+
+	FloorFormat   = `floor(%s)`
+	FloorFormatAs = `floor(%s) as "%s"`
 )
 
 // InnerFuncFormatMap 内置函数名称和SQL片段 映射
@@ -27,11 +35,15 @@ var (
 		CallDateTrunc: DateTruncFormat,
 		CallPGToChar:  ToCharFormat,
 		CallRound:     RoundFormat,
+		CallCeiling:   CeilingFormat,
+		CallFloor:     FloorFormat,
 	}
 
 	InnerAsFuncFormatMap = map[InnerFunc]string{
 		CallDateTrunc: DateTruncAsFormat,
 		CallPGToChar:  ToCharAsFormat,
 		CallRound:     RoundFormatAs,
+		CallCeiling:   CeilingFormatAs,
+		CallFloor:     FloorFormatAs,
 	}
 )
