@@ -63,3 +63,7 @@ func AnalyzeTemplatesByJson(req facade.AnalyzeTemplateRequest) (*facade.Template
 func AnalyzeTemplatesByProto(req *pb.AnalyzeTemplateRequest) (*facade.TemplateCtx, error) {
 	return common.AnalyzeTemplatesByProto(req)
 }
+
+func AnalyzeAdditionByProto(req *pb.AnalyzeAdditionRequest) (*facade.NativeSqlHeader, error) {
+	return common.AnalyzeAdditionByProto(req)
+}

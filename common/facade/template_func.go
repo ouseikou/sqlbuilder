@@ -1,6 +1,7 @@
 ﻿package facade
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
@@ -21,7 +22,6 @@ func InjectFunc() template.FuncMap {
 	return template.FuncMap{
 		// MBQL用法
 
-		// 1. 权限
 		"PowerList": PowerList,
 
 		// 新版模板语法内置函数
@@ -30,6 +30,15 @@ func InjectFunc() template.FuncMap {
 		"N1V": Normalize1Val,
 		// 规范化数组
 		"N1Arr": Normalize1Arr,
+
+		// kv对封装为map
+		"dictCvt": DictConvert,
+
+		// map元素转换为json
+		"jsonCvt": JsonConvert,
+
+		// json元素封装为切片
+		"arrCvt": ArrConvert,
 	}
 }
 
@@ -99,6 +108,26 @@ func Normalize1Arr(arr interface{}) string {
 	}
 	// string : 'a','b','c' ; num/bool: a,b,c ; other: 'a','b','c'
 	return strings.Join(normalizeArr, ",")
+}
+
+func ArrConvert(values ...string) []string {
+	return values
+}
+
+func DictConvert(keysAndValues ...interface{}) map[string]interface{} {
+	if len(keysAndValues)%2 != 0 {
+		return nil
+	}
+	m := make(map[string]interface{})
+	for i := 0; i < len(keysAndValues); i += 2 {
+		m[keysAndValues[i].(string)] = keysAndValues[i+1]
+	}
+	return m
+}
+
+func JsonConvert(data interface{}) string {
+	b, _ := json.Marshal(data)
+	return string(b)
 }
 
 // ----------------------------------------------------------------------------------------

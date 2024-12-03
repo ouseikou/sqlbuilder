@@ -148,3 +148,33 @@ func AnalyzeTemplatesByProto(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 
 }
+
+func AnalyzeAdditionByProto(c *gin.Context) {
+	req := &pb.AnalyzeAdditionRequest{}
+	bodyBuff, err := c.GetRawData()
+	if err != nil {
+		errorResponse(c, err)
+		return
+	}
+
+	err = protojson.Unmarshal(bodyBuff, req)
+	if err != nil {
+		errorResponse(c, err)
+		return
+	}
+
+	additions, err := service.AnalyzeAdditionByProto(req)
+
+	if err != nil {
+		errorResponse(c, err)
+		return
+	}
+
+	resp := common.Response{
+		Code: http.StatusOK,
+		Data: additions,
+	}
+
+	c.JSON(http.StatusOK, resp)
+
+}

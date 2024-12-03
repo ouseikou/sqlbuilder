@@ -63,3 +63,28 @@ func SourceCodeSubstringPath(regx string) string {
 
 	return matches[0]
 }
+
+// RemoveElements A切片移除存在于B切片元素
+// 参数:
+//   - sliceA: A切片
+//   - sliceB: B切片
+//
+// 返回值:
+//   - 返回: 新A切片
+func RemoveElements[T comparable](sliceA []T, sliceB []T) []T {
+	// 创建一个 map 来存储 sliceB 中的元素
+	elementsToRemove := make(map[T]struct{})
+	for _, elem := range sliceB {
+		elementsToRemove[elem] = struct{}{}
+	}
+
+	// 创建一个新的切片来存储结果
+	var result []T
+	for _, elem := range sliceA {
+		if _, found := elementsToRemove[elem]; !found {
+			result = append(result, elem)
+		}
+	}
+
+	return result
+}

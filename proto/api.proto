@@ -250,3 +250,8 @@ message AnalyzeTemplateRequest {
   map<string, TemplateArg> args = 2;
 }
 
+message AnalyzeAdditionRequest {
+  string tmpl = 1;
+}
+
+

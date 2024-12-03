@@ -181,7 +181,8 @@
         "use_as": {
           "type": "boolean"
         }
-      }
+      },
+      "title": "表达式不在vars使用类似递归, 而是平铺可能好点. ExpressionWrapper{int32 deep = 1; repeated Expression exps = 2;}"
     },
     "protoJoin": {
       "type": "object",
@@ -290,7 +291,7 @@
         },
         "expression": {
           "$ref": "#/definitions/protoExpression",
-          "title": "e.g. WHERE ARRAY_CONTAINS(tags, 'urgent')"
+          "title": "e.g. WHERE ARRAY_CONTAINS(tags, 'urgent') =\u003e 视作 Condition.MixField.Expression"
         }
       }
     },

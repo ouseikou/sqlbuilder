@@ -21,6 +21,19 @@ type TemplateCtx struct {
 	Master string `json:"master"`
 	// slave1,sql1; slave2,sql2;
 	Slave map[string]string `json:"slave"`
+	// 附加内容: 目前只有写SQL显式申明使用哪些表
+	Addition string `json:"addition"`
+}
+
+type NativeSqlHeader struct {
+	Specs []Specifications `json:"specs"`
+}
+
+type Specifications struct {
+	SourceFrom string `json:"source"`
+	Schema     string `json:"schema"`
+	Table      string `json:"table"`
+	Database   string `json:"db"`
 }
 
 // AnalyzeTemplatesByJson 解析模板字符串, 提取子模板和主模板
@@ -54,6 +67,7 @@ func AnalyzeSubTmpl(
 	slaveMap := make(map[string]string)
 	// 主模板内容(不解析)模板
 	var masterMap string
+	var addition string
 
 	// 创建一个模板画布(渲染整个模板字符串), 并注册自定义函数
 	tmpl, err := template.New("canvas").Funcs(InjectFunc()).Parse(templateStr)
@@ -86,12 +100,74 @@ func AnalyzeSubTmpl(
 			masterMap = strings.TrimSpace(t.Tree.Root.String())
 			continue
 		}
+
+		if strings.HasPrefix(strings.ToLower(tmplName), "addition") {
+			// addition 模板, 不解析, 获取模板原始字面量
+			addition = strings.TrimSpace(t.Tree.Root.String())
+			continue
+		}
+
 	}
 
 	return &TemplateCtx{
-		Master: masterMap,
-		Slave:  slaveMap,
+		Master:   masterMap,
+		Slave:    slaveMap,
+		Addition: addition,
 	}, nil
+}
+
+// AnalyzeTmplByTemplateStr 解析模板字符串, 提取子模板和主模板名称
+// 参数:
+//   - templateStr: SQL模板字面量
+//
+// 返回值:
+//   - 返回一个 主从模板名称切片
+//   - 返回一个 异常
+func AnalyzeTmplByTemplateStr(templateStr string) ([]string, error) {
+	var tmplSlice []string
+
+	// 创建一个模板画布(渲染整个模板字符串), 并注册自定义函数
+	tmpl, err := template.New("canvas").Funcs(InjectFunc()).Parse(templateStr)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, t := range tmpl.Templates() {
+		// 当前模板名称
+		tmplName := t.Name()
+		if isMasterSlaveTemplate(tmplName) {
+			tmplSlice = append(tmplSlice, tmplName)
+			continue
+		}
+	}
+
+	return tmplSlice, nil
+}
+
+// AnalyzeTmplByTemplate 解析模板字符串, 提取子模板和主模板名称
+// 参数:
+//   - templateStr: SQL模板字面量
+//
+// 返回值:
+//   - 返回一个 主从模板名称切片
+//   - 返回一个 异常
+func AnalyzeTmplByTemplate(tmpl *template.Template) ([]string, error) {
+	var tmplSlice []string
+
+	for _, t := range tmpl.Templates() {
+		// 当前模板名称
+		tmplName := t.Name()
+		if isMasterSlaveTemplate(tmplName) {
+			tmplSlice = append(tmplSlice, tmplName)
+			continue
+		}
+	}
+
+	return tmplSlice, nil
+}
+
+func isMasterSlaveTemplate(tmplName string) bool {
+	return strings.HasPrefix(strings.ToLower(tmplName), "slave") || strings.HasPrefix(strings.ToLower(tmplName), "master")
 }
 
 // -------------------------------------------  proto ----------------------------------------------
@@ -178,4 +254,13 @@ func RenderMasterTemplate(
 	}
 
 	return masterBuf.String(), nil
+}
+
+func AnalyzeAdditionByProto(req *pb.AnalyzeAdditionRequest) (*NativeSqlHeader, error) {
+	templateStr := req.Tmpl
+	if templateStr == "" {
+		return nil, errors.New("addition 模板不能为空")
+	}
+
+	return ExtractAdditionFromTemplate(templateStr)
 }
