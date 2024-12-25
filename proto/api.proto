@@ -55,6 +55,7 @@ enum CallType {
   CALL_TYPE_AGG = 1;
   CALL_TYPE_INNER = 2;
   CALL_TYPE_CUSTOM = 3;
+  CALL_TYPE_ARITH = 4;
 }
 
 
@@ -153,6 +154,8 @@ message Expression {
   repeated MixVars vars = 3;
   string call_as = 4;
   bool use_as = 5;
+  // 表达式是否加小括号, 新增 pnt-format
+  bool use_pnt = 6;
 }
 
 message MixVars {

@@ -244,24 +244,42 @@ func calAppendTextByColumnAsByProto(format string, column *pb.Column, userAs boo
 // 返回值:
 //   - 返回 Expression 对应字符串填充
 func getExpressionFuncFormatByProto(expression *pb.Expression) string {
-	callType := expression.CallType
-	// Expression 表达式只有在select关键字使用alias
-	if expression.UseAs {
-		switch callType {
-		case pb.CallType_CALL_TYPE_AGG:
-			return clause.PGAggregationAsFuncFormatMap[clause.AggFunc(expression.Call)]
-		case pb.CallType_CALL_TYPE_INNER:
-			return clause.InnerAsFuncFormatMap[clause.InnerFunc(expression.Call)]
-		default:
-			return ""
-		}
+	// 动态构建 Expression 的 format
+	var finalFormat string
+
+	// 初始化 Expression 的 format, 取不要 as 的那一部分
+	basicFormat := expressionFuncNoAsFormat(expression)
+	finalFormat = basicFormat
+
+	// 是否使用小括号
+	if expression.UsePnt {
+		finalFormat = fmt.Sprintf(clause.PntFormat, finalFormat)
 	}
 
+	// 是否使用 as 别名
+	// Expression 表达式只有在select关键字使用alias
+	if expression.UseAs {
+		finalFormat = fmt.Sprintf(clause.PGAsFormat, finalFormat)
+	}
+
+	return finalFormat
+}
+
+// expressionFuncNoAsFormat 获取Expression没有As的格式化字符串部分
+// 参数:
+//   - expression: proto 中的 Expression 对象
+//
+// 返回值:
+//   - 返回 Expression 没有As的格式化字符串部分
+func expressionFuncNoAsFormat(expression *pb.Expression) string {
+	callType := expression.CallType
 	switch callType {
 	case pb.CallType_CALL_TYPE_AGG:
 		return clause.AggregationFuncFormatMap[clause.AggFunc(expression.Call)]
 	case pb.CallType_CALL_TYPE_INNER:
 		return clause.InnerFuncFormatMap[clause.InnerFunc(expression.Call)]
+	case pb.CallType_CALL_TYPE_ARITH:
+		return clause.ArithFormatMap[clause.ArithExpression(expression.Call)]
 	default:
 		return ""
 	}

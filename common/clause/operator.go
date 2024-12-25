@@ -36,6 +36,49 @@ const (
 	COMMA = ", "
 )
 
+const (
+	PntFormat     = `(%s)`
+	PGAsFormat    = `%s as "%%s"`
+	PGAsAppend    = ` as "%s"`
+	MYSQLAsFormat = "%s as `%%s`"
+)
+
 type Operator struct {
 	Op interface{} // 基于上面3种类型
 }
+
+const (
+	ArithAddFormat   = `%s + %s`
+	ArithAddAsFormat = `%s + %s as "%s"`
+
+	ArithSubFormat   = `%s - %s`
+	ArithSubAsFormat = `%s - %s as "%s"`
+
+	ArithMulFormat   = `%s * %s`
+	ArithMulAsFormat = `%s * %s as "%s"`
+
+	ArithDivFormat   = `%s / %s`
+	ArithDivAsFormat = `%s / %s as "%s"`
+
+	ArithModFormat   = `%s %% %s`
+	ArithModAsFormat = `%s %% %s as "%s"`
+)
+
+// ArithFormatMap 内置函数名称和SQL片段 映射
+var (
+	ArithFormatMap = map[ArithExpression]string{
+		Add: ArithAddFormat,
+		Sub: ArithSubFormat,
+		Mul: ArithMulFormat,
+		Div: ArithDivFormat,
+		Mod: ArithModFormat,
+	}
+
+	ArithAsFormatMap = map[ArithExpression]string{
+		Add: ArithAddAsFormat,
+		Sub: ArithSubAsFormat,
+		Mul: ArithMulAsFormat,
+		Div: ArithDivAsFormat,
+		Mod: ArithModAsFormat,
+	}
+)

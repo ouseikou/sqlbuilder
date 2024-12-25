@@ -65,7 +65,8 @@
         "CALL_TYPE_UNSPECIFIED",
         "CALL_TYPE_AGG",
         "CALL_TYPE_INNER",
-        "CALL_TYPE_CUSTOM"
+        "CALL_TYPE_CUSTOM",
+        "CALL_TYPE_ARITH"
       ],
       "default": "CALL_TYPE_UNSPECIFIED"
     },
@@ -180,6 +181,10 @@
         },
         "use_as": {
           "type": "boolean"
+        },
+        "use_pnt": {
+          "type": "boolean",
+          "title": "表达式是否加小括号, 新增 pnt-format"
         }
       },
       "title": "表达式不在vars使用类似递归, 而是平铺可能好点. ExpressionWrapper{int32 deep = 1; repeated Expression exps = 2;}"
