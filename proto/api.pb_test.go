@@ -66,6 +66,67 @@ func makeSelect() []*proto.MixField {
 	return selects
 }
 
+func makeCaseWhenWhere1() []*proto.MixWhere {
+	wheres := make([]*proto.MixWhere, 0)
+
+	// 0 < x <= 3
+	condition1 := makeCaseWhenWhereCondition(proto.Op_OP_GTE, 0.0)
+	condition2 := makeCaseWhenWhereCondition(proto.Op_OP_LTE, 3.0)
+	wheres = append(wheres, &proto.MixWhere{Filter: condition1}, &proto.MixWhere{Filter: condition2})
+
+	return wheres
+}
+
+func makeCaseWhenWhere2() []*proto.MixWhere {
+	wheres := make([]*proto.MixWhere, 0)
+
+	// 3.0 < x <= 5.0
+	condition1 := makeCaseWhenWhereCondition(proto.Op_OP_GT, 3.0)
+	condition2 := makeCaseWhenWhereCondition(proto.Op_OP_LTE, 5.0)
+	wheres = append(wheres, &proto.MixWhere{Filter: condition1}, &proto.MixWhere{Filter: condition2})
+
+	return wheres
+}
+
+func makeCaseWhenWhereCondition(op proto.Op, ratingDouble float64) *proto.MixWhere_Condition {
+	conditionCol1 := &proto.MixField_Column{
+		Column: &proto.Column{Schema: "sample_data", Table: "products", Field: "rating", Alias: "比率", AggAble: false, UseAs: false},
+	}
+
+	args := make([]*proto.BasicData, 0)
+	args = append(args, &proto.BasicData{Data: &proto.BasicData_DoubleVal{DoubleVal: ratingDouble}})
+
+	condition1 := &proto.MixWhere_Condition{
+		Condition: &proto.Condition{Field: &proto.MixField{Mix: conditionCol1}, Operator: op, Args: args, Logic: proto.Logic_LOGIC_AND},
+	}
+	return condition1
+}
+
+func makeCaseWhenSelect() []*proto.MixField {
+	selects := make([]*proto.MixField, 0)
+
+	productCaseWhen1 := &proto.MixField_CaseWhen{
+		CaseWhen: &proto.CaseWhen{
+			Alias:     "比率区间",
+			ElseValue: &proto.BasicData{Data: &proto.BasicData_StrVal{StrVal: ""}},
+			Conditions: []*proto.CaseWhenItem{
+				{
+					Then: &proto.BasicData{Data: &proto.BasicData_StrVal{StrVal: "不合格"}},
+					When: makeCaseWhenWhere1(),
+				},
+				{
+					Then: &proto.BasicData{Data: &proto.BasicData_StrVal{StrVal: "合格"}},
+					When: makeCaseWhenWhere2(),
+				},
+			},
+		},
+	}
+
+	selects = append(selects, &proto.MixField{Mix: productCaseWhen1})
+
+	return selects
+}
+
 func makeGroupByVars() []*proto.MixVars {
 	vars := make([]*proto.MixVars, 0)
 	col := &proto.MixVars_Column{
@@ -205,6 +266,45 @@ func TestBuilderRequest_Descriptor(t *testing.T) {
 
 	t.Run("测试", func(t *testing.T) {
 		if len(request.Builders[0].Sql.GetModel().GroupBy) != 2 && len(request.Builders[0].Sql.GetModel().Select) != 3 {
+			t.Errorf("断言失败")
+		}
+	})
+}
+
+func TestCaseWhen_Descriptor(t *testing.T) {
+	sql := &proto.SqlReference{
+		From:        &proto.Table{TableName: "products", TableSchema: "sample_data", TableAlias: "products"},
+		Join:        []*proto.Join{},
+		Where:       []*proto.MixWhere{},
+		GroupBy:     []*proto.MixField{},
+		Aggregation: []*proto.Expression{},
+		Select:      makeCaseWhenSelect(),
+		OrderBy:     []*proto.OrderBy{},
+		Limit:       &proto.Limit{},
+	}
+
+	modelSql := &proto.MixSql_Model{Model: sql}
+
+	deep0 := &proto.DeepWrapper{Deep: 0, Sql: &proto.MixSql{Ref: modelSql}}
+
+	request := &proto.BuilderRequest{
+		Driver:   proto.Driver_DRIVER_POSTGRES,
+		Strategy: proto.BuilderStrategy_BUILDER_STRATEGY_MODEL,
+		Builders: []*proto.DeepWrapper{deep0},
+	}
+
+	buf, err := protoJsonOP.Marshal(request)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	json := string(buf)
+	fmt.Printf(json)
+	fmt.Println()
+
+	t.Run("测试", func(t *testing.T) {
+		if len(request.Builders[0].Sql.GetModel().Select) != 1 {
 			t.Errorf("断言失败")
 		}
 	})

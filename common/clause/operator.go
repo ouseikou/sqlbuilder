@@ -1,16 +1,16 @@
 package clause
 
-type compareExpression string // > = < >= <= !=
+type CompareExpression string // > = < >= <= !=
 type ArithExpression string   // + - * / %
 type LogicExpression string   // and, or, not, between, in, not in, like, is not null,
 
 const (
-	Eq  compareExpression = "="
-	Neq compareExpression = "!="
-	Gt  compareExpression = ">"
-	Gte compareExpression = ">="
-	Lt  compareExpression = "<"
-	Lte compareExpression = "<="
+	Eq  CompareExpression = "="
+	Neq CompareExpression = "!="
+	Gt  CompareExpression = ">"
+	Gte CompareExpression = ">="
+	Lt  CompareExpression = "<"
+	Lte CompareExpression = "<="
 )
 
 const (

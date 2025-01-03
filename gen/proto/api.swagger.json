@@ -70,6 +70,39 @@
       ],
       "default": "CALL_TYPE_UNSPECIFIED"
     },
+    "protoCaseWhen": {
+      "type": "object",
+      "properties": {
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protoCaseWhenItem"
+          }
+        },
+        "else_value": {
+          "$ref": "#/definitions/protoBasicData"
+        },
+        "alias": {
+          "type": "string"
+        }
+      }
+    },
+    "protoCaseWhenItem": {
+      "type": "object",
+      "properties": {
+        "when": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protoMixWhere"
+          }
+        },
+        "then": {
+          "$ref": "#/definitions/protoBasicData"
+        }
+      }
+    },
     "protoColumn": {
       "type": "object",
       "properties": {
@@ -187,7 +220,7 @@
           "title": "表达式是否加小括号, 新增 pnt-format"
         }
       },
-      "title": "表达式不在vars使用类似递归, 而是平铺可能好点. ExpressionWrapper{int32 deep = 1; repeated Expression exps = 2;}"
+      "title": "表达式不在vars使用类似递归形式, 而是平铺可能好点. ExpressionWrapper{int32 deep = 1; repeated Expression exps = 2;}"
     },
     "protoJoin": {
       "type": "object",
@@ -251,6 +284,9 @@
         },
         "expression": {
           "$ref": "#/definitions/protoExpression"
+        },
+        "case_when": {
+          "$ref": "#/definitions/protoCaseWhen"
         }
       },
       "title": "todo  未处理: 添加 Condition 会导致递归嵌套\nSELECT array_length(array_column, 1) \u003e 0 FROM my_table; SELECT NOT column_name FROM my_table; =\u003e Condition"

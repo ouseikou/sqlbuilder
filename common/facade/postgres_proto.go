@@ -3,6 +3,7 @@ package facade
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/forhsd/logger"
@@ -198,9 +199,53 @@ func processMixFieldItemByProto(mixItem *pb.MixField) string {
 	case *pb.MixField_Expression:
 		expression := v.Expression
 		return formatExpressionByProto(expression)
+	case *pb.MixField_CaseWhen:
+		caseWhen := v.CaseWhen
+		return formatCaseWhenByProto(caseWhen)
 	default:
 		return ""
 	}
+}
+
+// formatCaseWhenByProto 构建 case-when 类型的格式化字符串填充
+// 参数:
+//   - caseWhen: proto 中的 caseWhen 对象
+//
+// 返回值:
+//   - 返回 caseWhen 对应字符串填充
+func formatCaseWhenByProto(caseWhen *pb.CaseWhen) string {
+
+	// proto -> struct(case-when) -> string
+	caseWhenThens := formatCaseWhenItemByProto(caseWhen)
+
+	caseWhenStruct := clause.CaseWhen{
+		Conditions: caseWhenThens,
+		// case-when 默认没有 else 分支
+		ElseValue: "",
+		Alias:     caseWhen.Alias,
+	}
+
+	fragment := caseWhenStruct.BuilderCaseWhenFragment(clause.DriverPostgres)
+	// *xorm.Builder.Select(item...)  会自动填充逗号, 这里返回当前 items 切片的填充内容
+	return fragment
+}
+
+func formatCaseWhenItemByProto(caseWhen *pb.CaseWhen) []clause.CaseWhenCondition {
+	var conditions []clause.CaseWhenCondition
+
+	for _, c := range caseWhen.GetConditions() {
+		thenValue := ExtraArgItemValue(c.GetThen())
+		whenValue := mixWhere2Condition(c.GetWhen())
+		// 构造一行 case-when-then 语句
+		whenThenLine := clause.CaseWhenCondition{
+			Then: thenValue,
+			When: whenValue,
+		}
+
+		conditions = append(conditions, whenThenLine)
+	}
+
+	return conditions
 }
 
 // formatColumnByProto 构建 Column 类型的格式化字符串填充
@@ -216,6 +261,7 @@ func formatColumnByProto(column *pb.Column, format string) string {
 
 // formatExpressionByProto 构建 Expression 类型的格式化字符串填充
 func formatExpressionByProto(expression *pb.Expression) string {
+	// 通常表达式的format中占位符和表达式参数是一一对应的拉链结构
 	vars2Strings := calExpressionVarsFormatStringsByProto(expression)
 	format := getExpressionFuncFormatByProto(expression)
 	return fmt.Sprintf(format, vars2Strings...)
@@ -295,6 +341,8 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression) []interface{} {
 	vars := expr.Vars
 	// 表达式参数: int, string, clause.Column
 	var expressions []interface{}
+	// var的字面量值 -> 是否转义, 只针对 Column 和 Expression 类型的 var
+	var varTypeMap = make(map[any]bool)
 
 	// 如果函数是 count1, 只用填充别名
 	if expr.Call == string(clause.Count1) {
@@ -307,23 +355,34 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression) []interface{} {
 		case *pb.MixVars_Column:
 			column := v.Column
 			format := util.Ternary(column.UseAs, clause.PGTableColumnAs, clause.PGTableColumn).(string)
-			expressions = append(expressions, calAppendTextByColumnAsByProto(format, column, column.UseAs, expr.CallAs))
+			colLiteral := calAppendTextByColumnAsByProto(format, column, column.UseAs, expr.CallAs)
+			varTypeMap[colLiteral] = false
+			expressions = append(expressions, colLiteral)
 		case *pb.MixVars_Context:
 			exprString := v.Context
+			varTypeMap[exprString] = true
 			expressions = append(expressions, exprString)
 		case *pb.MixVars_Number:
 			exprInt := v.Number
-			expressions = append(expressions, fmt.Sprintf(clause.AnyLiteral, exprInt))
+			varNumLiteral := fmt.Sprintf(clause.AnyLiteral, exprInt)
+			expressions = append(expressions, varNumLiteral)
 		case *pb.MixVars_DoubleNum:
 			exprDouble := v.DoubleNum
-			expressions = append(expressions, fmt.Sprintf(clause.AnyLiteral, exprDouble))
+			doubleNumLiteral := fmt.Sprintf(clause.AnyLiteral, exprDouble)
+			expressions = append(expressions, doubleNumLiteral)
 		case *pb.MixVars_Expression:
 			exprVarExpression := v.Expression
 			varExpItemStr := formatExpressionByProto(exprVarExpression)
+			varTypeMap[varExpItemStr] = false
 			expressions = append(expressions, varExpItemStr)
 		default:
 			continue
 		}
+	}
+
+	// 如果是可变参数函数，将参数转换为一个字符串
+	if clause.IsVariadicArgsFunc(expr.Call) {
+		expressions = []interface{}{variadicArgsFuncVars2oneVar(expressions, varTypeMap)}
 	}
 
 	if expr.UseAs {
@@ -331,6 +390,52 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression) []interface{} {
 	}
 
 	return expressions
+}
+
+// variadicArgsFuncVars2oneVar 将可变参数函数的参数转换为一个字符串
+// 参数:
+//   - vars: proto 中的 Expression.vars
+//
+// 返回值:
+//   - 合并字符串
+func variadicArgsFuncVars2oneVar(vars []interface{}, varTypeMap map[any]bool) string {
+	var builder strings.Builder
+	// 遍历 args，将每个参数拼接成适合的 SQL 字符串
+	for i, arg := range vars {
+		// 对每个参数进行转换，确保它是一个有效的 SQL 字符串
+		if i > 0 {
+			builder.WriteString(", ")
+		}
+
+		switch v := arg.(type) {
+		case string:
+			// 如果是字符串类型原本是 Column 和 Expression, 不需要加单引号
+			if varTypeMap[arg] == false {
+				builder.WriteString(fmt.Sprintf("%s", v))
+				break
+			}
+			// 字符串类型加上单引号
+			builder.WriteString(fmt.Sprintf("'%s'", v))
+
+		case int:
+			// int 类型转换为字符串
+			builder.WriteString(strconv.Itoa(v))
+		case int32:
+			// int32 类型转换为字符串
+			builder.WriteString(strconv.FormatInt(int64(v), 10))
+		case int64:
+			// 数字类型直接转换为字符串
+			builder.WriteString(strconv.FormatInt(v, 10))
+		case float32, float64:
+			// 浮点数类型直接转换为字符串
+			builder.WriteString(fmt.Sprintf("%f", v))
+		default:
+			// 默认类型处理（其他类型，可以根据需要扩展）
+			builder.WriteString(fmt.Sprintf("%v", arg))
+		}
+	}
+
+	return builder.String()
 }
 
 func (f *PostgresModelBuilderFacade) BuildOther(builder *xorm.Builder, sqlRef *pb.SqlReference) *xorm.Builder {
@@ -383,9 +488,20 @@ func buildJoinByProto(builder *xorm.Builder, sqlRef *pb.SqlReference) *xorm.Buil
 // 返回:
 //   - *xorm.Builder: 返回构建好的xorm.Builder，带有WHERE条件
 func buildWhereByProto(builder *xorm.Builder, sqlRef *pb.SqlReference) *xorm.Builder {
+	xormCond := mixWhere2Condition(sqlRef.GetWhere())
+	return builder.Where(xormCond)
+}
+
+// mixWhere2Condition 根据SqlReference构建WHERE条件
+// 参数:
+//   - wheres: 指向WHERE条件的指针
+//
+// 返回:
+//   - xorm.Cond: 条件结构体 xorm.Builder.Cond
+func mixWhere2Condition(wheres []*pb.MixWhere) xorm.Cond {
 	var xormCond xorm.Cond
 
-	for _, whereItem := range sqlRef.GetWhere() {
+	for _, whereItem := range wheres {
 		switch f := whereItem.GetFilter().(type) {
 		case *pb.MixWhere_Condition:
 			// 为什么 xormCond 每次经过forr都没有刷新值,而都是nil
@@ -394,7 +510,7 @@ func buildWhereByProto(builder *xorm.Builder, sqlRef *pb.SqlReference) *xorm.Bui
 			// 暂时不考虑 Where-Expression, e.g. WHERE ARRAY_CONTAINS(tags, 'urgent')
 		}
 	}
-	return builder.Where(xormCond)
+	return xormCond
 }
 
 // buildWhereConditions 构建WHERE条件

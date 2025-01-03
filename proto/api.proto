@@ -174,8 +174,22 @@ message MixField {
   oneof mix {
     Column column = 1;
     Expression expression = 2;
+    CaseWhen case_when = 3;
   }
 }
+
+message CaseWhen {
+  repeated CaseWhenItem conditions = 1;
+  BasicData else_value = 2;
+  string alias = 3;
+}
+
+// 每一行 case-when-then就是多个条件组成的语句
+message CaseWhenItem {
+  repeated MixWhere when = 1;
+  BasicData then = 2;
+}
+
 
 // -----------------------------------------------   以上 Select  -----------------------------------------------------
 

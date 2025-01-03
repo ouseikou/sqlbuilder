@@ -4,6 +4,13 @@ type BuilderStrategy int
 type Driver int
 
 const (
+	// BackQuote 反引号反义处理
+	BackQuote = "`"
+	// DoubleQuotation 双引号反义处理
+	DoubleQuotation = `"`
+)
+
+const (
 	// ModelStrategy 模型模式
 	ModelStrategy BuilderStrategy = iota
 	// TemplateStrategy 模板模式
@@ -15,6 +22,17 @@ const (
 	DriverMysql
 	DriverDoris
 )
+
+var (
+	// DriverKeywordWrapMap 驱动关键字包裹符
+	DriverKeywordWrapMap = map[Driver]string{
+		DriverMysql:    BackQuote,
+		DriverDoris:    BackQuote,
+		DriverPostgres: DoubleQuotation,
+	}
+)
+
+// ==============================================================
 
 type DeepWrapper struct {
 	// 深度: 控制层级; e.g. 0, 代表最里层, 1~n, 代表依次包裹 0 层
