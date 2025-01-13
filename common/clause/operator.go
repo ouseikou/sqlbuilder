@@ -1,5 +1,7 @@
 package clause
 
+import "strings"
+
 type CompareExpression string // > = < >= <= !=
 type ArithExpression string   // + - * / %
 type LogicExpression string   // and, or, not, between, in, not in, like, is not null,
@@ -82,3 +84,36 @@ var (
 		Mod: ArithModAsFormat,
 	}
 )
+
+// CalArithFormat 计算算术运算符的format
+// 参数:
+//   - call: 运算符号
+//   - argsLen: 参数个数
+//
+// 返回值:
+//   - 返回 算术运算符的format
+func CalArithFormat(call string, argLen int) string {
+	// strings.Join(formatParts, " "+ call + " ")
+	var formatParts []string
+	for i := 0; i < argLen; i++ {
+		formatParts = append(formatParts, "%s")
+	}
+
+	return strings.Join(formatParts, " "+call+" ")
+}
+
+func CalArithFormatWithBuilder(call string, argLen int) string {
+	var builder strings.Builder
+
+	// 用一个循环逐个构建字符串部分
+	for i := 0; i < argLen; i++ {
+		if i > 0 {
+			// 如果不是第一个元素，则先添加运算符
+			builder.WriteString(" " + call + " ")
+		}
+		// 为每个参数添加"%s"
+		builder.WriteString("%s")
+	}
+
+	return builder.String()
+}

@@ -325,7 +325,8 @@ func expressionFuncNoAsFormat(expression *pb.Expression) string {
 	case pb.CallType_CALL_TYPE_INNER:
 		return clause.InnerFuncFormatMap[clause.InnerFunc(expression.Call)]
 	case pb.CallType_CALL_TYPE_ARITH:
-		return clause.ArithFormatMap[clause.ArithExpression(expression.Call)]
+		// 算术表达式的format要结合参数个数动态生成
+		return clause.CalArithFormatWithBuilder(expression.Call, len(expression.Vars))
 	default:
 		return ""
 	}
