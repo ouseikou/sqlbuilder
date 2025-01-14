@@ -16,11 +16,12 @@ const (
 )
 
 const (
-	Add ArithExpression = "+"
-	Sub ArithExpression = "-"
-	Mul ArithExpression = "*"
-	Div ArithExpression = "/"
-	Mod ArithExpression = "%"
+	Add  ArithExpression = "+"
+	Sub  ArithExpression = "-"
+	Mul  ArithExpression = "*"
+	Div  ArithExpression = "/"
+	Mod  ArithExpression = "%"
+	Mod2 ArithExpression = "%%"
 )
 
 const (
@@ -49,39 +50,14 @@ type Operator struct {
 	Op interface{} // 基于上面3种类型
 }
 
-const (
-	ArithAddFormat   = `%s + %s`
-	ArithAddAsFormat = `%s + %s as "%s"`
-
-	ArithSubFormat   = `%s - %s`
-	ArithSubAsFormat = `%s - %s as "%s"`
-
-	ArithMulFormat   = `%s * %s`
-	ArithMulAsFormat = `%s * %s as "%s"`
-
-	ArithDivFormat   = `%s / %s`
-	ArithDivAsFormat = `%s / %s as "%s"`
-
-	ArithModFormat   = `%s %% %s`
-	ArithModAsFormat = `%s %% %s as "%s"`
-)
-
 // ArithFormatMap 内置函数名称和SQL片段 映射
 var (
-	ArithFormatMap = map[ArithExpression]string{
-		Add: ArithAddFormat,
-		Sub: ArithSubFormat,
-		Mul: ArithMulFormat,
-		Div: ArithDivFormat,
-		Mod: ArithModFormat,
-	}
-
-	ArithAsFormatMap = map[ArithExpression]string{
-		Add: ArithAddAsFormat,
-		Sub: ArithSubAsFormat,
-		Mul: ArithMulAsFormat,
-		Div: ArithDivAsFormat,
-		Mod: ArithModAsFormat,
+	ArithFormatMap = map[string]string{
+		string(Add): string(Add),
+		string(Sub): string(Sub),
+		string(Mul): string(Mul),
+		string(Div): string(Div),
+		string(Mod): string(Mod2),
 	}
 )
 
@@ -99,7 +75,7 @@ func CalArithFormat(call string, argLen int) string {
 		formatParts = append(formatParts, "%s")
 	}
 
-	return strings.Join(formatParts, " "+call+" ")
+	return strings.Join(formatParts, " "+ArithFormatMap[call]+" ")
 }
 
 func CalArithFormatWithBuilder(call string, argLen int) string {
@@ -109,7 +85,7 @@ func CalArithFormatWithBuilder(call string, argLen int) string {
 	for i := 0; i < argLen; i++ {
 		if i > 0 {
 			// 如果不是第一个元素，则先添加运算符
-			builder.WriteString(" " + call + " ")
+			builder.WriteString(" " + ArithFormatMap[call] + " ")
 		}
 		// 为每个参数添加"%s"
 		builder.WriteString("%s")
