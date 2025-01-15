@@ -72,17 +72,17 @@ const (
 // pg format
 const (
 	// DateTruncFormat DateTruncAsFormat 转换为离散时间, 最终返回是timestamp类型
-	DateTruncFormat   = `date_trunc('%v', %s)`
-	DateTruncAsFormat = `date_trunc('%v', %s) as "%s"`
+	DateTruncFormat   = `date_trunc(%v, %s)`
+	DateTruncAsFormat = `date_trunc(%v, %s) as "%s"`
 
 	// ToCharFormat ToCharAsFormat to_char(时间类型字段, format), 最终返回是字符串
-	ToCharFormat   = `to_char(%s, '%v')`
-	ToCharAsFormat = `to_char(%s, '%v') as "%s"`
+	ToCharFormat   = `to_char(%s, %v)`
+	ToCharAsFormat = `to_char(%s, %v) as "%s"`
 
-	CallPgToDateFormat        = `to_date(%s, '%v')`
-	CallPgToDateAsFormat      = `to_date(%s, '%v')`
-	CallPgToTimestampFormat   = `to_timestamp(%s, '%v')`
-	CallPgToTimestampAsFormat = `to_timestamp(%s, '%v')`
+	CallPgToDateFormat        = `to_date(%s, %v)`
+	CallPgToDateAsFormat      = `to_date(%s, %v)`
+	CallPgToTimestampFormat   = `to_timestamp(%s, %v)`
+	CallPgToTimestampAsFormat = `to_timestamp(%s, %v)`
 
 	CbrtFormat    = `cbrt(%s)`
 	CbrtAsFormat  = `cbrt(%s) as "%s"`

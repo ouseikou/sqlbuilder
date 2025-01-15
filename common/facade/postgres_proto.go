@@ -363,7 +363,8 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression) []interface{} {
 		case *pb.MixVars_Context:
 			exprString := v.Context
 			varTypeMap[exprString] = true
-			expressions = append(expressions, exprString)
+			varStrLiteral := fmt.Sprintf(clause.StringSafeLiteral, exprString)
+			expressions = append(expressions, varStrLiteral)
 		case *pb.MixVars_Number:
 			exprInt := v.Number
 			varNumLiteral := fmt.Sprintf(clause.AnyLiteral, exprInt)

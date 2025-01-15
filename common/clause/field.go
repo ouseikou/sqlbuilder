@@ -2,6 +2,7 @@ package clause
 
 const (
 	StringLiteral         = `%s`
+	StringSafeLiteral     = `'%s'`
 	DoubleStringLiteral   = `%s %s`
 	PGStringLiteralSafe   = `"%s"`
 	AnyLiteral            = `%v`
