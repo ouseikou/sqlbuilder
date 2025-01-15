@@ -343,8 +343,8 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression) []interface{} {
 	vars := expr.Vars
 	// 表达式参数: int, string, clause.Column
 	var expressions []interface{}
-	// var的字面量值 -> 是否转义, 只针对 Column 和 Expression 类型的 var
-	var varTypeMap = make(map[any]bool)
+	// var的索引 -> 是否转义, 只针对 Column 和 Expression 类型的 var, 不能使用值, mapKey会被覆盖
+	var varIndexTypeMap = make(map[int]bool)
 
 	// 如果函数是 count1, 只用填充别名
 	if expr.Call == string(clause.Count1) {
@@ -352,19 +352,23 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression) []interface{} {
 		return expressions
 	}
 
-	for _, varItem := range vars {
+	for index, varItem := range vars {
 		switch v := varItem.GetVars().(type) {
 		case *pb.MixVars_Column:
 			column := v.Column
 			format := util.Ternary(column.UseAs, clause.PGTableColumnAs, clause.PGTableColumn).(string)
 			colLiteral := calAppendTextByColumnAsByProto(format, column, column.UseAs, expr.CallAs)
-			varTypeMap[colLiteral] = false
+			varIndexTypeMap[index] = false
 			expressions = append(expressions, colLiteral)
 		case *pb.MixVars_Context:
 			exprString := v.Context
-			varTypeMap[exprString] = true
+			varIndexTypeMap[index] = true
 			varStrLiteral := fmt.Sprintf(clause.StringSafeLiteral, exprString)
 			expressions = append(expressions, varStrLiteral)
+		case *pb.MixVars_StrLiteral:
+			exprStrLiteral := v.StrLiteral
+			varIndexTypeMap[index] = false
+			expressions = append(expressions, exprStrLiteral.Literal)
 		case *pb.MixVars_Number:
 			exprInt := v.Number
 			varNumLiteral := fmt.Sprintf(clause.AnyLiteral, exprInt)
@@ -376,7 +380,7 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression) []interface{} {
 		case *pb.MixVars_Expression:
 			exprVarExpression := v.Expression
 			varExpItemStr := formatExpressionByProto(exprVarExpression)
-			varTypeMap[varExpItemStr] = false
+			varIndexTypeMap[index] = false
 			expressions = append(expressions, varExpItemStr)
 		default:
 			continue
@@ -385,7 +389,7 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression) []interface{} {
 
 	// 如果是可变参数函数，将参数转换为一个字符串
 	if clause.IsVariadicArgsFunc(expr.Call) {
-		expressions = []interface{}{variadicArgsFuncVars2oneVar(expressions, varTypeMap)}
+		expressions = []interface{}{variadicArgsFuncVars2oneVar(expressions, varIndexTypeMap)}
 	}
 
 	if expr.UseAs {
@@ -401,7 +405,7 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression) []interface{} {
 //
 // 返回值:
 //   - 合并字符串
-func variadicArgsFuncVars2oneVar(vars []interface{}, varTypeMap map[any]bool) string {
+func variadicArgsFuncVars2oneVar(vars []interface{}, varIndexTypeMap map[int]bool) string {
 	var builder strings.Builder
 	// 遍历 args，将每个参数拼接成适合的 SQL 字符串
 	for i, arg := range vars {
@@ -413,7 +417,7 @@ func variadicArgsFuncVars2oneVar(vars []interface{}, varTypeMap map[any]bool) st
 		switch v := arg.(type) {
 		case string:
 			// 如果是字符串类型原本是 Column 和 Expression, 不需要加单引号
-			if varTypeMap[arg] == false {
+			if varIndexTypeMap[i] == false {
 				builder.WriteString(fmt.Sprintf("%s", v))
 				break
 			}
@@ -440,7 +444,6 @@ func variadicArgsFuncVars2oneVar(vars []interface{}, varTypeMap map[any]bool) st
 
 	return builder.String()
 }
-
 func (f *PostgresModelBuilderFacade) BuildOther(builder *xorm.Builder, sqlRef *pb.SqlReference) *xorm.Builder {
 	logger.Debug("[模板方法模式]-[postgres] 实现: 构建 builder 其他内容...")
 
@@ -640,6 +643,8 @@ func ExtraArgItemValue(item *pb.BasicData) interface{} {
 	switch elem := item.GetData().(type) {
 	case *pb.BasicData_StrVal:
 		return elem.StrVal
+	case *pb.BasicData_StrLiteral:
+		return elem.StrLiteral.Literal
 	case *pb.BasicData_IntVal:
 		return elem.IntVal
 	case *pb.BasicData_DoubleVal:

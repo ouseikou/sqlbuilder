@@ -165,6 +165,7 @@ message MixVars {
     string context = 3;
     int64 number = 4;
     double double_num = 5;
+    StringLiteral str_literal = 6; // 字符串字面量不会默认加单引号
   }
 }
 
@@ -238,14 +239,22 @@ enum Op {
   OP_OR = 14;        // "and"
 }
 
+
+// 字符串字面量
+message StringLiteral {
+  string literal = 1;
+}
+
 message BasicData {
   oneof data {
-    int64 int_val = 1; // 覆盖 int23
+    int64 int_val = 1; // 覆盖 int32
     double double_val = 2; // 覆盖 float
-    string str_val = 3;
+    string str_val = 3; // 字符串会默认加单引号
     bool logic = 4;
+    StringLiteral str_literal = 5; // 字符串字面量不会默认加单引号
   }
 }
+
 // -----------------------------------------------   以上 Where  -----------------------------------------------------
 
 
@@ -255,7 +264,7 @@ message BasicDataArr {
 
 message TemplateArg {
   oneof data {
-    int64 int_val = 1; // 覆盖 int23
+    int64 int_val = 1; // 覆盖 int32
     double double_val = 2; // 覆盖 float
     string str_val = 3;
     bool bool_val = 4;

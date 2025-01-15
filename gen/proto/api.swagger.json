@@ -23,7 +23,7 @@
         "int_val": {
           "type": "string",
           "format": "int64",
-          "title": "覆盖 int23"
+          "title": "覆盖 int32"
         },
         "double_val": {
           "type": "number",
@@ -31,10 +31,15 @@
           "title": "覆盖 float"
         },
         "str_val": {
-          "type": "string"
+          "type": "string",
+          "title": "字符串会默认加单引号"
         },
         "logic": {
           "type": "boolean"
+        },
+        "str_literal": {
+          "$ref": "#/definitions/protoStringLiteral",
+          "title": "字符串字面量不会默认加单引号"
         }
       }
     },
@@ -325,6 +330,10 @@
         "double_num": {
           "type": "number",
           "format": "double"
+        },
+        "str_literal": {
+          "$ref": "#/definitions/protoStringLiteral",
+          "title": "字符串字面量不会默认加单引号"
         }
       }
     },
@@ -442,6 +451,15 @@
         }
       }
     },
+    "protoStringLiteral": {
+      "type": "object",
+      "properties": {
+        "literal": {
+          "type": "string"
+        }
+      },
+      "title": "字符串字面量"
+    },
     "protoTable": {
       "type": "object",
       "properties": {
@@ -462,7 +480,7 @@
         "int_val": {
           "type": "string",
           "format": "int64",
-          "title": "覆盖 int23"
+          "title": "覆盖 int32"
         },
         "double_val": {
           "type": "number",
