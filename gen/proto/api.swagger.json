@@ -85,6 +85,9 @@
         },
         "alias": {
           "type": "string"
+        },
+        "use_as": {
+          "type": "boolean"
         }
       }
     },
@@ -101,7 +104,8 @@
         "then": {
           "$ref": "#/definitions/protoBasicData"
         }
-      }
+      },
+      "title": "每一行 case-when-then就是多个条件组成的语句"
     },
     "protoColumn": {
       "type": "object",
@@ -220,7 +224,7 @@
           "title": "表达式是否加小括号, 新增 pnt-format"
         }
       },
-      "title": "表达式不在vars使用类似递归形式, 而是平铺可能好点. ExpressionWrapper{int32 deep = 1; repeated Expression exps = 2;}"
+      "title": "表达式不在vars使用类似递归, 而是平铺可能好点. ExpressionWrapper{int32 deep = 1; repeated Expression exps = 2;}"
     },
     "protoJoin": {
       "type": "object",

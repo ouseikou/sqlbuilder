@@ -182,6 +182,7 @@ message CaseWhen {
   repeated CaseWhenItem conditions = 1;
   BasicData else_value = 2;
   string alias = 3;
+  bool use_as = 4;
 }
 
 // 每一行 case-when-then就是多个条件组成的语句

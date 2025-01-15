@@ -13,6 +13,7 @@ type CaseWhen struct {
 	ElseValue  string
 	// 表示 CASE 的列名as
 	Alias string
+	UseAs bool
 }
 
 // CaseWhenCondition 表示1行 case-when-then 语句
@@ -45,9 +46,11 @@ func (cw *CaseWhen) BuilderCaseWhenFragment(driver Driver) string {
 	}
 
 	// 结束 CASE 语句
-	builder.WriteString(" END")
+	builder.WriteString(" END ")
 	// 根据驱动返回转义符
 	driverKeyword := DriverKeywordWrapMap[driver]
-	builder.WriteString(fmt.Sprintf(` as %s%s%s`, driverKeyword, cw.Alias, driverKeyword))
+	if cw.UseAs {
+		builder.WriteString(fmt.Sprintf(` as %s%s%s`, driverKeyword, cw.Alias, driverKeyword))
+	}
 	return builder.String()
 }

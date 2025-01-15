@@ -223,6 +223,7 @@ func formatCaseWhenByProto(caseWhen *pb.CaseWhen) string {
 		// case-when 默认没有 else 分支
 		ElseValue: "",
 		Alias:     caseWhen.Alias,
+		UseAs:     caseWhen.UseAs,
 	}
 
 	fragment := caseWhenStruct.BuilderCaseWhenFragment(clause.DriverPostgres)
