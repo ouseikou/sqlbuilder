@@ -40,10 +40,13 @@ const (
 )
 
 const (
-	PntFormat     = `(%s)`
-	PGAsFormat    = `%s as "%%s"`
-	PGAsAppend    = ` as "%s"`
+	PntFormat = `(%s)`
+
+	PGAsFormat = `%s as "%%s"`
+	PGAsAppend = ` as "%%s"`
+
 	MYSQLAsFormat = "%s as `%%s`"
+	MYSQLAsAppend = " as `%%s`"
 )
 
 type Operator struct {

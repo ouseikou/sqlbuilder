@@ -1,16 +1,23 @@
 package clause
 
 const (
-	StringLiteral         = `%s`
-	StringSafeLiteral     = `'%s'`
-	DoubleStringLiteral   = `%s %s`
+	StringLiteral       = `%s`
+	StringSafeLiteral   = `'%s'`
+	DoubleStringLiteral = `%s %s`
+	AnyLiteral          = `%v`
+
 	PGStringLiteralSafe   = `"%s"`
-	AnyLiteral            = `%v`
 	PGSchemaTable         = `"%s"."%s"`
 	PGTableColumn         = `"%s"."%s"`
 	PGTableColumnAs       = `"%s"."%s" as "%s"`
 	PGSchemaTableColumn   = `"%s"."%s"."%s"`
 	PGSchemaTableColumnAs = `"%s"."%s"."%s" as "%s"`
+
+	MysqlStringLiteralSafe   = "`%s`"
+	MysqlTableTableColumn    = "`%s`.`%s`"
+	MysqlTableColumnAs       = "`%s`.`%s` as `%s`"
+	MysqlSchemaTableColumn   = "`%s`.`%s`.`%s`"
+	MysqlSchemaTableColumnAs = "`%s`.`%s`.`%s` as `%s`"
 )
 
 // FieldClause 使用需要断言

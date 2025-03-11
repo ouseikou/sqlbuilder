@@ -7,6 +7,10 @@ import (
 	pb "github.com/ouseikou/sqlbuilder/gen/proto"
 )
 
+// ==================================================================================================================
+// ==================================================== model-chain ====================================================
+// ==================================================================================================================
+
 // todo 1. java Object传参顺序问题影响SQL生成和结果 2. schema.table.column 参考MB 3.format在占位符写死了,根据方言决定 "" 或``
 
 func BuildModelSqlByJson(request clause.BuilderRequest) (string, error) {
@@ -36,19 +40,24 @@ func BuildTemplateSqlByJson(request clause.BuilderRequest) (string, error) {
 // BuildSqlByModelProto 使用 proto 解决 http 传输联合类型接收为 map 的元组类型擦除问题
 func BuildSqlByModelProto(request *pb.BuilderRequest) (string, error) {
 	// 根据方言创建facade
-	f, err := facade.CreateModelBuilderFacade(request.Driver)
+	builderInst, err := facade.ModelChainBuilderFactory(request.Driver)
 	if err != nil {
 		return "", err
 	}
+	facadeInstance := facade.NewModelChainSqlBuilderFacadeInstance(builderInst)
 	// 构建 xormBuilder -> sql
-	boundSQL, err := f.BuildSQL(request)
+	boundSQL, err := facadeInstance.Execute(request)
 	if err != nil {
 		return "", err
 	}
-	logger.Debug("执行模型模式SQL构建策略, SQL:\n%s", boundSQL)
+	logger.Debug("执行model模式SQL构建策略, SQL:\n%s", boundSQL)
 
 	return boundSQL, nil
 }
+
+// ==================================================================================================================
+// ==================================================== template ====================================================
+// ==================================================================================================================
 
 // BuildSqlByTemplateProto 根据proto协议请求和模板语法构建sql门面接口的实现
 // 参数:
