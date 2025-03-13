@@ -324,6 +324,8 @@ func expressionFuncNoAsFormat(expression *pb.Expression) string {
 	case pb.CallType_CALL_TYPE_ARITH:
 		// 算术表达式的format要结合参数个数动态生成
 		return clause.CalArithFormatWithBuilder(expression.Call, len(expression.Vars))
+	case pb.CallType_CALL_TYPE_LITERAL:
+		return expression.GetStrLiteral().GetLiteral()
 	default:
 		return ""
 	}
@@ -339,6 +341,15 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression, ctx *ModelBuilde
 	vars := expr.Vars
 	// 表达式参数: int, string, clause.Column
 	var expressions []interface{}
+
+	// 字面量只需要填充别名
+	if expr.CallType == pb.CallType_CALL_TYPE_LITERAL {
+		if expr.UseAs {
+			expressions = append(expressions, expr.CallAs)
+		}
+		return expressions
+	}
+
 	// var的索引 -> 是否转义, 只针对 Column 和 Expression 类型的 var, 不能使用值, mapKey会被覆盖
 	var varIndexTypeMap = make(map[int]bool)
 

@@ -71,7 +71,8 @@
         "CALL_TYPE_AGG",
         "CALL_TYPE_INNER",
         "CALL_TYPE_CUSTOM",
-        "CALL_TYPE_ARITH"
+        "CALL_TYPE_ARITH",
+        "CALL_TYPE_LITERAL"
       ],
       "default": "CALL_TYPE_UNSPECIFIED"
     },
@@ -227,9 +228,13 @@
         "use_pnt": {
           "type": "boolean",
           "title": "表达式是否加小括号, 新增 pnt-format"
+        },
+        "str_literal": {
+          "$ref": "#/definitions/protoStringLiteral",
+          "title": "处理极其复杂的表达式或公式, 调用方直接将字面量片段给到 sqlbuilder, 不做任何处理"
         }
       },
-      "title": "表达式不在vars使用类似递归, 而是平铺可能好点. ExpressionWrapper{int32 deep = 1; repeated Expression exps = 2;}"
+      "title": "表达式不在vars使用类似递归形式, 而是平铺可能好点. ExpressionWrapper{int32 deep = 1; repeated Expression exps = 2;}"
     },
     "protoJoin": {
       "type": "object",

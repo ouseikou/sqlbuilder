@@ -56,6 +56,7 @@ enum CallType {
   CALL_TYPE_INNER = 2;
   CALL_TYPE_CUSTOM = 3;
   CALL_TYPE_ARITH = 4;
+  CALL_TYPE_LITERAL = 5;
 }
 
 
@@ -156,6 +157,8 @@ message Expression {
   bool use_as = 5;
   // 表达式是否加小括号, 新增 pnt-format
   bool use_pnt = 6;
+  // 处理极其复杂的表达式或公式, 调用方直接将字面量片段给到 sqlbuilder, 不做任何处理
+  optional StringLiteral str_literal = 7;
 }
 
 message MixVars {
