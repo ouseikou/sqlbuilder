@@ -25,13 +25,18 @@ const (
 
 // pg
 const (
-	CallDateTrunc     InnerFunc = "date_trunc"
+	CallPgDateTrunc   InnerFunc = "date_trunc"
 	CallPGToChar      InnerFunc = "to_char"
 	CallPgToDate      InnerFunc = "to_date"
 	CallPgToTimestamp InnerFunc = "to_timestamp"
 
 	Cbrt  InnerFunc = "cbrt"
 	Trunc InnerFunc = "trunc"
+)
+
+// doris
+const (
+	CallDorisDateTrunc InnerFunc = "doris_date_trunc"
 )
 
 // 通用 format
@@ -71,9 +76,9 @@ const (
 
 // pg format
 const (
-	// DateTruncFormat DateTruncAsFormat 转换为离散时间, 最终返回是timestamp类型
-	DateTruncFormat   = `date_trunc(%v, %s)`
-	DateTruncAsFormat = `date_trunc(%v, %s) as "%s"`
+	// PgDateTruncFormat PgDateTruncAsFormat 转换为离散时间, 最终返回是timestamp类型
+	PgDateTruncFormat   = `date_trunc(%v, %s)`
+	PgDateTruncAsFormat = `date_trunc(%v, %s) as "%s"`
 
 	// ToCharFormat ToCharAsFormat to_char(时间类型字段, format), 最终返回是字符串
 	ToCharFormat   = `to_char(%s, %v)`
@@ -88,6 +93,12 @@ const (
 	CbrtAsFormat  = `cbrt(%s) as "%s"`
 	TruncFormat   = `trunc(%s, %v)`
 	TruncAsFormat = `trunc(%s, %v) as "%s"`
+)
+
+// doris format
+const (
+	DorisDateTruncFormat   = `date_trunc(%s, %v)`
+	DorisDateTruncAsFormat = "date_trunc(%s, %v) as `%s`"
 )
 
 // InnerFuncFormatMap 内置函数名称和SQL片段 映射
@@ -112,13 +123,16 @@ var (
 
 		// pg
 
-		CallDateTrunc: DateTruncFormat,
-		CallPGToChar:  ToCharFormat,
+		CallPgDateTrunc: PgDateTruncFormat,
+		CallPGToChar:    ToCharFormat,
 
 		CallPgToDate:      CallPgToDateFormat,
 		CallPgToTimestamp: CallPgToTimestampFormat,
 		Cbrt:              CbrtFormat,
 		Trunc:             TruncFormat,
+
+		// doris
+		CallDorisDateTrunc: DorisDateTruncFormat,
 	}
 
 	InnerAsFuncFormatMap = map[InnerFunc]string{
@@ -139,13 +153,16 @@ var (
 
 		// pg
 
-		CallDateTrunc: DateTruncAsFormat,
-		CallPGToChar:  ToCharAsFormat,
+		CallPgDateTrunc: PgDateTruncAsFormat,
+		CallPGToChar:    ToCharAsFormat,
 
 		CallPgToDate:      CallPgToDateAsFormat,
 		CallPgToTimestamp: CallPgToTimestampAsFormat,
 		Cbrt:              CbrtAsFormat,
 		Trunc:             TruncAsFormat,
+
+		// doris
+		CallDorisDateTrunc: DorisDateTruncAsFormat,
 	}
 
 	// VariadicInnerFuncFormatMap 可变参数
