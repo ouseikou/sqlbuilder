@@ -25,6 +25,11 @@ const (
 	NullIf InnerFunc = "nullif"
 )
 
+// mysql
+const (
+	MysqlIfNull InnerFunc = "ifnull"
+)
+
 // pg
 const (
 	CallPgDateTrunc   InnerFunc = "date_trunc"
@@ -32,8 +37,9 @@ const (
 	CallPgToDate      InnerFunc = "to_date"
 	CallPgToTimestamp InnerFunc = "to_timestamp"
 
-	Cbrt  InnerFunc = "cbrt"
-	Trunc InnerFunc = "trunc"
+	Cbrt       InnerFunc = "cbrt"
+	Trunc      InnerFunc = "trunc"
+	PgCoalesce InnerFunc = "coalesce"
 )
 
 // doris
@@ -78,6 +84,11 @@ const (
 	NullIfFormat = `nullif(%s, %s)`
 )
 
+// mysql format
+const (
+	MysqlIfNullFormat = `ifnull(%s, %s)`
+)
+
 // pg format
 const (
 	// PgDateTruncFormat PgDateTruncAsFormat 转换为离散时间, 最终返回是timestamp类型
@@ -97,6 +108,8 @@ const (
 	CbrtAsFormat  = `cbrt(%s) as "%s"`
 	TruncFormat   = `trunc(%s, %v)`
 	TruncAsFormat = `trunc(%s, %v) as "%s"`
+
+	PgCoalesceFormat = `coalesce(%s, %s)`
 )
 
 // doris format
@@ -126,6 +139,10 @@ var (
 		Concat: ConcatFormat,
 		NullIf: NullIfFormat,
 
+		// mysql
+
+		MysqlIfNull: MysqlIfNullFormat,
+
 		// pg
 
 		CallPgDateTrunc: PgDateTruncFormat,
@@ -135,6 +152,8 @@ var (
 		CallPgToTimestamp: CallPgToTimestampFormat,
 		Cbrt:              CbrtFormat,
 		Trunc:             TruncFormat,
+
+		PgCoalesce: PgCoalesceFormat,
 
 		// doris
 		CallDorisDateTrunc: DorisDateTruncFormat,
