@@ -21,6 +21,8 @@ const (
 
 	// Concat 可变参数的通用函数
 	Concat InnerFunc = "concat"
+
+	NullIf InnerFunc = "nullif"
 )
 
 // pg
@@ -72,6 +74,8 @@ const (
 
 	ConcatFormat   = `concat(%s)`
 	ConcatAsFormat = `concat(%s) as "%s"`
+
+	NullIfFormat = `nullif(%s, %s)`
 )
 
 // pg format
@@ -120,6 +124,7 @@ var (
 		Length:    LengthFormat,
 
 		Concat: ConcatFormat,
+		NullIf: NullIfFormat,
 
 		// pg
 
@@ -134,6 +139,8 @@ var (
 		// doris
 		CallDorisDateTrunc: DorisDateTruncFormat,
 	}
+
+	// InnerAsFuncFormatMap 注意: as格式化不再使用, 代码逻辑 as 别名根据驱动做格式化
 
 	InnerAsFuncFormatMap = map[InnerFunc]string{
 		// common
