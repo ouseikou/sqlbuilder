@@ -25,7 +25,7 @@ const (
 	NullIf InnerFunc = "nullif"
 )
 
-// mysql
+// mysql/doris
 const (
 	MysqlIfNull InnerFunc = "ifnull"
 )
@@ -109,7 +109,7 @@ const (
 	TruncFormat   = `trunc(%s, %v)`
 	TruncAsFormat = `trunc(%s, %v) as "%s"`
 
-	PgCoalesceFormat = `coalesce(%s, %s)`
+	PgCoalesceFormat = `coalesce(%s)`
 )
 
 // doris format
@@ -193,7 +193,8 @@ var (
 
 	// VariadicInnerFuncFormatMap 可变参数
 	VariadicInnerFuncFormatMap = map[InnerFunc]string{
-		Concat: ConcatFormat,
+		Concat:     ConcatFormat,
+		PgCoalesce: PgCoalesceFormat,
 	}
 )
 

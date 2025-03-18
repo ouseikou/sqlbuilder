@@ -371,7 +371,8 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression, ctx *ModelBuilde
 			expressions = append(expressions, colLiteral)
 		case *pb.MixVars_Context:
 			exprString := v.Context
-			varIndexTypeMap[index] = true
+			// 字符串由于此处已经转义过, 后面处理可变参数不需要转义, 和 Column/Expression, 不需要加单引号
+			varIndexTypeMap[index] = false
 			varStrLiteral := fmt.Sprintf(clause.StringSafeLiteral, exprString)
 			expressions = append(expressions, varStrLiteral)
 		case *pb.MixVars_StrLiteral:
