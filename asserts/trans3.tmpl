@@ -19,7 +19,7 @@ select
      )*/
 
     sum(htr.amount - htr.refund_amount) 合计
-from "hst_trade_887f2181-eb06-4d77-b914-7c37c884952c_db".hst_transaction_record htr
+from "hst_trade_{{dfv .ENTERPRISE_ID "887f2181-eb06-4d77-b914-7c37c884952c"}}_db".hst_transaction_record htr
     left join (
         select
             mos.external_part_org_id,

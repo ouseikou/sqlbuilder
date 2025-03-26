@@ -1,8 +1,9 @@
 ﻿package facade
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNormalizeArrValue(t *testing.T) {
@@ -20,4 +21,19 @@ func TestNormalizeArrValue(t *testing.T) {
 
 	finalStr4 := Normalize1Arr(nil)
 	assert.EqualValues(t, "", finalStr4)
+
+	finalStr5 := DefaultValue(16, 10)
+	assert.EqualValues(t, 16, finalStr5)
+
+	finalStr6 := DefaultValue(0, 10)
+	assert.EqualValues(t, 10, finalStr6)
+
+	finalStr7 := DefaultValue("", "aasd")
+	assert.EqualValues(t, "aasd", finalStr7)
+
+	finalStr8 := DefaultValue([]interface{}{1, 2, 3}, "aasd")
+	assert.EqualValues(t, []interface{}{1, 2, 3}, finalStr8)
+
+	finalStr9 := DefaultValue(nil, []interface{}{"a", "b", "c"})
+	assert.EqualValues(t, []interface{}{"a", "b", "c"}, finalStr9)
 }

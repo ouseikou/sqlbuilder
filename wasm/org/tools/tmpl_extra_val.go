@@ -59,7 +59,35 @@ func InjectFunc() template.FuncMap {
 		"N1Arr": Normalize1Arr,
 		// 不使用反射
 		"N1Arr2": Normalize1ArrNoReflect,
+
+		// 默认值处理
+		"dfv": DefaultValue,
 	}
+}
+
+func DefaultValue(expect interface{}, defaultVal interface{}) interface{} {
+	if expect == nil {
+		return defaultVal
+	}
+	switch arg := expect.(type) {
+	case string:
+		// 字符串= '' , 取默认值
+		if arg == "" {
+			return defaultVal
+		}
+	case float32, float64, int, int32, int64, bool:
+		// 数值是零值, 取默认值
+		if arg == 0 {
+			return defaultVal
+		}
+	default:
+		// 处理 interface{} 类型，判断是否为零值
+		v := reflect.ValueOf(expect)
+		if v.IsZero() {
+			return defaultVal
+		}
+	}
+	return expect
 }
 
 func PowerList(guids []interface{}) string {

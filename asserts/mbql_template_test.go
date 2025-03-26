@@ -3,13 +3,14 @@ package facade
 import (
 	"bytes"
 	"fmt"
-	"github.com/ouseikou/sqlbuilder/common/facade"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 	"text/template"
+
+	"github.com/ouseikou/sqlbuilder/common/facade"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTemplateString(t *testing.T) {
@@ -161,4 +162,67 @@ func TestTemplateFlowWithNormalize(t *testing.T) {
 	// 主模板保留字面量
 	fmt.Println(templates.Master)
 	assert.EqualValues(t, false, strings.Contains(templates.Master, "ffd10705-4449-4439-9d81-84bb08600e3c"))
+}
+
+func TestTemplateFlowWithDefaultValue(t *testing.T) {
+
+	// 1. 模拟: 模板变量(所有有值)参数
+	// 由写SQL的用户来控制参数的规范化, 避免程序控制出问题
+	args := map[string]interface{}{
+		"STORE_GUID":        `ffd10705-4449-4439-9d81-84bb08600e3c`,
+		"GROUP_STORE_GUID":  `4ee5f568-b096-44c6-8b58-4147ef36a3fb`,
+		"START_TIME":        `2024-07-05 17:17:37`,
+		"END_TIME":          `2024-09-05 17:17:37`,
+		"PAYMENT_TYPE_NAME": `交通银行`,
+		"Guids":             []interface{}{"2203b12d-618a-4974-b09f-86ce3d35d26a", "362401e3-7876-4427-b467-8474a0efa03c"},
+		"PrivilegesFlag":    -2,
+		// "ENTERPRISE_ID":     `ffd10705-4449-4439-9d81-84bb08600e3c`,
+	}
+
+	// 1. 创建模板画布, 并注册所有自定义函数
+	tmpl := template.New("root").Funcs(facade.InjectFunc())
+
+	// 2. 提取提前执行块
+	// 将模板文件解析到模板画布中
+	// ParseFiles 当前文件相对路径, 非项目根路径
+	tmpl, err := tmpl.ParseFiles(filepath.Join("trans3.tmpl"))
+	if err != nil {
+		fmt.Println("Error parsing files:", err)
+		return
+	}
+
+	// 4. 执行画布主模板
+	var masterBuf bytes.Buffer
+	err = tmpl.ExecuteTemplate(&masterBuf, "master", args)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("................最终sql................")
+	fmt.Println(masterBuf.String())
+
+	fmt.Println("=============================分割线1=============================")
+
+}
+
+func TestFormatBufAppend(t *testing.T) {
+	var finalFormat string
+
+	basicFormat := `avg(%s)`
+
+	// 期望 flag1 = true, 在之前字符串追加小括号
+	if true {
+		finalFormat = fmt.Sprintf(`(%s)`, basicFormat)
+	}
+	// 期望 flag2 = true, 在之前字符串追加as
+	if true {
+		finalFormat = fmt.Sprintf(`%s as "%s"`, finalFormat, "别名")
+	}
+
+	if finalFormat == "" {
+		finalFormat = basicFormat
+	}
+
+	// 打印最终 format 字符串
+	fmt.Println(finalFormat)
 }
