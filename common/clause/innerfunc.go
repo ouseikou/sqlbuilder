@@ -44,7 +44,8 @@ const (
 
 // doris
 const (
-	CallDorisDateTrunc InnerFunc = "doris_date_trunc"
+	CallDorisDateTrunc  InnerFunc = "doris_date_trunc"
+	CallDorisDateFormat InnerFunc = "date_format"
 )
 
 // 通用 format
@@ -116,6 +117,8 @@ const (
 const (
 	DorisDateTruncFormat   = `date_trunc(%s, %v)`
 	DorisDateTruncAsFormat = "date_trunc(%s, %v) as `%s`"
+
+	DorisDateFormatFormat = `date_format(%s, %v)`
 )
 
 // InnerFuncFormatMap 内置函数名称和SQL片段 映射
@@ -156,7 +159,8 @@ var (
 		PgCoalesce: PgCoalesceFormat,
 
 		// doris
-		CallDorisDateTrunc: DorisDateTruncFormat,
+		CallDorisDateTrunc:  DorisDateTruncFormat,
+		CallDorisDateFormat: DorisDateFormatFormat,
 	}
 
 	// InnerAsFuncFormatMap 注意: as格式化不再使用, 代码逻辑 as 别名根据驱动做格式化
