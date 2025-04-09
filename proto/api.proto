@@ -118,9 +118,21 @@ enum JoinType {
 message Join {
   JoinType type = 1;
   Table table = 2;
-  Condition left = 3;
-  Condition right = 4;
-  Op on = 5;
+  repeated JoinCond joinCond = 3;
+}
+
+message JoinCond {
+  oneof mix {
+    OnField onField = 1;
+    Condition onCond = 2;
+  }
+}
+
+message OnField {
+  MixField left = 1;
+  MixField right = 2;
+  Op on = 3;
+  Logic logic = 4; // 和下一个条件的逻辑关系, 默认 and, 可选or
 }
 
 // -----------------------------------------------   以上 Join  -----------------------------------------------------

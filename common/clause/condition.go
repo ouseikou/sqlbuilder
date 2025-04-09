@@ -18,8 +18,8 @@ const (
 	ConditionIsNull    ConditionOperator = "is null"
 	ConditionIsNotNull ConditionOperator = "is not null"
 
-	ConditionAnd ConditionOperator = "or"
-	ConditionOr  ConditionOperator = "and"
+	ConditionAnd ConditionOperator = "and"
+	ConditionOr  ConditionOperator = "or"
 )
 
 // Condition

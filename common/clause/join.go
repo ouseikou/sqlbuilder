@@ -10,6 +10,19 @@ const (
 	CrossJoin JoinType = "cross join"
 )
 
+const (
+	LeftJoinXorm  string = "LEFT"
+	RightJoinXorm string = "RIGHT"
+	InnerJoinXorm string = "INNER"
+	FullJoinXorm  string = "FULL"
+	CrossJoinXorm string = "CROSS"
+)
+
+// OnFieldFormat e.g. InnerJoin("table3", "table2.id = table3.tid")
+const OnFieldFormat string = `%s %s %s`
+const SafeCond string = `( %s )`
+const Space string = ` `
+
 type Join struct {
 	// 连接方式
 	Type JoinType `json:"type"`

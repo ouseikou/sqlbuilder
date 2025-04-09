@@ -80,6 +80,13 @@ func TestXORMSQLBuilder(t *testing.T) {
 	whereBoundSQL, _ := builderWhere.ToBoundSQL()
 	t.Log(whereBoundSQL)
 
+	// 测试 join-on
+	//sqlF, _ := xorm.ToBoundSQL(xorm.Lt{"d": 3}.And(xorm.Lt{"e": 4}))
+	//fmt.Println(sqlF)
+	//var sss = []string{" e<4", "d<3 ", `"t1"."id" = "t2"."t1_id"`}
+	//fs := strings.Join(sss, " and ")
+	//fmt.Println(fs)
+
 	//// 使用 expr 实现下面效果
 	//// (a=1 AND b LIKE '%c%') OR (a=2 AND b LIKE '%g%')
 	//segment := xorm.Eq{"a": 1}.And(xorm.Like{"b", "c"}).Or(xorm.Eq{"a": 2}.And(xorm.Like{"b", "g"})).

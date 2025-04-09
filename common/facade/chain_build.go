@@ -69,7 +69,7 @@ func buildChainOther(
 
 	// 判断是否组装 Join
 	if len(sqlRef.Join) > 0 {
-		builder = buildJoinByProto(builder, sqlRef)
+		builder = buildJoinByProto(builder, sqlRef, ctx)
 	}
 
 	// 判断是否组装 Where
@@ -462,8 +462,78 @@ func variadicArgsFuncVars2oneVar(vars []interface{}, varIndexTypeMap map[int]boo
 //
 // 返回值:
 //   - *xorm.Builder类型的指针，用于继续构建SQL查询
-func buildJoinByProto(builder *xorm.Builder, sqlRef *pb.SqlReference) *xorm.Builder {
+func buildJoinByProto(builder *xorm.Builder, sqlRef *pb.SqlReference, ctx *ModelBuilderCtx) *xorm.Builder {
+	joins := sqlRef.GetJoin()
+	for _, join := range joins {
+		// 每次将返回的新 Builder 赋值给变量
+		builder = buildJoinItemByProto(builder, join, ctx)
+	}
 	return builder
+}
+
+func buildJoinItemByProto(builder *xorm.Builder, join *pb.Join, ctx *ModelBuilderCtx) *xorm.Builder {
+	joinCond := buildJoinCondByProto(join.GetJoinCond(), ctx)
+	joinSchemaTable := buildJoinSchemaTableByProto(join, ctx)
+
+	switch join.GetType() {
+	case pb.JoinType_JOIN_TYPE_LEFT:
+		return builder.LeftJoin(joinSchemaTable, joinCond)
+	case pb.JoinType_JOIN_TYPE_RIGHT:
+		return builder.RightJoin(joinSchemaTable, joinCond)
+	case pb.JoinType_JOIN_TYPE_INNER:
+		return builder.InnerJoin(joinSchemaTable, joinCond)
+	case pb.JoinType_JOIN_TYPE_FULL:
+		return builder.FullJoin(joinSchemaTable, joinCond)
+	case pb.JoinType_JOIN_TYPE_CROSS:
+		return builder.CrossJoin(joinSchemaTable, joinCond)
+	default:
+		return builder
+	}
+}
+
+func buildJoinSchemaTableByProto(join *pb.Join, ctx *ModelBuilderCtx) string {
+	table := join.GetTable()
+	string2LiteralSafeFormat := ctx.String2LiteralSafeFormat
+	joinSchemaTable := fmt.Sprintf(string2LiteralSafeFormat, table.TableSchema, table.TableName)
+	return joinSchemaTable
+}
+
+func buildJoinCondByProto(joinCondProto []*pb.JoinCond, ctx *ModelBuilderCtx) interface{} {
+	// 注意: 规定 []JoinCond 内的元素索引优先级: 1. OnField > onCond(or连接) > onCond(and连接), 否则会导致语义不对
+	var joinConds []string
+
+	var allCond xorm.Cond
+	for i, jcItem := range joinCondProto {
+		switch jc := jcItem.GetMix().(type) {
+		case *pb.JoinCond_OnField:
+			onField := jc.OnField
+			left := processMixFieldItemByProto(onField.GetLeft(), ctx)
+			right := processMixFieldItemByProto(onField.GetRight(), ctx)
+			op := op2ConditionString(onField.GetOn())
+			logic := logic2String(onField.GetLogic())
+			// 返回字符串 e.g. "t1"."id" = "t2"."t1_id"
+			onFieldStr := fmt.Sprintf(clause.OnFieldFormat, left, op, right)
+			joinConds = append(joinConds, onFieldStr)
+			if i != len(joinCondProto)-1 {
+				joinConds = append(joinConds, logic)
+			}
+		case *pb.JoinCond_OnCond:
+			onCond := jc.OnCond
+			// 收集所有 Condition
+			allCond = buildWhereConditions(allCond, onCond, ctx)
+		}
+	}
+
+	// Condition 合并加在最后
+	if nil != allCond {
+		onCondSqlStr, _ := xorm.ToBoundSQL(allCond)
+		joinConds = append(joinConds, fmt.Sprintf(clause.SafeCond, onCondSqlStr))
+	}
+
+	// join-on 条件融合为一个字符串
+	finalJoinCond := strings.Join(joinConds, clause.Space)
+
+	return finalJoinCond
 }
 
 // buildWhereByProto 根据SqlReference构建WHERE条件
@@ -600,6 +670,34 @@ func buildWhereConditionItem(cond *pb.Condition, ctx *ModelBuilderCtx) xorm.Cond
 		return xorm.Or(xorm.Expr(formatField, formatArgs))
 	}
 	return nil
+}
+
+func op2ConditionString(operator pb.Op) string {
+	switch operator {
+	case pb.Op_OP_EQ:
+		return string(clause.ConditionEq)
+	case pb.Op_OP_NEQ:
+		return string(clause.ConditionNeq)
+	case pb.Op_OP_LT:
+		return string(clause.ConditionLt)
+	case pb.Op_OP_LTE:
+		return string(clause.ConditionLte)
+	case pb.Op_OP_GT:
+		return string(clause.ConditionGt)
+	case pb.Op_OP_GTE:
+		return string(clause.ConditionGte)
+	}
+	return string(clause.ConditionEq)
+}
+
+func logic2String(operator pb.Logic) string {
+	switch operator {
+	case pb.Logic_LOGIC_AND:
+		return string(clause.ConditionAnd)
+	case pb.Logic_LOGIC_OR:
+		return string(clause.ConditionOr)
+	}
+	return string(clause.ConditionAnd)
 }
 
 // extraConditionOpField 根据给定的条件生成额外的操作字段字符串

@@ -234,7 +234,7 @@
           "title": "处理极其复杂的表达式或公式, 调用方直接将字面量片段给到 sqlbuilder, 不做任何处理"
         }
       },
-      "title": "表达式不在vars使用类似递归形式, 而是平铺可能好点. ExpressionWrapper{int32 deep = 1; repeated Expression exps = 2;}"
+      "title": "表达式不在vars使用类似递归, 而是平铺可能好点. ExpressionWrapper{int32 deep = 1; repeated Expression exps = 2;}"
     },
     "protoJoin": {
       "type": "object",
@@ -245,14 +245,23 @@
         "table": {
           "$ref": "#/definitions/protoTable"
         },
-        "left": {
-          "$ref": "#/definitions/protoCondition"
+        "joinCond": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protoJoinCond"
+          }
+        }
+      }
+    },
+    "protoJoinCond": {
+      "type": "object",
+      "properties": {
+        "onField": {
+          "$ref": "#/definitions/protoOnField"
         },
-        "right": {
+        "onCond": {
           "$ref": "#/definitions/protoCondition"
-        },
-        "on": {
-          "$ref": "#/definitions/protoOp"
         }
       }
     },
@@ -351,6 +360,24 @@
         "expression": {
           "$ref": "#/definitions/protoExpression",
           "title": "e.g. WHERE ARRAY_CONTAINS(tags, 'urgent') =\u003e 视作 Condition.MixField.Expression"
+        }
+      }
+    },
+    "protoOnField": {
+      "type": "object",
+      "properties": {
+        "left": {
+          "$ref": "#/definitions/protoMixField"
+        },
+        "right": {
+          "$ref": "#/definitions/protoMixField"
+        },
+        "on": {
+          "$ref": "#/definitions/protoOp"
+        },
+        "logic": {
+          "$ref": "#/definitions/protoLogic",
+          "title": "和下一个条件的逻辑关系, 默认 and, 可选or"
         }
       }
     },
