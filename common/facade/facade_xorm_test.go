@@ -1,6 +1,8 @@
 package facade
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -116,4 +118,17 @@ func TestExprCond(t *testing.T) {
 	logicSql, err := xorm.ToBoundSQL(logicNest)
 	assert.EqualValues(t, "a=3 OR (b=1 AND c=2)", logicSql)
 
+}
+
+func TestInsertExpr(t *testing.T) {
+	sql, err := xorm.Insert(xorm.Eq{`INSERT_INTO_NIL`: xorm.Expr("SELECT b FROM t WHERE d=? LIMIT 1", 2)}).
+		Into("table1").ToBoundSQL()
+	assert.NoError(t, err)
+	// INSERT INTO table1 (INSERT_INTO_NIL) Values ((SELECT b FROM t WHERE d=2 LIMIT 1))
+	fmt.Println(sql)
+
+	// 期望: INSERT INTO table1  Values ((SELECT b FROM t WHERE d=2 LIMIT 1))
+	output := strings.ReplaceAll(sql, "(INSERT_INTO_NIL)", "")
+	fmt.Println(output)
+	assert.EqualValues(t, "INSERT INTO table1  Values ((SELECT b FROM t WHERE d=2 LIMIT 1))", output)
 }
