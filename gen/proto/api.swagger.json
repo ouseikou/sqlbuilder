@@ -178,6 +178,10 @@
         "reverse": {
           "type": "boolean",
           "title": "是否对该条件取反(NOT)"
+        },
+        "group_id": {
+          "type": "string",
+          "title": "组内根据logic独立构建, 组之间是and"
         }
       }
     },

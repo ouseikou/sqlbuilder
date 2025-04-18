@@ -224,6 +224,7 @@ message Condition {
   Op operator = 3;
   Logic logic = 4; // 和上一个条件的逻辑关系, 默认 and, 可选or
   bool reverse = 5; // 是否对该条件取反(NOT)
+  string group_id = 6; // 组内根据logic独立构建, 组之间是and
 }
 
 enum Logic {

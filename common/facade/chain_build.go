@@ -555,18 +555,49 @@ func buildWhereByProto(builder *xorm.Builder, sqlRef *pb.SqlReference, ctx *Mode
 // 返回:
 //   - xorm.Cond: 条件结构体 xorm.Builder.Cond
 func mixWhere2Condition(wheres []*pb.MixWhere, ctx *ModelBuilderCtx) xorm.Cond {
-	var xormCond xorm.Cond
+	// 每组内部 n * cond, 待融合
+	var eachGroupXormCond xorm.Cond
+	// 组之间的 cond
+	var collectGroupCondSlice []xorm.Cond
+	whereSize := len(wheres)
 
-	for _, whereItem := range wheres {
+	// 对比水位线: 用于对比上一个cond和当前cond是否是同一个组内的cond
+	var wtGroupId string
+	for i, whereItem := range wheres {
 		switch f := whereItem.GetFilter().(type) {
 		case *pb.MixWhere_Condition:
-			// 为什么 xormCond 每次经过forr都没有刷新值,而都是nil
-			xormCond = buildWhereConditions(xormCond, f.Condition, ctx)
+			currentCond := f.Condition
+			// 为什么抽取方法后 collectGroupCondSlice 每次经过forr都没有刷新值,而都是nil
+			currentCondGroupId := currentCond.GetGroupId()
+			if wtGroupId == "" {
+				wtGroupId = currentCondGroupId
+			}
+			// 组id不同, 融合之前cond转换为 Expr, 收集转换后的 Expr, 并重置 eachGroupXormCond
+			if wtGroupId != currentCondGroupId {
+				// 置换组内多个Cond 转换为1个 Expr, 添加到切片
+				groupedCondSqlStr, _ := xorm.ToBoundSQL(eachGroupXormCond)
+				collectGroupCondSlice = append(collectGroupCondSlice, xorm.Expr(groupedCondSqlStr))
+				// 结束后每一组cond重置, 刷新wtGroupId
+				eachGroupXormCond = nil
+				wtGroupId = currentCondGroupId
+			}
+			eachGroupXormCond = buildWhereConditions(eachGroupXormCond, currentCond, ctx)
+			// 最后一个解析的要添加进去
+			if i == whereSize-1 {
+				collectGroupCondSlice = append(collectGroupCondSlice, eachGroupXormCond)
+			}
 		case *pb.MixWhere_Expression:
 			// 暂时不考虑 Where-Expression, e.g. WHERE ARRAY_CONTAINS(tags, 'urgent')
 		}
 	}
-	return xormCond
+
+	var finalXormCond xorm.Cond
+	// 遍历 toConvertCond 使用 and 连接 = > xorm.And(toConvertCond元素1, toConvertCond元素2 ...)
+	for _, condItem := range collectGroupCondSlice {
+		finalXormCond = xorm.And(finalXormCond, condItem)
+	}
+
+	return finalXormCond
 }
 
 // buildWhereConditions 构建WHERE条件

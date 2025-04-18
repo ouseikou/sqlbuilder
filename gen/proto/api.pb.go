@@ -1787,8 +1787,9 @@ type Condition struct {
 	Field         *MixField              `protobuf:"bytes,1,opt,name=field,proto3" json:"field,omitempty"` // 暂时不考虑 where 1=1, where true; MixField.Expression 覆盖 WHERE ARRAY_LENGTH(my_array, 1) > 5 场景
 	Args          []*BasicData           `protobuf:"bytes,2,rep,name=args,proto3" json:"args,omitempty"`
 	Operator      Op                     `protobuf:"varint,3,opt,name=operator,proto3,enum=proto.Op" json:"operator,omitempty"`
-	Logic         Logic                  `protobuf:"varint,4,opt,name=logic,proto3,enum=proto.Logic" json:"logic,omitempty"` // 和上一个条件的逻辑关系, 默认 and, 可选or
-	Reverse       bool                   `protobuf:"varint,5,opt,name=reverse,proto3" json:"reverse,omitempty"`              // 是否对该条件取反(NOT)
+	Logic         Logic                  `protobuf:"varint,4,opt,name=logic,proto3,enum=proto.Logic" json:"logic,omitempty"`  // 和上一个条件的逻辑关系, 默认 and, 可选or
+	Reverse       bool                   `protobuf:"varint,5,opt,name=reverse,proto3" json:"reverse,omitempty"`               // 是否对该条件取反(NOT)
+	GroupId       string                 `protobuf:"bytes,6,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"` // 组内根据logic独立构建, 组之间是and
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1856,6 +1857,13 @@ func (x *Condition) GetReverse() bool {
 		return x.Reverse
 	}
 	return false
+}
+
+func (x *Condition) GetGroupId() string {
+	if x != nil {
+		return x.GroupId
+	}
+	return ""
 }
 
 // 字符串字面量
@@ -2420,13 +2428,14 @@ const file_proto_api_proto_rawDesc = "" +
 	"\n" +
 	"expression\x18\x02 \x01(\v2\x11.proto.ExpressionH\x00R\n" +
 	"expressionB\b\n" +
-	"\x06filter\"\xbd\x01\n" +
+	"\x06filter\"\xd8\x01\n" +
 	"\tCondition\x12%\n" +
 	"\x05field\x18\x01 \x01(\v2\x0f.proto.MixFieldR\x05field\x12$\n" +
 	"\x04args\x18\x02 \x03(\v2\x10.proto.BasicDataR\x04args\x12%\n" +
 	"\boperator\x18\x03 \x01(\x0e2\t.proto.OpR\boperator\x12\"\n" +
 	"\x05logic\x18\x04 \x01(\x0e2\f.proto.LogicR\x05logic\x12\x18\n" +
-	"\areverse\x18\x05 \x01(\bR\areverse\")\n" +
+	"\areverse\x18\x05 \x01(\bR\areverse\x12\x19\n" +
+	"\bgroup_id\x18\x06 \x01(\tR\agroupId\")\n" +
 	"\rStringLiteral\x12\x18\n" +
 	"\aliteral\x18\x01 \x01(\tR\aliteral\"\xbb\x01\n" +
 	"\tBasicData\x12\x19\n" +
