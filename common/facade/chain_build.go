@@ -671,6 +671,17 @@ func buildWhereConditionItem(cond *pb.Condition, ctx *ModelBuilderCtx) xorm.Cond
 	case pb.Op_OP_LIKE:
 		field := extraConditionOpField(cond, ctx)
 		return xorm.Like{field, ExtraArgItemValue(cond.Args[0]).(string)}
+		// 不包含, 以XX开头, 以XX结尾, 调用方在ARG上处理传过来
+	case pb.Op_OP_NOT_LIKE:
+		// reverse=true
+		field := extraConditionOpField(cond, ctx)
+		return xorm.Like{field, ExtraArgItemValue(cond.Args[0]).(string)}
+	case pb.Op_OP_PREFIX_LIKE:
+		field := extraConditionOpField(cond, ctx)
+		return xorm.Like{field, ExtraArgItemValue(cond.Args[0]).(string)}
+	case pb.Op_OP_LIKE_SUFFIX:
+		field := extraConditionOpField(cond, ctx)
+		return xorm.Like{field, ExtraArgItemValue(cond.Args[0]).(string)}
 		// column op ...arg
 	case pb.Op_OP_BETWEEN:
 		field := extraConditionOpField(cond, ctx)

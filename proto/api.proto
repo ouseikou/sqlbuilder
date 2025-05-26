@@ -243,16 +243,19 @@ enum Op {
   OP_GT = 5;         // ">"
   OP_GTE = 6;        // ">="
   OP_LIKE = 7;       // "like"
+  OP_NOT_LIKE = 8;       // "not like", like && reverse=true
+  OP_PREFIX_LIKE = 9;       // "left like = %s模糊"
+  OP_LIKE_SUFFIX = 10;       // like right = 模糊%s"
 
-  OP_BETWEEN = 8;    // "between"
-  OP_IN = 9;         // "in"
+  OP_BETWEEN = 11;    // "between"
+  OP_IN = 12;         // "in"
 
-  OP_NOT_IN = 10;   // "not in"
-  OP_IS_NULL = 11;   // "is null"
-  OP_IS_NOT_NULL = 12; // "is not null"
+  OP_NOT_IN = 13;   // "not in"
+  OP_IS_NULL = 14;   // "is null"
+  OP_IS_NOT_NULL = 15; // "is not null"
 
-  OP_AND = 13;       // "or"
-  OP_OR = 14;        // "and"
+  OP_AND = 16;       // "or"
+  OP_OR = 17;        // "and"
 }
 
 

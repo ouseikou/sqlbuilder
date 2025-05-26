@@ -298,13 +298,16 @@ const (
 	Op_OP_GT          Op = 5  // ">"
 	Op_OP_GTE         Op = 6  // ">="
 	Op_OP_LIKE        Op = 7  // "like"
-	Op_OP_BETWEEN     Op = 8  // "between"
-	Op_OP_IN          Op = 9  // "in"
-	Op_OP_NOT_IN      Op = 10 // "not in"
-	Op_OP_IS_NULL     Op = 11 // "is null"
-	Op_OP_IS_NOT_NULL Op = 12 // "is not null"
-	Op_OP_AND         Op = 13 // "or"
-	Op_OP_OR          Op = 14 // "and"
+	Op_OP_NOT_LIKE    Op = 8  // "not like"
+	Op_OP_PREFIX_LIKE Op = 9  // "left like = %s模糊"
+	Op_OP_LIKE_SUFFIX Op = 10 // like right = 模糊%s"
+	Op_OP_BETWEEN     Op = 11 // "between"
+	Op_OP_IN          Op = 12 // "in"
+	Op_OP_NOT_IN      Op = 13 // "not in"
+	Op_OP_IS_NULL     Op = 14 // "is null"
+	Op_OP_IS_NOT_NULL Op = 15 // "is not null"
+	Op_OP_AND         Op = 16 // "or"
+	Op_OP_OR          Op = 17 // "and"
 )
 
 // Enum value maps for Op.
@@ -318,13 +321,16 @@ var (
 		5:  "OP_GT",
 		6:  "OP_GTE",
 		7:  "OP_LIKE",
-		8:  "OP_BETWEEN",
-		9:  "OP_IN",
-		10: "OP_NOT_IN",
-		11: "OP_IS_NULL",
-		12: "OP_IS_NOT_NULL",
-		13: "OP_AND",
-		14: "OP_OR",
+		8:  "OP_NOT_LIKE",
+		9:  "OP_PREFIX_LIKE",
+		10: "OP_LIKE_SUFFIX",
+		11: "OP_BETWEEN",
+		12: "OP_IN",
+		13: "OP_NOT_IN",
+		14: "OP_IS_NULL",
+		15: "OP_IS_NOT_NULL",
+		16: "OP_AND",
+		17: "OP_OR",
 	}
 	Op_value = map[string]int32{
 		"OP_UNSPECIFIED": 0,
@@ -335,13 +341,16 @@ var (
 		"OP_GT":          5,
 		"OP_GTE":         6,
 		"OP_LIKE":        7,
-		"OP_BETWEEN":     8,
-		"OP_IN":          9,
-		"OP_NOT_IN":      10,
-		"OP_IS_NULL":     11,
-		"OP_IS_NOT_NULL": 12,
-		"OP_AND":         13,
-		"OP_OR":          14,
+		"OP_NOT_LIKE":    8,
+		"OP_PREFIX_LIKE": 9,
+		"OP_LIKE_SUFFIX": 10,
+		"OP_BETWEEN":     11,
+		"OP_IN":          12,
+		"OP_NOT_IN":      13,
+		"OP_IS_NULL":     14,
+		"OP_IS_NOT_NULL": 15,
+		"OP_AND":         16,
+		"OP_OR":          17,
 	}
 )
 
@@ -2491,7 +2500,7 @@ const file_proto_api_proto_rawDesc = "" +
 	"\x05Logic\x12\x15\n" +
 	"\x11LOGIC_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tLOGIC_AND\x10\x01\x12\f\n" +
-	"\bLOGIC_OR\x10\x02*\xcf\x01\n" +
+	"\bLOGIC_OR\x10\x02*\x88\x02\n" +
 	"\x02Op\x12\x12\n" +
 	"\x0eOP_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05OP_EQ\x10\x01\x12\n" +
@@ -2503,18 +2512,21 @@ const file_proto_api_proto_rawDesc = "" +
 	"\x05OP_GT\x10\x05\x12\n" +
 	"\n" +
 	"\x06OP_GTE\x10\x06\x12\v\n" +
-	"\aOP_LIKE\x10\a\x12\x0e\n" +
-	"\n" +
-	"OP_BETWEEN\x10\b\x12\t\n" +
-	"\x05OP_IN\x10\t\x12\r\n" +
-	"\tOP_NOT_IN\x10\n" +
+	"\aOP_LIKE\x10\a\x12\x0f\n" +
+	"\vOP_NOT_LIKE\x10\b\x12\x12\n" +
+	"\x0eOP_PREFIX_LIKE\x10\t\x12\x12\n" +
+	"\x0eOP_LIKE_SUFFIX\x10\n" +
 	"\x12\x0e\n" +
 	"\n" +
-	"OP_IS_NULL\x10\v\x12\x12\n" +
-	"\x0eOP_IS_NOT_NULL\x10\f\x12\n" +
+	"OP_BETWEEN\x10\v\x12\t\n" +
+	"\x05OP_IN\x10\f\x12\r\n" +
+	"\tOP_NOT_IN\x10\r\x12\x0e\n" +
 	"\n" +
-	"\x06OP_AND\x10\r\x12\t\n" +
-	"\x05OP_OR\x10\x0e2\x96\x01\n" +
+	"OP_IS_NULL\x10\x0e\x12\x12\n" +
+	"\x0eOP_IS_NOT_NULL\x10\x0f\x12\n" +
+	"\n" +
+	"\x06OP_AND\x10\x10\x12\t\n" +
+	"\x05OP_OR\x10\x112\x96\x01\n" +
 	"\rSqlBuilderApi\x12:\n" +
 	"\bGenerate\x12\x15.proto.BuilderRequest\x1a\x15.proto.CommonResponse\"\x00\x12I\n" +
 	"\x0fAnalyzeTemplate\x12\x1d.proto.AnalyzeTemplateRequest\x1a\x15.proto.CommonResponse\"\x00B\x0fZ\r./proto;protob\x06proto3"
