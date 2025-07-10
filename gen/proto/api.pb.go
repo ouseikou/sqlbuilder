@@ -298,7 +298,7 @@ const (
 	Op_OP_GT          Op = 5  // ">"
 	Op_OP_GTE         Op = 6  // ">="
 	Op_OP_LIKE        Op = 7  // "like"
-	Op_OP_NOT_LIKE    Op = 8  // "not like"
+	Op_OP_NOT_LIKE    Op = 8  // "not like", like && reverse=true
 	Op_OP_PREFIX_LIKE Op = 9  // "left like = %s模糊"
 	Op_OP_LIKE_SUFFIX Op = 10 // like right = 模糊%s"
 	Op_OP_BETWEEN     Op = 11 // "between"
@@ -1799,6 +1799,7 @@ type Condition struct {
 	Logic         Logic                  `protobuf:"varint,4,opt,name=logic,proto3,enum=proto.Logic" json:"logic,omitempty"`  // 和上一个条件的逻辑关系, 默认 and, 可选or
 	Reverse       bool                   `protobuf:"varint,5,opt,name=reverse,proto3" json:"reverse,omitempty"`               // 是否对该条件取反(NOT)
 	GroupId       string                 `protobuf:"bytes,6,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"` // 组内根据logic独立构建, 组之间是and
+	UsePnt        bool                   `protobuf:"varint,7,opt,name=use_pnt,json=usePnt,proto3" json:"use_pnt,omitempty"`   // 该条件块是否加小括号, 新增 pnt-format
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1873,6 +1874,13 @@ func (x *Condition) GetGroupId() string {
 		return x.GroupId
 	}
 	return ""
+}
+
+func (x *Condition) GetUsePnt() bool {
+	if x != nil {
+		return x.UsePnt
+	}
+	return false
 }
 
 // 字符串字面量
@@ -2437,14 +2445,15 @@ const file_proto_api_proto_rawDesc = "" +
 	"\n" +
 	"expression\x18\x02 \x01(\v2\x11.proto.ExpressionH\x00R\n" +
 	"expressionB\b\n" +
-	"\x06filter\"\xd8\x01\n" +
+	"\x06filter\"\xf1\x01\n" +
 	"\tCondition\x12%\n" +
 	"\x05field\x18\x01 \x01(\v2\x0f.proto.MixFieldR\x05field\x12$\n" +
 	"\x04args\x18\x02 \x03(\v2\x10.proto.BasicDataR\x04args\x12%\n" +
 	"\boperator\x18\x03 \x01(\x0e2\t.proto.OpR\boperator\x12\"\n" +
 	"\x05logic\x18\x04 \x01(\x0e2\f.proto.LogicR\x05logic\x12\x18\n" +
 	"\areverse\x18\x05 \x01(\bR\areverse\x12\x19\n" +
-	"\bgroup_id\x18\x06 \x01(\tR\agroupId\")\n" +
+	"\bgroup_id\x18\x06 \x01(\tR\agroupId\x12\x17\n" +
+	"\ause_pnt\x18\a \x01(\bR\x06usePnt\")\n" +
 	"\rStringLiteral\x12\x18\n" +
 	"\aliteral\x18\x01 \x01(\tR\aliteral\"\xbb\x01\n" +
 	"\tBasicData\x12\x19\n" +

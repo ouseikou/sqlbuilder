@@ -612,7 +612,8 @@ func mixWhere2Condition(wheres []*pb.MixWhere, ctx *ModelBuilderCtx) xorm.Cond {
 func buildWhereConditions(xormCond xorm.Cond, condition *pb.Condition, ctx *ModelBuilderCtx) xorm.Cond {
 	currentCondTemp := buildWhereConditionItem(condition, ctx)
 	// 通过 reverse 判断是否对当前条件取反
-	currentCondition := refreshReverseWhereConditionItem(condition, currentCondTemp)
+	currentCondition1 := refreshReverseWhereConditionItem(condition, currentCondTemp)
+	currentCondition := refreshPntWhereConditionItem(condition, currentCondition1)
 	if nil == xormCond {
 		// 没有where条件, 作为第一个条件
 		return currentCondition
@@ -635,6 +636,17 @@ func buildWhereConditions(xormCond xorm.Cond, condition *pb.Condition, ctx *Mode
 func refreshReverseWhereConditionItem(pbCond *pb.Condition, builderCond xorm.Cond) xorm.Cond {
 	if pbCond.GetReverse() {
 		return xorm.Not{builderCond}
+	}
+	return builderCond
+}
+
+func refreshPntWhereConditionItem(pbCond *pb.Condition, builderCond xorm.Cond) xorm.Cond {
+	// 是否使用小括号
+	if pbCond.GetUsePnt() {
+		finalCondExprLiteral, _ := xorm.ToBoundSQL(builderCond)
+		var finalCondStr string
+		finalCondStr = fmt.Sprintf(clause.PntFormat, finalCondExprLiteral)
+		return xorm.Expr(finalCondStr)
 	}
 	return builderCond
 }
