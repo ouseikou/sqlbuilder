@@ -1,4 +1,4 @@
-﻿package facade
+package facade
 
 import (
 	"fmt"
@@ -26,14 +26,7 @@ func ChainSqlBuilder(
 	return builder
 }
 
-// buildChainBasic 抽象方法: 构建 select & from, 具体实现由子类提供
-// 参数:
-//   - appendBuilder: 上一次的 xorm.Builder 指针
-//   - dialectBuilder: xorm.Builder 对象
-//   - sqlRef: 当前层级的sqlRef对象
-//
-// 返回值:
-//   - 返回一个 xorm.Builder 对象
+// 抽象方法: 构建 select & from, 具体实现由子类提供
 func buildChainBasic(
 	appendBuilder *xorm.Builder,
 	dialectBuilder *xorm.Builder,
@@ -54,13 +47,7 @@ func buildChainBasic(
 	return basicBuilder
 }
 
-// buildChainOther 抽象方法: 构建SQL其他关键字内容，具体实现由子类提供
-// 参数:
-//   - builder: xorm.Builder 指针对象
-//   - sqlRef: 当前层级的sqlRef对象
-//
-// 返回值:
-//   - 返回一个 xorm.Builder 对象
+// 抽象方法: 构建SQL其他关键字内容，具体实现由子类提供
 func buildChainOther(
 	builder *xorm.Builder,
 	sqlRef *pb.SqlReference,
@@ -73,7 +60,7 @@ func buildChainOther(
 	}
 
 	// 判断是否组装 Where
-	if len(sqlRef.Where) > 0 {
+	if len(sqlRef.Where) > 0 || sqlRef.LogicWhere != nil {
 		builder = buildWhereByProto(builder, sqlRef, ctx)
 	}
 
@@ -142,13 +129,6 @@ func buildBasicByProto(
 	return basicBuilder
 }
 
-// createBasicArgsByProto 提取构建 buildBasicByProto 必须的参数
-// 参数:
-//   - sqlRef: 当前层级的sqlRef对象
-//
-// 返回值:
-//   - 返回 .Select($slice)
-//   - 返回 .From(&schema.table, $fromAlias)
 func createBasicArgsByProto(sqlRef *pb.SqlReference, ctx *ModelBuilderCtx) ([]string, string, string) {
 	selectClause := sqlRef.Select
 
@@ -164,12 +144,7 @@ func createBasicArgsByProto(sqlRef *pb.SqlReference, ctx *ModelBuilderCtx) ([]st
 	return selects, tableSchema, fmt.Sprintf(string1LiteralSafeFormat, fromClause.TableAlias)
 }
 
-// extraColumnOrExpressionStringsByProto 将MixField转换为对应的string字符串
-// 参数:
-//   - mixClause: proto 中的 MixField 对象
-//
-// 返回值:
-//   - 返回 .Select($slice) 的 $slice 切片
+// 将MixField转换为对应的string字符串
 func extraColumnOrExpressionStringsByProto(mixClause []*pb.MixField, ctx *ModelBuilderCtx) []string {
 	var selects []string
 	for _, mixItem := range mixClause {
@@ -181,7 +156,6 @@ func extraColumnOrExpressionStringsByProto(mixClause []*pb.MixField, ctx *ModelB
 	return selects
 }
 
-// processMixFieldItemByProto 将MixField转换为对应的string字符串
 func processMixFieldItemByProto(mixItem *pb.MixField, ctx *ModelBuilderCtx) string {
 	string2LiteralSafeFormat := ctx.String2LiteralSafeFormat
 	string2LiteralAsSafeFormat := ctx.String2LiteralAsSafeFormat
@@ -202,12 +176,7 @@ func processMixFieldItemByProto(mixItem *pb.MixField, ctx *ModelBuilderCtx) stri
 	}
 }
 
-// formatCaseWhenByProto 构建 case-when 类型的格式化字符串填充
-// 参数:
-//   - caseWhen: proto 中的 caseWhen 对象
-//
-// 返回值:
-//   - 返回 caseWhen 对应字符串填充
+// 构建 case-when 类型的格式化字符串填充
 func formatCaseWhenByProto(caseWhen *pb.CaseWhen, ctx *ModelBuilderCtx) string {
 
 	// proto -> struct(case-when) -> string
@@ -244,13 +213,7 @@ func formatCaseWhenItemByProto(caseWhen *pb.CaseWhen, ctx *ModelBuilderCtx) []cl
 	return conditions
 }
 
-// formatColumnByProto 构建 Column 类型的格式化字符串填充
-// 参数:
-//   - column: proto 中的 Column 对象
-//   - format: 格式化字符串
-//
-// 返回值:
-//   - 返回 Column 对应字符串填充
+// 构建 Column 类型的格式化字符串填充
 func formatColumnByProto(column *pb.Column, format string) string {
 	return calAppendTextByColumnAsByProto(format, column, column.UseAs, column.Alias)
 }
@@ -263,15 +226,6 @@ func formatExpressionByProto(expression *pb.Expression, ctx *ModelBuilderCtx) st
 	return fmt.Sprintf(format, vars2Strings...)
 }
 
-// calAppendTextByColumnAsByProto 构建 Column 类型的格式化字符串填充
-// 参数:
-//   - format: 格式化字符串
-//   - column: proto 中的 Column 对象
-//   - userAs: format 是否使用 as
-//   - alias: format 字符串 as 占位符对应别名
-//
-// 返回值:
-//   - 返回 Column 对应字符串填充
 func calAppendTextByColumnAsByProto(format string, column *pb.Column, userAs bool, alias string) string {
 	if userAs {
 		return fmt.Sprintf(format, column.Table, column.Field, alias)
@@ -279,12 +233,7 @@ func calAppendTextByColumnAsByProto(format string, column *pb.Column, userAs boo
 	return fmt.Sprintf(format, column.Table, column.Field)
 }
 
-// getExpressionFuncFormatByProto 获取Expression对应的格式化字符串
-// 参数:
-//   - expression: proto 中的 Expression 对象
-//
-// 返回值:
-//   - 返回 Expression 对应字符串填充
+// 获取Expression对应的格式化字符串
 func getExpressionFuncFormatByProto(expression *pb.Expression, ctx *ModelBuilderCtx) string {
 	// 动态构建 Expression 的 format
 	var finalFormat string
@@ -308,12 +257,7 @@ func getExpressionFuncFormatByProto(expression *pb.Expression, ctx *ModelBuilder
 	return finalFormat
 }
 
-// expressionFuncNoAsFormat 获取Expression没有As的格式化字符串部分
-// 参数:
-//   - expression: proto 中的 Expression 对象
-//
-// 返回值:
-//   - 返回 Expression 没有As的格式化字符串部分
+// 获取Expression没有As的格式化字符串部分
 func expressionFuncNoAsFormat(expression *pb.Expression) string {
 	callType := expression.CallType
 	switch callType {
@@ -331,12 +275,7 @@ func expressionFuncNoAsFormat(expression *pb.Expression) string {
 	}
 }
 
-// calExpressionVarsFormatStringsByProto 构建Expression表达式占位符所需的字符串填充
-// 参数:
-//   - expression: proto 中的 Expression 对象
-//
-// 返回值:
-//   - 返回 Expression 表达式参数的字符串切片
+// 构建Expression表达式占位符所需的字符串填充
 func calExpressionVarsFormatStringsByProto(expr *pb.Expression, ctx *ModelBuilderCtx) []interface{} {
 	vars := expr.Vars
 	// 表达式参数: int, string, clause.Column
@@ -409,12 +348,7 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression, ctx *ModelBuilde
 	return expressions
 }
 
-// variadicArgsFuncVars2oneVar 将可变参数函数的参数转换为一个字符串
-// 参数:
-//   - vars: proto 中的 Expression.vars
-//
-// 返回值:
-//   - 合并字符串
+// 将可变参数函数的参数转换为一个字符串
 func variadicArgsFuncVars2oneVar(vars []interface{}, varIndexTypeMap map[int]bool) string {
 	var builder strings.Builder
 	// 遍历 args，将每个参数拼接成适合的 SQL 字符串
@@ -455,13 +389,7 @@ func variadicArgsFuncVars2oneVar(vars []interface{}, varIndexTypeMap map[int]boo
 	return builder.String()
 }
 
-// buildJoinByProto 根据SqlReference对象构建SQL查询。
-// 参数:
-//   - builder: *xorm.Builder类型的指针，用于构建SQL查询
-//   - sqlRef: *pb.SqlReference类型的指针，包含SQL查询的引用信息
-//
-// 返回值:
-//   - *xorm.Builder类型的指针，用于继续构建SQL查询
+// 构建 sql.join
 func buildJoinByProto(builder *xorm.Builder, sqlRef *pb.SqlReference, ctx *ModelBuilderCtx) *xorm.Builder {
 	joins := sqlRef.GetJoin()
 	for _, join := range joins {
@@ -536,24 +464,71 @@ func buildJoinCondByProto(joinCondProto []*pb.JoinCond, ctx *ModelBuilderCtx) in
 	return finalJoinCond
 }
 
-// buildWhereByProto 根据SqlReference构建WHERE条件
-// 参数:
-//   - builder: xorm.Builder的指针，用于构建SQL查询
-//   - sqlRef: 指向SqlReference的指针，包含要构建WHERE条件的定义
-//
-// 返回:
-//   - *xorm.Builder: 返回构建好的xorm.Builder，带有WHERE条件
+// 构建 sql.where 总函数
 func buildWhereByProto(builder *xorm.Builder, sqlRef *pb.SqlReference, ctx *ModelBuilderCtx) *xorm.Builder {
-	xormCond := mixWhere2Condition(sqlRef.GetWhere(), ctx)
+	var xormCond xorm.Cond
+
+	if sqlRef.LogicWhere != nil && len(sqlRef.LogicWhere.Children) > 0 {
+		// ✅ 使用新结构（优先方式）
+		xormCond = buildCondFromLogicGroup(sqlRef.LogicWhere, ctx)
+	} else if len(sqlRef.Where) > 0 {
+		// ✅ 向下兼容老结构
+		xormCond = mixWhere2Condition(sqlRef.GetWhere(), ctx)
+	}
+
 	return builder.Where(xormCond)
 }
 
-// mixWhere2Condition 根据SqlReference构建WHERE条件
-// 参数:
-//   - wheres: 指向WHERE条件的指针
-//
-// 返回:
-//   - xorm.Cond: 条件结构体 xorm.Builder.Cond
+// 构建 sql.where-group-cond
+func buildCondFromLogicGroup(group *pb.LogicGroup, ctx *ModelBuilderCtx) xorm.Cond {
+	var cond xorm.Cond
+
+	for _, node := range group.Children {
+		var subCond xorm.Cond
+
+		switch t := node.Node.(type) {
+		case *pb.LogicNode_Leaf:
+			subCond = mixWhere2ConditionWithoutGroup(t.Leaf, ctx)
+
+		case *pb.LogicNode_Group:
+			subCond = buildCondFromLogicGroup(t.Group, ctx)
+
+		default:
+			continue // 忽略未识别节点
+		}
+
+		// 组合逻辑（默认 AND）
+		if cond == nil {
+			cond = subCond
+		} else {
+			switch group.Logic {
+			case pb.Logic_LOGIC_OR:
+				cond = xorm.Or(cond, subCond)
+			default:
+				cond = xorm.And(cond, subCond)
+			}
+		}
+	}
+
+	// 加括号
+	if group.UsePnt {
+		sqlStr, _ := xorm.ToBoundSQL(cond)
+		return xorm.Expr(fmt.Sprintf(clause.PntFormat, sqlStr))
+	}
+
+	return cond
+}
+
+func mixWhere2ConditionWithoutGroup(where *pb.MixWhere, ctx *ModelBuilderCtx) xorm.Cond {
+	switch f := where.Filter.(type) {
+	case *pb.MixWhere_Condition:
+		return buildWhereConditionsWithOuterLogic(f.Condition, ctx)
+	case *pb.MixWhere_Expression:
+	}
+	return nil
+}
+
+// // 构建 sql.where-cond
 func mixWhere2Condition(wheres []*pb.MixWhere, ctx *ModelBuilderCtx) xorm.Cond {
 	// 每组内部 n * cond, 待融合
 	var eachGroupXormCond xorm.Cond
@@ -600,15 +575,14 @@ func mixWhere2Condition(wheres []*pb.MixWhere, ctx *ModelBuilderCtx) xorm.Cond {
 	return finalXormCond
 }
 
-// buildWhereConditions 构建WHERE条件
-// 该方法主要用于根据给定的protobuf条件对象构建对应的xorm条件对象
-// 它会考虑与现有条件的逻辑连接方式（AND或OR），并据此构建复合条件
-// 参数:
-//   - xormCond: 当前的xorm条件对象，可能为nil
-//   - condition: protobuf定义的条件对象，用于构建新的条件
-//
-// 返回值:
-//   - 返回更新后的xorm条件对象
+func buildWhereConditionsWithOuterLogic(condition *pb.Condition, ctx *ModelBuilderCtx) xorm.Cond {
+	currentCondTemp := buildWhereConditionItem(condition, ctx)
+	// 通过 reverse 判断是否对当前条件取反
+	currentCondition1 := refreshReverseWhereConditionItem(condition, currentCondTemp)
+	return currentCondition1
+}
+
+// 构建 sql.where-cond 的 cond 整个片段
 func buildWhereConditions(xormCond xorm.Cond, condition *pb.Condition, ctx *ModelBuilderCtx) xorm.Cond {
 	currentCondTemp := buildWhereConditionItem(condition, ctx)
 	// 通过 reverse 判断是否对当前条件取反
@@ -625,14 +599,7 @@ func buildWhereConditions(xormCond xorm.Cond, condition *pb.Condition, ctx *Mode
 	return xorm.Or(xormCond, currentCondition)
 }
 
-// refreshReverseWhereConditionItem 构建WHERE条件
-// 通过 reverse 判断是否对当前条件取反
-// 参数:
-//   - pbCond: protobuf定义的条件对象，用于构建新的条件
-//   - builderCond: 已经构建的新条件
-//
-// 返回值:
-//   - 返回更新后的xorm条件对象
+// NOT 反转 sql.where-cond 的 cond 其中一个片段
 func refreshReverseWhereConditionItem(pbCond *pb.Condition, builderCond xorm.Cond) xorm.Cond {
 	if pbCond.GetReverse() {
 		return xorm.Not{builderCond}
@@ -640,6 +607,7 @@ func refreshReverseWhereConditionItem(pbCond *pb.Condition, builderCond xorm.Con
 	return builderCond
 }
 
+// 加括号: sql.where-cond 的 cond 其中一个片段
 func refreshPntWhereConditionItem(pbCond *pb.Condition, builderCond xorm.Cond) xorm.Cond {
 	// 是否使用小括号
 	if pbCond.GetUsePnt() {
@@ -651,13 +619,7 @@ func refreshPntWhereConditionItem(pbCond *pb.Condition, builderCond xorm.Cond) x
 	return builderCond
 }
 
-// buildWhereConditionItem 根据提供的Condition对象构建xorm的条件表达式
-// 主要用于数据库查询时的条件构造，通过解析Condition中的操作符和参数，生成对应的xorm条件对象
-// 参数:
-//   - cond 指向一个protobuf定义的Condition对象，用于构建查询条件
-//
-// 返回值:
-//   - 返回生成的xorm.Cond对象，用于数据库查询；如果无法构建，则返回nil
+// sql.where-cond 的 cond 其中一个片段的表达式构建
 func buildWhereConditionItem(cond *pb.Condition, ctx *ModelBuilderCtx) xorm.Cond {
 	operator := cond.Operator
 	switch operator {
@@ -754,23 +716,11 @@ func logic2String(operator pb.Logic) string {
 	return string(clause.ConditionAnd)
 }
 
-// extraConditionOpField 根据给定的条件生成额外的操作字段字符串
-// 这个函数主要处理条件中的字段，通过调用processMixFieldItemByProto函数来实现字段的处理
-// 参数:
-//   - cond 指向一个protobuf定义的Condition对象，该对象包含了查询或操作的条件
-//
-// 返回值:
-//   - 返回一个字符串，该字符串是处理后的结果
+// sql 建模中 MixField 处理
 func extraConditionOpField(cond *pb.Condition, ctx *ModelBuilderCtx) string {
 	return processMixFieldItemByProto(cond.GetField(), ctx)
 }
 
-// ExtraArgItemValue 根据BasicData中的不同类型返回相应的值。
-// 参数:
-//   - item: 指向BasicData的指针作为参数，并根据BasicData中封装的实际数据类型
-//
-// 返回值:
-//   - 返回一个接口类型值，可以是字符串、整数、浮点数或布尔值
 func ExtraArgItemValue(item *pb.BasicData) interface{} {
 	switch elem := item.GetData().(type) {
 	case *pb.BasicData_StrVal:
@@ -787,12 +737,6 @@ func ExtraArgItemValue(item *pb.BasicData) interface{} {
 	return ""
 }
 
-// extraConditionArgsSlice 根据给定的Condition对象不定长参数的切片
-// 参数:
-//   - cond 指向一个protobuf定义的Condition对象，该对象包含了查询或操作的条件
-//
-// 返回值:
-//   - 返回一个接口类型值，可以是字符串、整数、浮点数或布尔值
 func extraConditionArgsSlice(cond *pb.Condition) interface{} {
 	var inArgs []interface{}
 	for _, data := range cond.GetArgs() {
@@ -810,13 +754,7 @@ func extraConditionArgsSlice(cond *pb.Condition) interface{} {
 	return inArgs
 }
 
-// buildOrderByProto 根据给定的SqlReference对象构建xorm的OrderBy方法
-// 参数:
-//   - builder: *xorm.Builder类型的指针，用于构建SQL查询
-//   - sqlRef: *pb.SqlReference类型的指针，包含SQL查询的引用信息
-//
-// 返回值:
-//   - *xorm.Builder类型的指针，用于继续构建SQL查询
+// 构建 sql.order-by
 func buildOrderByProto(builder *xorm.Builder, sqlRef *pb.SqlReference, ctx *ModelBuilderCtx) *xorm.Builder {
 	orderByClause := sqlRef.OrderBy
 	// 提取 orderBy 字符串片段
@@ -834,13 +772,7 @@ func buildOrderByProto(builder *xorm.Builder, sqlRef *pb.SqlReference, ctx *Mode
 	return builder.OrderBy(orderByFragment)
 }
 
-// buildLimitProto 根据给定的SqlReference对象构建xorm的Limit方法
-// 参数:
-//   - builder: *xorm.Builder类型的指针，用于构建SQL查询
-//   - sqlRef: *pb.SqlReference类型的指针，包含SQL查询的引用信息
-//
-// 返回值:
-//   - *xorm.Builder类型的指针，用于继续构建SQL查询
+// 构建 sql.limit
 func buildLimitProto(builder *xorm.Builder, sqlRef *pb.SqlReference) *xorm.Builder {
 	limit := sqlRef.Limit
 	// 分页大小为0数据库允许但代码视为无效分页
@@ -850,13 +782,7 @@ func buildLimitProto(builder *xorm.Builder, sqlRef *pb.SqlReference) *xorm.Build
 	return builder.Limit(int(limit.LimitN), int(limit.Offset))
 }
 
-// buildGroupByByProto 根据给定的SqlReference对象构建xorm的GroupBy方法
-// 参数:
-//   - builder: *xorm.Builder类型的指针，用于构建SQL查询
-//   - sqlRef: *pb.SqlReference类型的指针，包含SQL查询的引用信息
-//
-// 返回值:
-//   - *xorm.Builder类型的指针，用于继续构建SQL查询
+// 构建 sql.group-by
 func buildGroupByByProto(builder *xorm.Builder, sqlRef *pb.SqlReference, ctx *ModelBuilderCtx) *xorm.Builder {
 	groupByClause := sqlRef.GroupBy
 	// 类型断言: Column 或者 Expression

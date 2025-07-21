@@ -94,6 +94,10 @@ message SqlReference {
   repeated MixField select = 6;
   repeated OrderBy order_by = 7;
   optional Limit limit = 8;
+  // 新结构(where 递归树表达), 优先级>MixWhere(2)
+  // 不适用于过往 where-cond 条件之间逻辑处理, 要求明确指定逻辑分组, 不同逻辑只能是不同分组
+  // 因此需要单独查询一次构造 where-group-cond
+  optional LogicGroup logic_where = 9;
 }
 
 // -----------------------------------------------   SqlReference 内部  -----------------------------------------------------
@@ -209,6 +213,19 @@ message CaseWhenItem {
 
 
 // -----------------------------------------------   以上 Select  -----------------------------------------------------
+
+message LogicNode {
+  oneof node {
+    LogicGroup group = 1;      // 一个逻辑组合（AND/OR）递归结构
+    MixWhere leaf = 2;         // 一个条件：Condition 或 Expression
+  }
+}
+
+message LogicGroup {
+  Logic logic = 1;                   // 当前 group 的逻辑操作（AND / OR）
+  repeated LogicNode children = 2;  // 子节点（可继续是 group 或 leaf）
+  bool use_pnt = 3;                 // 是否加括号包裹整个 group
+}
 
 
 message MixWhere {
