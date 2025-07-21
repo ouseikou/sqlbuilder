@@ -510,7 +510,7 @@ func buildCondFromLogicGroup(group *pb.LogicGroup, ctx *ModelBuilderCtx) xorm.Co
 		}
 	}
 
-	// 加括号
+	// 当前片段是否加括号, 与下一个逻辑连接
 	if group.UsePnt {
 		sqlStr, _ := xorm.ToBoundSQL(cond)
 		return xorm.Expr(fmt.Sprintf(clause.PntFormat, sqlStr))
@@ -579,7 +579,8 @@ func buildWhereConditionsWithOuterLogic(condition *pb.Condition, ctx *ModelBuild
 	currentCondTemp := buildWhereConditionItem(condition, ctx)
 	// 通过 reverse 判断是否对当前条件取反
 	currentCondition1 := refreshReverseWhereConditionItem(condition, currentCondTemp)
-	return currentCondition1
+	currentCondition := refreshPntWhereConditionItem(condition, currentCondition1)
+	return currentCondition
 }
 
 // 构建 sql.where-cond 的 cond 整个片段
