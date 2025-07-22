@@ -622,69 +622,56 @@ func refreshPntWhereConditionItem(pbCond *pb.Condition, builderCond xorm.Cond) x
 
 // sql.where-cond 的 cond 其中一个片段的表达式构建
 func buildWhereConditionItem(cond *pb.Condition, ctx *ModelBuilderCtx) xorm.Cond {
+	if cond.GetLiteralCond() != nil && cond.GetLiteralCond().GetLiteral() != "" {
+		return xorm.Expr(cond.GetLiteralCond().GetLiteral())
+	}
 	operator := cond.Operator
+	condField := extraConditionOpField(cond, ctx)
 	switch operator {
 	//column op arg[0]
 	case pb.Op_OP_EQ:
-		field := extraConditionOpField(cond, ctx)
-		return &xorm.Eq{field: ExtraArgItemValue(cond.Args[0])}
+		return &xorm.Eq{condField: ExtraArgItemValue(cond.Args[0])}
 	case pb.Op_OP_NEQ:
-		field := extraConditionOpField(cond, ctx)
-		return &xorm.Neq{field: ExtraArgItemValue(cond.Args[0])}
+		return &xorm.Neq{condField: ExtraArgItemValue(cond.Args[0])}
 	case pb.Op_OP_LT:
-		field := extraConditionOpField(cond, ctx)
-		return &xorm.Lt{field: ExtraArgItemValue(cond.Args[0])}
+		return &xorm.Lt{condField: ExtraArgItemValue(cond.Args[0])}
 	case pb.Op_OP_LTE:
-		field := extraConditionOpField(cond, ctx)
-		return xorm.Lte{field: ExtraArgItemValue(cond.Args[0])}
+		return xorm.Lte{condField: ExtraArgItemValue(cond.Args[0])}
 	case pb.Op_OP_GT:
-		field := extraConditionOpField(cond, ctx)
-		return xorm.Gt{field: ExtraArgItemValue(cond.Args[0])}
+		return xorm.Gt{condField: ExtraArgItemValue(cond.Args[0])}
 	case pb.Op_OP_GTE:
-		field := extraConditionOpField(cond, ctx)
-		return xorm.Gte{field: ExtraArgItemValue(cond.Args[0])}
+		return xorm.Gte{condField: ExtraArgItemValue(cond.Args[0])}
 	case pb.Op_OP_LIKE:
-		field := extraConditionOpField(cond, ctx)
-		return xorm.Like{field, ExtraArgItemValue(cond.Args[0]).(string)}
+		return xorm.Like{condField, ExtraArgItemValue(cond.Args[0]).(string)}
 		// 不包含, 以XX开头, 以XX结尾, 调用方在ARG上处理传过来
 	case pb.Op_OP_NOT_LIKE:
 		// reverse=true
-		field := extraConditionOpField(cond, ctx)
-		return xorm.Like{field, ExtraArgItemValue(cond.Args[0]).(string)}
+		return xorm.Like{condField, ExtraArgItemValue(cond.Args[0]).(string)}
 	case pb.Op_OP_PREFIX_LIKE:
-		field := extraConditionOpField(cond, ctx)
-		return xorm.Like{field, ExtraArgItemValue(cond.Args[0]).(string)}
+		return xorm.Like{condField, ExtraArgItemValue(cond.Args[0]).(string)}
 	case pb.Op_OP_LIKE_SUFFIX:
-		field := extraConditionOpField(cond, ctx)
-		return xorm.Like{field, ExtraArgItemValue(cond.Args[0]).(string)}
+		return xorm.Like{condField, ExtraArgItemValue(cond.Args[0]).(string)}
 		// column op ...arg
 	case pb.Op_OP_BETWEEN:
-		field := extraConditionOpField(cond, ctx)
-		return xorm.Between{Col: field, LessVal: ExtraArgItemValue(cond.Args[0]), MoreVal: ExtraArgItemValue(cond.Args[1])}
+		return xorm.Between{Col: condField, LessVal: ExtraArgItemValue(cond.Args[0]), MoreVal: ExtraArgItemValue(cond.Args[1])}
 	case pb.Op_OP_IN:
-		field := extraConditionOpField(cond, ctx)
 		inArgs := extraConditionArgsSlice(cond)
-		return xorm.In(field, inArgs)
+		return xorm.In(condField, inArgs)
 	case pb.Op_OP_NOT_IN:
-		field := extraConditionOpField(cond, ctx)
 		inArgs := extraConditionArgsSlice(cond)
-		return xorm.NotIn(field, inArgs)
+		return xorm.NotIn(condField, inArgs)
 		// column op
 	case pb.Op_OP_IS_NULL:
-		field := extraConditionOpField(cond, ctx)
-		return xorm.IsNull{field}
+		return xorm.IsNull{condField}
 	case pb.Op_OP_IS_NOT_NULL:
-		field := extraConditionOpField(cond, ctx)
-		return xorm.NotNull{field}
+		return xorm.NotNull{condField}
 		// Where(xorm.Expr(Column, ...arg)), and 和 or 暂时使用Expr处理, 需要sqlbuilder调用方提供完整 sqlFormat;; => 未测试
 	case pb.Op_OP_AND:
-		formatField := extraConditionOpField(cond, ctx)
 		formatArgs := extraConditionArgsSlice(cond)
-		return xorm.And(xorm.Expr(formatField, formatArgs))
+		return xorm.And(xorm.Expr(condField, formatArgs))
 	case pb.Op_OP_OR:
-		formatField := extraConditionOpField(cond, ctx)
 		formatArgs := extraConditionArgsSlice(cond)
-		return xorm.Or(xorm.Expr(formatField, formatArgs))
+		return xorm.Or(xorm.Expr(condField, formatArgs))
 	}
 	return nil
 }

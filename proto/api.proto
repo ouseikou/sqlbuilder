@@ -243,6 +243,7 @@ message Condition {
   bool reverse = 5; // 是否对该条件取反(NOT)
   string group_id = 6; // 组内根据logic独立构建, 组之间是and
   bool use_pnt = 7; // 该条件块是否加小括号, 新增 pnt-format
+  optional StringLiteral literal_cond = 8; // 如果是字面量，将不再执行 [MixField Op BasicData], 直接与其他条件逻辑与逻辑或
 }
 
 enum Logic {
