@@ -513,7 +513,9 @@ func buildCondFromLogicGroup(group *pb.LogicGroup, ctx *ModelBuilderCtx) xorm.Co
 	// 当前片段是否加括号, 与下一个逻辑连接
 	if group.UsePnt {
 		sqlStr, _ := xorm.ToBoundSQL(cond)
-		return xorm.Expr(fmt.Sprintf(clause.PntFormat, sqlStr))
+		// 由于 xorm.Expr() 源码内会自动对 sql片段加括号, 因此不需要主动再次添加括号
+		//return xorm.Expr(fmt.Sprintf(clause.PntFormat, sqlStr))
+		return xorm.Expr(sqlStr)
 	}
 
 	return cond
@@ -623,6 +625,7 @@ func refreshPntWhereConditionItem(pbCond *pb.Condition, builderCond xorm.Cond) x
 // sql.where-cond 的 cond 其中一个片段的表达式构建
 func buildWhereConditionItem(cond *pb.Condition, ctx *ModelBuilderCtx) xorm.Cond {
 	if cond.GetLiteralCond() != nil && cond.GetLiteralCond().GetLiteral() != "" {
+		// 由于 xorm.Expr() 源码内会自动对 sql片段加括号, 因此字面量不需要主动再次添加括号
 		return xorm.Expr(cond.GetLiteralCond().GetLiteral())
 	}
 	operator := cond.Operator
