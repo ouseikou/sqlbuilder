@@ -63,6 +63,7 @@ const (
 	CallPgDateTruncMonth InnerFunc = "pg_datetrunc_month"
 	CallPgDateTruncYear  InnerFunc = "pg_datetrunc_year"
 
+	// 由于sql太复杂使用字面量实现
 	CallPgDateDiffDay   InnerFunc = "pg_datediff_day"
 	CallPgDateDiffMonth InnerFunc = "pg_datediff_month"
 	CallPgDateDiffYear  InnerFunc = "pg_datediff_year"
@@ -178,6 +179,10 @@ const (
 	DorisDateAddDayFormat   = `DATE_ADD(%s, INTERVAL %v DAY)`
 	DorisDateAddMonthFormat = `DATE_ADD(%s, INTERVAL %v MONTH)`
 	DorisDateAddYearFormat  = `DATE_ADD(%s, INTERVAL %v YEAR)`
+
+	DorisDateDiffDayFormat   = `DATEDIFF(%s, %s)`
+	DorisDateDiffMonthFormat = `TIMESTAMPDIFF(MONTH, %s, %s)`
+	DorisDateDiffYearFormat  = `TIMESTAMPDIFF(YEAR, %s, %s)`
 )
 
 // InnerFuncFormatMap 内置函数名称和SQL片段 映射
@@ -242,6 +247,10 @@ var (
 		CallDorisDateAddDay:   DorisDateAddDayFormat,
 		CallDorisDateAddMonth: DorisDateAddMonthFormat,
 		CallDorisDateAddYear:  DorisDateAddYearFormat,
+
+		CallDorisDateDiffDay:   DorisDateDiffDayFormat,
+		CallDorisDateDiffMonth: DorisDateDiffMonthFormat,
+		CallDorisDateDiffYear:  DorisDateDiffYearFormat,
 	}
 
 	// InnerAsFuncFormatMap 注意: as格式化不再使用, 代码逻辑 as 别名根据驱动做格式化
