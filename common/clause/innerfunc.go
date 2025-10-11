@@ -176,10 +176,12 @@ const (
 
 	DorisDateFormatFormat = `date_format(%s, %v)`
 
+	// doris dateadd
 	DorisDateAddDayFormat   = `DATE_ADD(%s, INTERVAL %v DAY)`
 	DorisDateAddMonthFormat = `DATE_ADD(%s, INTERVAL %v MONTH)`
 	DorisDateAddYearFormat  = `DATE_ADD(%s, INTERVAL %v YEAR)`
 
+	// doris datediff
 	DorisDateDiffDayFormat   = `(-DATEDIFF(%s, %s))`
 	DorisDateDiffMonthFormat = `TIMESTAMPDIFF(MONTH, %s, %s)`
 	DorisDateDiffYearFormat  = `TIMESTAMPDIFF(YEAR, %s, %s)`
