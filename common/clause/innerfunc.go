@@ -2,6 +2,17 @@ package clause
 
 type InnerFunc string // count, sum, avg, max, min, distinct; 数据库的聚合函数不支持嵌套调用
 
+// 无参数函数
+const (
+	Count1Str string = "count1"
+	NowFunc          = "now"
+)
+
+// 无参数函数format
+const (
+	NowFormat = "now()"
+)
+
 // 通用函数
 const (
 	CallRound   InnerFunc = "round"
@@ -19,10 +30,13 @@ const (
 	Substring InnerFunc = "substring"
 	Length    InnerFunc = "length"
 
+	NullIf InnerFunc = "nullif"
+
 	// Concat 可变参数的通用函数
 	Concat InnerFunc = "concat"
 
-	NullIf InnerFunc = "nullif"
+	Greatest InnerFunc = "greatest"
+	Least    InnerFunc = "least"
 )
 
 // mysql/doris
@@ -40,12 +54,28 @@ const (
 	Cbrt       InnerFunc = "cbrt"
 	Trunc      InnerFunc = "trunc"
 	PgCoalesce InnerFunc = "coalesce"
+
+	CallPgDateAddDay   InnerFunc = "pg_dateadd_day"
+	CallPgDateAddMonth InnerFunc = "pg_dateadd_month"
+	CallPgDateAddYear  InnerFunc = "pg_dateadd_year"
+
+	CallPgDateDiffDay   InnerFunc = "pg_datediff_day"
+	CallPgDateDiffMonth InnerFunc = "pg_datediff_month"
+	CallPgDateDiffYear  InnerFunc = "pg_datediff_year"
 )
 
 // doris
 const (
 	CallDorisDateTrunc  InnerFunc = "doris_date_trunc"
 	CallDorisDateFormat InnerFunc = "date_format"
+
+	CallDorisDateAddDay   InnerFunc = "doris_dateadd_day"
+	CallDorisDateAddMonth InnerFunc = "doris_dateadd_month"
+	CallDorisDateAddYear  InnerFunc = "doris_dateadd_year"
+
+	CallDorisDateDiffDay   InnerFunc = "doris_datediff_day"
+	CallDorisDateDiffMonth InnerFunc = "doris_datediff_month"
+	CallDorisDateDiffYear  InnerFunc = "doris_datediff_year"
 )
 
 // 通用 format
@@ -83,6 +113,9 @@ const (
 	ConcatAsFormat = `concat(%s) as "%s"`
 
 	NullIfFormat = `nullif(%s, %s)`
+
+	GreatestFormat = `greatest(%s)`
+	LeastFormat    = `least(%s)`
 )
 
 // mysql format
@@ -111,6 +144,10 @@ const (
 	TruncAsFormat = `trunc(%s, %v) as "%s"`
 
 	PgCoalesceFormat = `coalesce(%s)`
+
+	CallPgDateAddDayFormat   = `(%s + INTERVAL '%v DAY')`
+	CallPgDateAddMonthFormat = `(%s + INTERVAL '%v MONTH')`
+	CallPgDateAddYearFormat  = `(%s + INTERVAL '%v YEAR')`
 )
 
 // doris format
@@ -119,6 +156,10 @@ const (
 	DorisDateTruncAsFormat = "date_trunc(%s, %v) as `%s`"
 
 	DorisDateFormatFormat = `date_format(%s, %v)`
+
+	DorisDateAddDayFormat   = `DATE_ADD(%s, INTERVAL %v DAY)`
+	DorisDateAddMonthFormat = `DATE_ADD(%s, INTERVAL %v MONTH)`
+	DorisDateAddYearFormat  = `DATE_ADD(%s, INTERVAL %v YEAR)`
 )
 
 // InnerFuncFormatMap 内置函数名称和SQL片段 映射
@@ -139,8 +180,13 @@ var (
 		Substring: SubstringFormat,
 		Length:    LengthFormat,
 
-		Concat: ConcatFormat,
-		NullIf: NullIfFormat,
+		Concat:   ConcatFormat,
+		Greatest: GreatestFormat,
+		Least:    LeastFormat,
+		NullIf:   NullIfFormat,
+
+		// 无参数
+		NowFunc: NowFormat,
 
 		// mysql
 
@@ -148,8 +194,11 @@ var (
 
 		// pg
 
-		CallPgDateTrunc: PgDateTruncFormat,
-		CallPGToChar:    ToCharFormat,
+		CallPgDateTrunc:    PgDateTruncFormat,
+		CallPgDateAddDay:   CallPgDateAddDayFormat,
+		CallPgDateAddMonth: CallPgDateAddMonthFormat,
+		CallPgDateAddYear:  CallPgDateAddYearFormat,
+		CallPGToChar:       ToCharFormat,
 
 		CallPgToDate:      CallPgToDateFormat,
 		CallPgToTimestamp: CallPgToTimestampFormat,
@@ -161,6 +210,10 @@ var (
 		// doris
 		CallDorisDateTrunc:  DorisDateTruncFormat,
 		CallDorisDateFormat: DorisDateFormatFormat,
+
+		CallDorisDateAddDay:   DorisDateAddDayFormat,
+		CallDorisDateAddMonth: DorisDateAddMonthFormat,
+		CallDorisDateAddYear:  DorisDateAddYearFormat,
 	}
 
 	// InnerAsFuncFormatMap 注意: as格式化不再使用, 代码逻辑 as 别名根据驱动做格式化
@@ -199,9 +252,20 @@ var (
 	VariadicInnerFuncFormatMap = map[InnerFunc]string{
 		Concat:     ConcatFormat,
 		PgCoalesce: PgCoalesceFormat,
+		Greatest:   GreatestFormat,
+		Least:      LeastFormat,
+	}
+
+	NoneArgFuncFormatMap = map[string]string{
+		Count1Str: Count1Format,
+		NowFunc:   NowFormat,
 	}
 )
 
 func IsVariadicArgsFunc(exp string) bool {
 	return VariadicInnerFuncFormatMap[InnerFunc(exp)] != ""
+}
+
+func IsNoneArgFunc(exp string) bool {
+	return NoneArgFuncFormatMap[exp] != ""
 }

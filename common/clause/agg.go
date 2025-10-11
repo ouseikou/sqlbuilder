@@ -15,6 +15,9 @@ const (
 	Stddev AggFunc = "stddev"
 	// Variance pg 方差
 	Variance AggFunc = "variance"
+
+	PGMedian    AggFunc = "pg_median"
+	DorisMedian AggFunc = "doris_median"
 )
 
 const (
@@ -39,6 +42,11 @@ const (
 	PGVarianceFormatAs      = `variance(%s) as "%s"`
 )
 
+const (
+	PGMedianFormat    = `percentile_cont(0.5) within group (order by %s)`
+	DorisMedianFormat = `percentile_approx(%s, 0.5)`
+)
+
 // AggregationFuncFormatMap 映射聚合函数
 var (
 	AggregationFuncFormatMap = map[AggFunc]string{
@@ -51,6 +59,9 @@ var (
 		CountDistinct: CountDistinctFormat,
 		Stddev:        StddevFormat,
 		Variance:      VarianceFormat,
+
+		PGMedian:    PGMedianFormat,
+		DorisMedian: DorisMedianFormat,
 	}
 
 	PGAggregationAsFuncFormatMap = map[AggFunc]string{

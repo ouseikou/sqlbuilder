@@ -292,8 +292,8 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression, ctx *ModelBuilde
 	// var的索引 -> 是否转义, 只针对 Column 和 Expression 类型的 var, 不能使用值, mapKey会被覆盖
 	var varIndexTypeMap = make(map[int]bool)
 
-	// 如果函数是 count1, 只用填充别名
-	if expr.Call == string(clause.Count1) {
+	// 如果函数是 count1/now, 只用填充别名
+	if clause.IsNoneArgFunc(expr.Call) {
 		expressions = append(expressions, expr.CallAs)
 		return expressions
 	}
