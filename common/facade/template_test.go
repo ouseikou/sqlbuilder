@@ -1,12 +1,12 @@
-﻿package facade
+package facade
 
 import (
 	"fmt"
+	"github.com/ouseikou/sqlbuilder/gen/proto"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/encoding/protojson"
 	"os"
 	"path/filepath"
-	"sql-builder/gen/proto"
 	"strings"
 	"testing"
 )

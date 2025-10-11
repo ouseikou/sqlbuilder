@@ -281,8 +281,9 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression, ctx *ModelBuilde
 	// 表达式参数: int, string, clause.Column
 	var expressions []interface{}
 
-	// 字面量只需要填充别名
-	if expr.CallType == pb.CallType_CALL_TYPE_LITERAL {
+	// 1. 字面量只需要填充别名
+	// 2. 如果函数是 count1/now, 只用填充别名
+	if expr.CallType == pb.CallType_CALL_TYPE_LITERAL || clause.IsNoneArgFunc(expr.Call) {
 		if expr.UseAs {
 			expressions = append(expressions, expr.CallAs)
 		}
@@ -291,12 +292,6 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression, ctx *ModelBuilde
 
 	// var的索引 -> 是否转义, 只针对 Column 和 Expression 类型的 var, 不能使用值, mapKey会被覆盖
 	var varIndexTypeMap = make(map[int]bool)
-
-	// 如果函数是 count1/now, 只用填充别名
-	if clause.IsNoneArgFunc(expr.Call) {
-		expressions = append(expressions, expr.CallAs)
-		return expressions
-	}
 
 	string2LiteralSafeFormat := ctx.String2LiteralSafeFormat
 	string2LiteralAsSafeFormat := ctx.String2LiteralAsSafeFormat

@@ -59,6 +59,10 @@ const (
 	CallPgDateAddMonth InnerFunc = "pg_dateadd_month"
 	CallPgDateAddYear  InnerFunc = "pg_dateadd_year"
 
+	CallPgDateTruncDay   InnerFunc = "pg_datetrunc_day"
+	CallPgDateTruncMonth InnerFunc = "pg_datetrunc_month"
+	CallPgDateTruncYear  InnerFunc = "pg_datetrunc_year"
+
 	CallPgDateDiffDay   InnerFunc = "pg_datediff_day"
 	CallPgDateDiffMonth InnerFunc = "pg_datediff_month"
 	CallPgDateDiffYear  InnerFunc = "pg_datediff_year"
@@ -72,6 +76,10 @@ const (
 	CallDorisDateAddDay   InnerFunc = "doris_dateadd_day"
 	CallDorisDateAddMonth InnerFunc = "doris_dateadd_month"
 	CallDorisDateAddYear  InnerFunc = "doris_dateadd_year"
+
+	CallDorisDateTruncDay   InnerFunc = "doris_datetrunc_day"
+	CallDorisDateTruncMonth InnerFunc = "doris_datetrunc_month"
+	CallDorisDateTruncYear  InnerFunc = "doris_datetrunc_year"
 
 	CallDorisDateDiffDay   InnerFunc = "doris_datediff_day"
 	CallDorisDateDiffMonth InnerFunc = "doris_datediff_month"
@@ -126,7 +134,12 @@ const (
 // pg format
 const (
 	// PgDateTruncFormat PgDateTruncAsFormat 转换为离散时间, 最终返回是timestamp类型
-	PgDateTruncFormat   = `date_trunc(%v, %s)`
+	PgDateTruncFormat = `date_trunc(%v, %s)`
+
+	PgDateTruncDayFormat   = `date_trunc('day', %s)`
+	PgDateTruncMonthFormat = `date_trunc('month', %s)`
+	PgDateTruncYearFormat  = `date_trunc('year', %s)`
+
 	PgDateTruncAsFormat = `date_trunc(%v, %s) as "%s"`
 
 	// ToCharFormat ToCharAsFormat to_char(时间类型字段, format), 最终返回是字符串
@@ -152,7 +165,12 @@ const (
 
 // doris format
 const (
-	DorisDateTruncFormat   = `date_trunc(%s, %v)`
+	DorisDateTruncFormat = `date_trunc(%s, %v)`
+
+	DorisDateTruncDayFormat   = `date_trunc(%s, 'day')`
+	DorisDateTruncMonthFormat = `date_trunc(%s, 'month')`
+	DorisDateTruncYearFormat  = `date_trunc(%s, 'year')`
+
 	DorisDateTruncAsFormat = "date_trunc(%s, %v) as `%s`"
 
 	DorisDateFormatFormat = `date_format(%s, %v)`
@@ -194,7 +212,12 @@ var (
 
 		// pg
 
-		CallPgDateTrunc:    PgDateTruncFormat,
+		CallPgDateTrunc: PgDateTruncFormat,
+
+		CallPgDateTruncDay:   PgDateTruncDayFormat,
+		CallPgDateTruncMonth: PgDateTruncMonthFormat,
+		CallPgDateTruncYear:  PgDateTruncYearFormat,
+
 		CallPgDateAddDay:   CallPgDateAddDayFormat,
 		CallPgDateAddMonth: CallPgDateAddMonthFormat,
 		CallPgDateAddYear:  CallPgDateAddYearFormat,
@@ -208,7 +231,12 @@ var (
 		PgCoalesce: PgCoalesceFormat,
 
 		// doris
-		CallDorisDateTrunc:  DorisDateTruncFormat,
+		CallDorisDateTrunc: DorisDateTruncFormat,
+
+		CallDorisDateTruncDay:   DorisDateTruncDayFormat,
+		CallDorisDateTruncMonth: DorisDateTruncMonthFormat,
+		CallDorisDateTruncYear:  DorisDateTruncYearFormat,
+
 		CallDorisDateFormat: DorisDateFormatFormat,
 
 		CallDorisDateAddDay:   DorisDateAddDayFormat,
