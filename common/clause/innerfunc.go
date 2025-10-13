@@ -308,3 +308,10 @@ func IsVariadicArgsFunc(exp string) bool {
 func IsNoneArgFunc(exp string) bool {
 	return NoneArgFuncFormatMap[exp] != ""
 }
+
+// IsTmplLiteralFunc 函数对应的字面量获取是否是：通过模板转换字符串字面量，而不是通过fmt.Sprintf转换
+func IsTmplLiteralFunc(exp string) bool {
+	return CallPgDateDiffDay == InnerFunc(exp) ||
+		CallPgDateDiffMonth == InnerFunc(exp) ||
+		CallPgDateDiffYear == InnerFunc(exp)
+}

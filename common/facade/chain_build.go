@@ -222,7 +222,11 @@ func formatColumnByProto(column *pb.Column, format string) string {
 func formatExpressionByProto(expression *pb.Expression, ctx *ModelBuilderCtx) string {
 	// 通常表达式的format中占位符和表达式参数是一一对应的拉链结构
 	vars2Strings := calExpressionVarsFormatStringsByProto(expression, ctx)
-	format := getExpressionFuncFormatByProto(expression, ctx)
+	format, currentExprIsLiteral := getExpressionFuncFormatByProto(expression, ctx, vars2Strings)
+	// 当前嵌套层是字面量表达式不需要fmt填充参数
+	if currentExprIsLiteral {
+		return format
+	}
 	return fmt.Sprintf(format, vars2Strings...)
 }
 
@@ -234,12 +238,12 @@ func calAppendTextByColumnAsByProto(format string, column *pb.Column, userAs boo
 }
 
 // 获取Expression对应的格式化字符串
-func getExpressionFuncFormatByProto(expression *pb.Expression, ctx *ModelBuilderCtx) string {
+func getExpressionFuncFormatByProto(expression *pb.Expression, ctx *ModelBuilderCtx, tmpVars2Strings []interface{}) (string, bool) {
 	// 动态构建 Expression 的 format
 	var finalFormat string
 
 	// 初始化 Expression 的 format, 取不要 as 的那一部分
-	basicFormat := expressionFuncNoAsFormat(expression)
+	basicFormat, currentExprIsLiteral := expressionFuncNoAsFormat(expression, tmpVars2Strings)
 	finalFormat = basicFormat
 
 	// 是否使用小括号
@@ -254,24 +258,31 @@ func getExpressionFuncFormatByProto(expression *pb.Expression, ctx *ModelBuilder
 		finalFormat = fmt.Sprintf(asFormat, finalFormat)
 	}
 
-	return finalFormat
+	return finalFormat, currentExprIsLiteral
 }
 
 // 获取Expression没有As的格式化字符串部分
-func expressionFuncNoAsFormat(expression *pb.Expression) string {
+// 返回值:
+//   - 驱动对应的 fmt 字符串
+//   - 当前层级表达式是否是字面量
+func expressionFuncNoAsFormat(expression *pb.Expression, tmpVars2Strings []interface{}) (string, bool) {
 	callType := expression.CallType
 	switch callType {
 	case pb.CallType_CALL_TYPE_AGG:
-		return clause.AggregationFuncFormatMap[clause.AggFunc(expression.Call)]
+		return clause.AggregationFuncFormatMap[clause.AggFunc(expression.Call)], false
 	case pb.CallType_CALL_TYPE_INNER:
-		return clause.InnerFuncFormatMap[clause.InnerFunc(expression.Call)]
+		// 根据模板字符串字面量的表达式格式化得到表达式对应的字符串字面量
+		if clause.IsTmplLiteralFunc(expression.Call) {
+			return FormatTmplLiteralInnerFunc(expression.Call, tmpVars2Strings), true
+		}
+		return clause.InnerFuncFormatMap[clause.InnerFunc(expression.Call)], false
 	case pb.CallType_CALL_TYPE_ARITH:
 		// 算术表达式的format要结合参数个数动态生成
-		return clause.CalArithFormatWithBuilder(expression.Call, len(expression.Vars))
+		return clause.CalArithFormatWithBuilder(expression.Call, len(expression.Vars)), false
 	case pb.CallType_CALL_TYPE_LITERAL:
-		return expression.GetStrLiteral().GetLiteral()
+		return expression.GetStrLiteral().GetLiteral(), false
 	default:
-		return ""
+		return "", false
 	}
 }
 
