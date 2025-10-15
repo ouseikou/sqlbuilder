@@ -181,10 +181,13 @@ message MixVars {
   oneof vars {
     Column column = 1;
     Expression expression = 2;
-    string context = 3;
-    int64 number = 4;
-    double double_num = 5;
-    StringLiteral str_literal = 6; // 字符串字面量不会默认加单引号
+    MultiCondition multi_condition = 4;
+    // todo 暂未适配
+    LogicGroup logic_condition = 5;
+    string context = 6;
+    int64 number = 7;
+    double double_num = 8;
+    StringLiteral str_literal = 9; // 字符串字面量不会默认加单引号
   }
 }
 
@@ -209,6 +212,11 @@ message CaseWhen {
 message CaseWhenItem {
   repeated MixWhere when = 1;
   BasicData then = 2;
+}
+
+// 多个条件组合
+message MultiCondition {
+  repeated MixWhere conditions = 1;
 }
 
 
@@ -250,6 +258,7 @@ enum Logic {
   LOGIC_UNSPECIFIED = 0;
   LOGIC_AND = 1;
   LOGIC_OR = 2;
+  LOGIC_NOT = 3;
 }
 
 enum Op {

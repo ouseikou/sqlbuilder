@@ -18,6 +18,13 @@ const (
 
 	PGMedian    AggFunc = "pg_median"
 	DorisMedian AggFunc = "doris_median"
+
+	PGCountIf         AggFunc = "countIf"
+	PGSumIf           AggFunc = "sumIf"
+	PGAvgIf           AggFunc = "avgIf"
+	PGMaxIf           AggFunc = "maxIf"
+	PGMinIf           AggFunc = "minIf"
+	PGCountDistinctIf AggFunc = "countDistinctIf"
 )
 
 const (
@@ -40,6 +47,13 @@ const (
 	PGCountDistinctAsFormat = `count(distinct(%s)) as "%s"`
 	PGStddevFormatAs        = `stddev(%s) as "%s"`
 	PGVarianceFormatAs      = `variance(%s) as "%s"`
+
+	PGCountIfFormat         = `count(%s) FILTER (WHERE %s)`
+	PGSumIfFormat           = `sum(%s) FILTER (WHERE %s)`
+	PGAvgIfFormat           = `avg(%s) FILTER (WHERE %s)`
+	PGMaxIfFormat           = `max(%s) FILTER (WHERE %s)`
+	PGMinIfFormat           = `min(%s) FILTER (WHERE %s)`
+	PGCountDistinctIfFormat = `count(distinct(%s)) FILTER (WHERE %s)`
 )
 
 const (
@@ -62,6 +76,13 @@ var (
 
 		PGMedian:    PGMedianFormat,
 		DorisMedian: DorisMedianFormat,
+
+		PGSumIf:           PGSumIfFormat,
+		PGAvgIf:           PGAvgIfFormat,
+		PGMaxIf:           PGMaxIfFormat,
+		PGMinIf:           PGMinIfFormat,
+		PGCountIf:         PGCountIfFormat,
+		PGCountDistinctIf: PGCountDistinctIfFormat,
 	}
 
 	PGAggregationAsFuncFormatMap = map[AggFunc]string{

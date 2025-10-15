@@ -301,7 +301,7 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression, ctx *ModelBuilde
 		return expressions
 	}
 
-	// var的索引 -> 是否转义, 只针对 Column 和 Expression 类型的 var, 不能使用值, mapKey会被覆盖
+	// var的索引 -> 是否转义, 只针对 Column 和 Expression, MultiCondition 类型的 var, 不能使用值, mapKey会被覆盖
 	var varIndexTypeMap = make(map[int]bool)
 
 	string2LiteralSafeFormat := ctx.String2LiteralSafeFormat
@@ -337,6 +337,11 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression, ctx *ModelBuilde
 			varExpItemStr := formatExpressionByProto(exprVarExpression, ctx)
 			varIndexTypeMap[index] = false
 			expressions = append(expressions, varExpItemStr)
+		case *pb.MixVars_MultiCondition:
+			exprMultiCondition := v.MultiCondition
+			varMultiCondItemStr := formatExprVarMultiCond2Str(exprMultiCondition.GetConditions(), ctx)
+			varIndexTypeMap[index] = false
+			expressions = append(expressions, varMultiCondItemStr)
 		default:
 			continue
 		}
@@ -366,7 +371,7 @@ func variadicArgsFuncVars2oneVar(vars []interface{}, varIndexTypeMap map[int]boo
 
 		switch v := arg.(type) {
 		case string:
-			// 如果是字符串类型原本是 Column 和 Expression, 不需要加单引号
+			// 如果是字符串类型原本是 Column 和 Expression, MultiCondition, 不需要加单引号
 			if varIndexTypeMap[i] == false {
 				builder.WriteString(fmt.Sprintf("%s", v))
 				break
@@ -468,6 +473,15 @@ func buildJoinCondByProto(joinCondProto []*pb.JoinCond, ctx *ModelBuilderCtx) in
 	finalJoinCond := strings.Join(joinConds, clause.Space)
 
 	return finalJoinCond
+}
+
+func formatExprVarMultiCond2Str(wheres []*pb.MixWhere, ctx *ModelBuilderCtx) string {
+	xormCond := mixWhere2Condition(wheres, ctx)
+	multiCondStr, err := xorm.ToBoundSQL(xormCond)
+	if err != nil {
+		panic("构建 MultiCondition 失败")
+	}
+	return multiCondStr
 }
 
 // 构建 sql.where 总函数

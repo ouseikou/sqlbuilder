@@ -307,7 +307,8 @@
       "enum": [
         "LOGIC_UNSPECIFIED",
         "LOGIC_AND",
-        "LOGIC_OR"
+        "LOGIC_OR",
+        "LOGIC_NOT"
       ],
       "default": "LOGIC_UNSPECIFIED"
     },
@@ -380,6 +381,13 @@
         "expression": {
           "$ref": "#/definitions/protoExpression"
         },
+        "multi_condition": {
+          "$ref": "#/definitions/protoMultiCondition"
+        },
+        "logic_condition": {
+          "$ref": "#/definitions/protoLogicGroup",
+          "title": "todo 暂未适配"
+        },
         "context": {
           "type": "string"
         },
@@ -408,6 +416,19 @@
           "title": "e.g. WHERE ARRAY_CONTAINS(tags, 'urgent') =\u003e 视作 Condition.MixField.Expression"
         }
       }
+    },
+    "protoMultiCondition": {
+      "type": "object",
+      "properties": {
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protoMixWhere"
+          }
+        }
+      },
+      "title": "多个条件组合"
     },
     "protoOnField": {
       "type": "object",
