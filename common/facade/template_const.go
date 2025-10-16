@@ -12,26 +12,26 @@ const (
 
 	// 对应 VisualColumnExpressionTypeEnum.INNER_PG_DATEDIFF_DAY
 	PGDateDiffDayTmpl = `
-        (DATE({{.second}}) - DATE({{.first}}))::INT
+        (DATE(DATE_TRUNC('day', {{.second}})) - DATE(DATE_TRUNC('day', {{.first}})))::INT
     `
 
 	// 对应 VisualColumnExpressionTypeEnum.INNER_PG_DATEDIFF_MONTH
 	PGDateDiffMonthTmpl = `
         (
-          (EXTRACT(YEAR FROM {{.second}}) - EXTRACT(YEAR FROM {{.first}})) * 12
-          + (EXTRACT(MONTH FROM {{.second}}) - EXTRACT(MONTH FROM {{.first}}))
-          - CASE WHEN EXTRACT(DAY FROM {{.second}}) < EXTRACT(DAY FROM {{.first}}) THEN 1 ELSE 0 END
+          (EXTRACT(YEAR FROM DATE_TRUNC('month', {{.second}})) - EXTRACT(YEAR FROM DATE_TRUNC('month', {{.first}}))) * 12
+          + (EXTRACT(MONTH FROM DATE_TRUNC('month', {{.second}})) - EXTRACT(MONTH FROM DATE_TRUNC('month', {{.first}})))
+          - CASE WHEN EXTRACT(DAY FROM DATE_TRUNC('month', {{.second}})) < EXTRACT(DAY FROM DATE_TRUNC('month', {{.first}})) THEN 1 ELSE 0 END
         )::INT
     `
 
 	// 对应 VisualColumnExpressionTypeEnum.INNER_PG_DATEDIFF_YEAR
 	PGDateDiffYearTmpl = `
         (
-            EXTRACT(YEAR FROM {{.second}}) - EXTRACT(YEAR FROM {{.first}})
+            EXTRACT(YEAR FROM DATE_TRUNC('year', {{.second}})) - EXTRACT(YEAR FROM {{.first}})
             - CASE
-                WHEN (EXTRACT(MONTH FROM {{.second}}) < EXTRACT(MONTH FROM {{.first}}))
-                  OR (EXTRACT(MONTH FROM {{.second}}) = EXTRACT(MONTH FROM {{.first}})
-                      AND EXTRACT(DAY FROM {{.second}}) < EXTRACT(DAY FROM {{.first}}))
+                WHEN (EXTRACT(MONTH FROM DATE_TRUNC('year', {{.second}})) < EXTRACT(MONTH FROM DATE_TRUNC('year', {{.first}})))
+                  OR (EXTRACT(MONTH FROM DATE_TRUNC('year', {{.second}})) = EXTRACT(MONTH FROM DATE_TRUNC('year', {{.first}}))
+                      AND EXTRACT(DAY FROM DATE_TRUNC('year', {{.second}})) < EXTRACT(DAY FROM DATE_TRUNC('year', {{.first}})))
                 THEN 1 ELSE 0
               END
           )::INT
