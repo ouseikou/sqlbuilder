@@ -20,21 +20,12 @@ const (
         (
           (EXTRACT(YEAR FROM DATE_TRUNC('month', {{.second}})) - EXTRACT(YEAR FROM DATE_TRUNC('month', {{.first}}))) * 12
           + (EXTRACT(MONTH FROM DATE_TRUNC('month', {{.second}})) - EXTRACT(MONTH FROM DATE_TRUNC('month', {{.first}})))
-          - CASE WHEN EXTRACT(DAY FROM DATE_TRUNC('month', {{.second}})) < EXTRACT(DAY FROM DATE_TRUNC('month', {{.first}})) THEN 1 ELSE 0 END
         )::INT
     `
 
 	// 对应 VisualColumnExpressionTypeEnum.INNER_PG_DATEDIFF_YEAR
 	PGDateDiffYearTmpl = `
-        (
-            EXTRACT(YEAR FROM DATE_TRUNC('year', {{.second}})) - EXTRACT(YEAR FROM {{.first}})
-            - CASE
-                WHEN (EXTRACT(MONTH FROM DATE_TRUNC('year', {{.second}})) < EXTRACT(MONTH FROM DATE_TRUNC('year', {{.first}})))
-                  OR (EXTRACT(MONTH FROM DATE_TRUNC('year', {{.second}})) = EXTRACT(MONTH FROM DATE_TRUNC('year', {{.first}}))
-                      AND EXTRACT(DAY FROM DATE_TRUNC('year', {{.second}})) < EXTRACT(DAY FROM DATE_TRUNC('year', {{.first}})))
-                THEN 1 ELSE 0
-              END
-          )::INT
+        (EXTRACT(YEAR FROM DATE_TRUNC('year', {{.second}})) - EXTRACT(YEAR FROM {{.first}}))::INT
     `
 )
 

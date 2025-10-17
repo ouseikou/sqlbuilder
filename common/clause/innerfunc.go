@@ -182,9 +182,9 @@ const (
 	DorisDateAddYearFormat  = `DATE_ADD(%s, INTERVAL %v YEAR)`
 
 	// doris datediff
-	DorisDateDiffDayFormat   = `(-DATEDIFF(%s, %s))`
-	DorisDateDiffMonthFormat = `TIMESTAMPDIFF(MONTH, %s, %s)`
-	DorisDateDiffYearFormat  = `TIMESTAMPDIFF(YEAR, %s, %s)`
+	DorisDateDiffDayFormat   = `(-DATEDIFF(date_trunc(%s, 'day'), date_trunc(%s, 'day')))`
+	DorisDateDiffMonthFormat = `TIMESTAMPDIFF(MONTH, date_trunc(%s, 'month'), date_trunc(%s, 'month'))`
+	DorisDateDiffYearFormat  = `TIMESTAMPDIFF(YEAR, date_trunc(%s, 'year'), date_trunc(%s, 'year'))`
 )
 
 // InnerFuncFormatMap 内置函数名称和SQL片段 映射
