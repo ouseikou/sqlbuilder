@@ -225,6 +225,9 @@ func formatExpressionByProto(expression *pb.Expression, ctx *ModelBuilderCtx) st
 	format, currentExprIsLiteral := getExpressionFuncFormatByProto(expression, ctx, vars2Strings)
 	// 当前嵌套层是字面量表达式不需要fmt填充参数
 	if currentExprIsLiteral {
+		if expression.UseAs {
+			return fmt.Sprintf(format, expression.GetCallAs())
+		}
 		return format
 	}
 	return fmt.Sprintf(format, vars2Strings...)
