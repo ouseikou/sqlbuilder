@@ -84,7 +84,7 @@ message SqlText {
 }
 
 message SqlReference {
-  Table from = 1;
+  MixTable from = 1;
   repeated Join join = 2;
   repeated MixWhere where = 3;
   // GroupBy 可以是 Column 或 Expression
@@ -108,6 +108,19 @@ message Table {
   string table_alias = 3;
 }
 
+message LiteralTable {
+  StringLiteral sub_literal = 1;
+  string literal_alias = 2;
+}
+
+message MixTable {
+  oneof mt {
+    Table normal_table = 1;
+    LiteralTable literal_table = 2;
+  }
+}
+
+
 // -----------------------------------------------   以上 From  -----------------------------------------------------
 
 enum JoinType {
@@ -121,7 +134,7 @@ enum JoinType {
 
 message Join {
   JoinType type = 1;
-  Table table = 2;
+  MixTable table = 2;
   repeated JoinCond joinCond = 3;
 }
 

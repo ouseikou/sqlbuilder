@@ -255,7 +255,8 @@
           "$ref": "#/definitions/protoJoinType"
         },
         "table": {
-          "$ref": "#/definitions/protoTable"
+          "$ref": "#/definitions/protoMixTable",
+          "title": "todo Table -\u003e MixTable"
         },
         "joinCond": {
           "type": "array",
@@ -299,6 +300,17 @@
         "offset": {
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "protoLiteralTable": {
+      "type": "object",
+      "properties": {
+        "sub_literal": {
+          "$ref": "#/definitions/protoStringLiteral"
+        },
+        "literal_alias": {
+          "type": "string"
         }
       }
     },
@@ -369,6 +381,17 @@
         },
         "template": {
           "$ref": "#/definitions/protoSqlText"
+        }
+      }
+    },
+    "protoMixTable": {
+      "type": "object",
+      "properties": {
+        "normal_table": {
+          "$ref": "#/definitions/protoTable"
+        },
+        "literal_table": {
+          "$ref": "#/definitions/protoLiteralTable"
         }
       }
     },
@@ -488,7 +511,8 @@
       "type": "object",
       "properties": {
         "from": {
-          "$ref": "#/definitions/protoTable"
+          "$ref": "#/definitions/protoMixTable",
+          "title": "todo Table -\u003e MixTable, 或者使用 optional 兼容参考 LogicGroup"
         },
         "join": {
           "type": "array",

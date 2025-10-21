@@ -132,3 +132,57 @@ func TestInsertExpr(t *testing.T) {
 	fmt.Println(output)
 	assert.EqualValues(t, "INSERT INTO table1  Values ((SELECT b FROM t WHERE d=2 LIMIT 1))", output)
 }
+
+func TestFromLiteralText(t *testing.T) {
+
+	// from 和 join 子查询带字面量可行性验证
+
+	mainSql := `
+		(
+			SELECT
+				-- 主查询: area、province、sum(order_number)
+				org_t_alias."area" AS org_t_area,
+				org_t_alias."province" AS org_t_province,
+				SUM(org_t_alias."order_number") AS x_dimension_metric
+			FROM
+				"sample_data"."lod_func_test_table" AS org_t_alias
+			GROUP BY
+				org_t_alias."area",
+				org_t_alias."province"
+			ORDER BY
+				org_t_area ASC,
+				org_t_province ASC
+		)
+	`
+
+	lodSql := `
+		(
+			SELECT
+				-- lod子查询：area、sum(order_number)
+				org_t_alias."area" AS org_t_area,
+				SUM(org_t_alias."order_number") AS lod_metric
+			FROM
+				"sample_data"."lod_func_test_table" AS org_t_alias
+			GROUP BY
+				org_t_alias."area"
+		)
+	`
+
+	b := xorm.Select(
+		"x_dimension_tmp_t.org_t_area AS select_area ",
+		"x_dimension_tmp_t.org_t_province AS select_province",
+		"x_dimension_tmp_t.x_dimension_metric AS select_common_metric",
+		"lod_dimension_tmp_t.lod_metric AS select_lod_metric",
+	).
+		From(
+			mainSql, "x_dimension_tmp_t",
+		).
+		InnerJoin(
+			xorm.As(lodSql, "lod_dimension_tmp_t"),
+			//"schema1.table1", // joinTable 可以是 string
+			`x_dimension_tmp_t."org_t_area" = lod_dimension_tmp_t."org_t_area"`,
+		)
+
+	sql, _ := b.ToBoundSQL()
+	fmt.Println(sql)
+}

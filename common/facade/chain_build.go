@@ -1,6 +1,7 @@
 package facade
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -36,7 +37,10 @@ func buildChainBasic(
 
 	// 嵌套sql, 构建 select + from
 	if appendBuilder != nil {
-		nestBasicBuilder := buildNestBasicByProto(appendBuilder, dialectBuilder, sqlRef, ctx)
+		nestBasicBuilder, err := buildNestBasicByProto(appendBuilder, dialectBuilder, sqlRef, ctx)
+		if err != nil {
+			panic(err.Error())
+		}
 		return nestBasicBuilder
 	}
 	// 一层sql, 构建 select + from
@@ -97,16 +101,25 @@ func buildNestBasicByProto(
 	dialectBuilder *xorm.Builder,
 	sqlRef *pb.SqlReference,
 	ctx *ModelBuilderCtx,
-) *xorm.Builder {
+) (*xorm.Builder, error) {
+	from := sqlRef.GetFrom()
+
+	// 如果 from 类型是 MixTable.LiteralTable 报错
+	if _, ok := from.GetMt().(*pb.MixTable_LiteralTable); ok {
+		return nil, errors.New("模型层级构建模式不支持字面量Table")
+	}
+	// 强转
+	normalTable := from.GetNormalTable()
+
 	// 类型断言: Column 或者 Expression
 	selects := extraColumnOrExpressionStringsByProto(sqlRef.GetSelect(), ctx)
 
 	string1LiteralSafeFormat := ctx.String1LiteralSafeFormat
 	nestBasicBuilder := dialectBuilder.
 		Select(selects...).
-		From(appendBuilder, fmt.Sprintf(string1LiteralSafeFormat, sqlRef.GetFrom().GetTableAlias()))
+		From(appendBuilder, fmt.Sprintf(string1LiteralSafeFormat, normalTable.GetTableAlias()))
 
-	return nestBasicBuilder
+	return nestBasicBuilder, nil
 }
 
 // buildBasicByProto 构建基本的SQL查询器
@@ -136,12 +149,23 @@ func createBasicArgsByProto(sqlRef *pb.SqlReference, ctx *ModelBuilderCtx) ([]st
 	selects := extraColumnOrExpressionStringsByProto(selectClause, ctx)
 
 	fromClause := sqlRef.From
-
+	// x 的引号表达
 	string1LiteralSafeFormat := ctx.String1LiteralSafeFormat
+	// x.y 的引号表达
 	string2LiteralSafeFormat := ctx.String2LiteralSafeFormat
-	tableSchema := fmt.Sprintf(string2LiteralSafeFormat, fromClause.TableSchema, fromClause.TableName)
 
-	return selects, tableSchema, fmt.Sprintf(string1LiteralSafeFormat, fromClause.TableAlias)
+	switch v := fromClause.GetMt().(type) {
+	case *pb.MixTable_NormalTable:
+		normalTable := v.NormalTable
+		tableSchema := fmt.Sprintf(string2LiteralSafeFormat, normalTable.TableSchema, normalTable.TableName)
+		return selects, tableSchema, fmt.Sprintf(string1LiteralSafeFormat, normalTable.TableAlias)
+	case *pb.MixTable_LiteralTable:
+		literalTable := v.LiteralTable
+		// 第二个参数是子查询字面量加小括号，第三个参数是别名
+		return selects, fmt.Sprintf(clause.PntFormat, literalTable.GetSubLiteral().GetLiteral()), fmt.Sprintf(string1LiteralSafeFormat, literalTable.GetLiteralAlias())
+	default:
+		panic("未知Table类型")
+	}
 }
 
 // 将MixField转换为对应的string字符串
@@ -433,11 +457,21 @@ func buildJoinItemByProto(builder *xorm.Builder, join *pb.Join, ctx *ModelBuilde
 	}
 }
 
-func buildJoinSchemaTableByProto(join *pb.Join, ctx *ModelBuilderCtx) string {
-	table := join.GetTable()
-	string2LiteralSafeFormat := ctx.String2LiteralSafeFormat
-	joinSchemaTable := fmt.Sprintf(string2LiteralSafeFormat, table.TableSchema, table.TableName)
-	return joinSchemaTable
+func buildJoinSchemaTableByProto(join *pb.Join, ctx *ModelBuilderCtx) interface{} {
+	mixTable := join.GetTable()
+
+	switch v := mixTable.GetMt().(type) {
+	case *pb.MixTable_NormalTable:
+		normalTable := mixTable.GetNormalTable()
+		string2LiteralSafeFormat := ctx.String2LiteralSafeFormat
+		joinSchemaTable := fmt.Sprintf(string2LiteralSafeFormat, normalTable.TableSchema, normalTable.TableName)
+		return joinSchemaTable
+	case *pb.MixTable_LiteralTable:
+		literalTable := v.LiteralTable
+		return xorm.As(fmt.Sprintf(clause.PntFormat, literalTable.GetSubLiteral().GetLiteral()), literalTable.GetLiteralAlias())
+	default:
+		panic("未知Join-Table类型")
+	}
 }
 
 func buildJoinCondByProto(joinCondProto []*pb.JoinCond, ctx *ModelBuilderCtx) interface{} {
