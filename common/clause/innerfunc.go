@@ -67,6 +67,11 @@ const (
 	CallPgDateDiffDay   InnerFunc = "pg_datediff_day"
 	CallPgDateDiffMonth InnerFunc = "pg_datediff_month"
 	CallPgDateDiffYear  InnerFunc = "pg_datediff_year"
+
+	// 在select字段使用代表bool函数
+	CallPgBoolFuncIsNull    InnerFunc = "is null"
+	CallPgBoolFuncIsNotNull InnerFunc = "is not null"
+	CallPgBoolFuncBetween   InnerFunc = "between"
 )
 
 // doris
@@ -162,6 +167,10 @@ const (
 	CallPgDateAddDayFormat   = `(%s + INTERVAL '%v DAY')`
 	CallPgDateAddMonthFormat = `(%s + INTERVAL '%v MONTH')`
 	CallPgDateAddYearFormat  = `(%s + INTERVAL '%v YEAR')`
+
+	CallPgBoolFuncIsNullFormat    = "(%s is null)"
+	CallPgBoolFuncIsNotNullFormat = "(%s is not null)"
+	CallPgBoolFuncBetweenFormat   = "(%s between %s and %s)"
 )
 
 // doris format
@@ -237,6 +246,10 @@ var (
 
 		PgCoalesce: PgCoalesceFormat,
 
+		CallPgBoolFuncIsNull:    CallPgBoolFuncIsNullFormat,
+		CallPgBoolFuncIsNotNull: CallPgBoolFuncIsNotNullFormat,
+		CallPgBoolFuncBetween:   CallPgBoolFuncBetweenFormat,
+
 		// doris
 		CallDorisDateTrunc: DorisDateTruncFormat,
 
@@ -255,6 +268,7 @@ var (
 		CallDorisDateDiffYear:  DorisDateDiffYearFormat,
 	}
 
+	// as 不再维护， 通过是否使用别名决定是否在 format 之后加别名
 	// InnerAsFuncFormatMap 注意: as格式化不再使用, 代码逻辑 as 别名根据驱动做格式化
 
 	InnerAsFuncFormatMap = map[InnerFunc]string{
