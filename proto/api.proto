@@ -55,8 +55,11 @@ enum CallType {
   CALL_TYPE_AGG = 1;
   CALL_TYPE_INNER = 2;
   CALL_TYPE_CUSTOM = 3;
+  // e.g. + - / * %
   CALL_TYPE_ARITH = 4;
   CALL_TYPE_LITERAL = 5;
+  // e.g.  =, !=, <, >, <=, >=, between, is null, is not null, etc
+  CALL_TYPE_BOOLEAN = 6;
 }
 
 

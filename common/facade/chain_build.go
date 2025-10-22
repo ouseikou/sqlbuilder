@@ -308,6 +308,8 @@ func expressionFuncNoAsFormat(expression *pb.Expression, tmpVars2Strings []inter
 		return clause.CalArithFormatWithBuilder(expression.Call, len(expression.Vars)), false
 	case pb.CallType_CALL_TYPE_LITERAL:
 		return expression.GetStrLiteral().GetLiteral(), false
+	case pb.CallType_CALL_TYPE_BOOLEAN:
+		return clause.BoolFormatMap[expression.Call], false
 	default:
 		return "", false
 	}

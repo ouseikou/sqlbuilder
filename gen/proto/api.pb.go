@@ -129,8 +129,11 @@ const (
 	CallType_CALL_TYPE_AGG         CallType = 1
 	CallType_CALL_TYPE_INNER       CallType = 2
 	CallType_CALL_TYPE_CUSTOM      CallType = 3
-	CallType_CALL_TYPE_ARITH       CallType = 4
-	CallType_CALL_TYPE_LITERAL     CallType = 5
+	// e.g. + - / * %
+	CallType_CALL_TYPE_ARITH   CallType = 4
+	CallType_CALL_TYPE_LITERAL CallType = 5
+	// e.g.  =, !=, <, >, <=, >=, between, is null, is not null, etc
+	CallType_CALL_TYPE_BOOLEAN CallType = 6
 )
 
 // Enum value maps for CallType.
@@ -142,6 +145,7 @@ var (
 		3: "CALL_TYPE_CUSTOM",
 		4: "CALL_TYPE_ARITH",
 		5: "CALL_TYPE_LITERAL",
+		6: "CALL_TYPE_BOOLEAN",
 	}
 	CallType_value = map[string]int32{
 		"CALL_TYPE_UNSPECIFIED": 0,
@@ -150,6 +154,7 @@ var (
 		"CALL_TYPE_CUSTOM":      3,
 		"CALL_TYPE_ARITH":       4,
 		"CALL_TYPE_LITERAL":     5,
+		"CALL_TYPE_BOOLEAN":     6,
 	}
 )
 
@@ -692,10 +697,9 @@ func (x *SqlText) GetArgs() map[string]*TemplateArg {
 
 type SqlReference struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// todo Table -> MixTable, 或者使用 optional 兼容参考 LogicGroup
-	From  *MixTable   `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	Join  []*Join     `protobuf:"bytes,2,rep,name=join,proto3" json:"join,omitempty"`
-	Where []*MixWhere `protobuf:"bytes,3,rep,name=where,proto3" json:"where,omitempty"`
+	From  *MixTable              `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	Join  []*Join                `protobuf:"bytes,2,rep,name=join,proto3" json:"join,omitempty"`
+	Where []*MixWhere            `protobuf:"bytes,3,rep,name=where,proto3" json:"where,omitempty"`
 	// GroupBy 可以是 Column 或 Expression
 	GroupBy     []*MixField   `protobuf:"bytes,4,rep,name=group_by,json=groupBy,proto3" json:"group_by,omitempty"`
 	Aggregation []*Expression `protobuf:"bytes,5,rep,name=aggregation,proto3" json:"aggregation,omitempty"`
@@ -999,11 +1003,10 @@ func (*MixTable_NormalTable) isMixTable_Mt() {}
 func (*MixTable_LiteralTable) isMixTable_Mt() {}
 
 type Join struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	Type  JoinType               `protobuf:"varint,1,opt,name=type,proto3,enum=proto.JoinType" json:"type,omitempty"`
-	// todo Table -> MixTable
-	Table         *MixTable   `protobuf:"bytes,2,opt,name=table,proto3" json:"table,omitempty"`
-	JoinCond      []*JoinCond `protobuf:"bytes,3,rep,name=joinCond,proto3" json:"joinCond,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Type          JoinType               `protobuf:"varint,1,opt,name=type,proto3,enum=proto.JoinType" json:"type,omitempty"`
+	Table         *MixTable              `protobuf:"bytes,2,opt,name=table,proto3" json:"table,omitempty"`
+	JoinCond      []*JoinCond            `protobuf:"bytes,3,rep,name=joinCond,proto3" json:"joinCond,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2897,14 +2900,15 @@ const file_proto_api_proto_rawDesc = "" +
 	"\x0fBuilderStrategy\x12 \n" +
 	"\x1cBUILDER_STRATEGY_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16BUILDER_STRATEGY_MODEL\x10\x01\x12\x1d\n" +
-	"\x19BUILDER_STRATEGY_TEMPLATE\x10\x02*\x8f\x01\n" +
+	"\x19BUILDER_STRATEGY_TEMPLATE\x10\x02*\xa6\x01\n" +
 	"\bCallType\x12\x19\n" +
 	"\x15CALL_TYPE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rCALL_TYPE_AGG\x10\x01\x12\x13\n" +
 	"\x0fCALL_TYPE_INNER\x10\x02\x12\x14\n" +
 	"\x10CALL_TYPE_CUSTOM\x10\x03\x12\x13\n" +
 	"\x0fCALL_TYPE_ARITH\x10\x04\x12\x15\n" +
-	"\x11CALL_TYPE_LITERAL\x10\x05*\x8c\x01\n" +
+	"\x11CALL_TYPE_LITERAL\x10\x05\x12\x15\n" +
+	"\x11CALL_TYPE_BOOLEAN\x10\x06*\x8c\x01\n" +
 	"\bJoinType\x12\x19\n" +
 	"\x15JOIN_TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eJOIN_TYPE_LEFT\x10\x01\x12\x13\n" +

@@ -67,11 +67,6 @@ const (
 	CallPgDateDiffDay   InnerFunc = "pg_datediff_day"
 	CallPgDateDiffMonth InnerFunc = "pg_datediff_month"
 	CallPgDateDiffYear  InnerFunc = "pg_datediff_year"
-
-	// 在select字段使用代表bool函数
-	CallPgBoolFuncIsNull    InnerFunc = "is null"
-	CallPgBoolFuncIsNotNull InnerFunc = "is not null"
-	CallPgBoolFuncBetween   InnerFunc = "between"
 )
 
 // doris
@@ -167,10 +162,6 @@ const (
 	CallPgDateAddDayFormat   = `(%s + INTERVAL '%v DAY')`
 	CallPgDateAddMonthFormat = `(%s + INTERVAL '%v MONTH')`
 	CallPgDateAddYearFormat  = `(%s + INTERVAL '%v YEAR')`
-
-	CallPgBoolFuncIsNullFormat    = "(%s is null)"
-	CallPgBoolFuncIsNotNullFormat = "(%s is not null)"
-	CallPgBoolFuncBetweenFormat   = "(%s between %s and %s)"
 )
 
 // doris format
@@ -245,10 +236,6 @@ var (
 		Trunc:             TruncFormat,
 
 		PgCoalesce: PgCoalesceFormat,
-
-		CallPgBoolFuncIsNull:    CallPgBoolFuncIsNullFormat,
-		CallPgBoolFuncIsNotNull: CallPgBoolFuncIsNotNullFormat,
-		CallPgBoolFuncBetween:   CallPgBoolFuncBetweenFormat,
 
 		// doris
 		CallDorisDateTrunc: DorisDateTruncFormat,

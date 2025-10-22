@@ -36,6 +36,19 @@ const (
 )
 
 const (
+	BoolEq  = "="
+	BoolNeq = "!="
+	BoolGt  = ">"
+	BoolGte = ">="
+	BoolLt  = "<"
+	BoolLte = "<="
+	// 在select字段使用代表bool函数
+	PgBoolFuncIsNull    = "is null"
+	PgBoolFuncIsNotNull = "is not null"
+	PgBoolFuncBetween   = "between"
+)
+
+const (
 	COMMA = ", "
 )
 
@@ -47,20 +60,42 @@ const (
 
 	MYSQLAsFormat = "%s as `%%s`"
 	MYSQLAsAppend = " as `%%s`"
+
+	PgBoolFuncEqFormat        = "(%s = %s)"
+	PgBoolFuncNeqFormat       = "(%s != %s)"
+	PgBoolFuncGtFormat        = "(%s > %s)"
+	PgBoolFuncGteFormat       = "(%s >= %s)"
+	PgBoolFuncLtFormat        = "(%s < %s)"
+	PgBoolFuncLteFormat       = "(%s <= %s)"
+	PgBoolFuncIsNullFormat    = "(%s is null)"
+	PgBoolFuncIsNotNullFormat = "(%s is not null)"
+	PgBoolFuncBetweenFormat   = "(%s between %s and %s)"
 )
 
 type Operator struct {
 	Op interface{} // 基于上面3种类型
 }
 
-// ArithFormatMap 内置函数名称和SQL片段 映射
 var (
+	// ArithFormatMap 内置函数名称和SQL片段 映射
 	ArithFormatMap = map[string]string{
 		string(Add): string(Add),
 		string(Sub): string(Sub),
 		string(Mul): string(Mul),
 		string(Div): string(Div),
 		string(Mod): string(Mod2),
+	}
+
+	BoolFormatMap = map[string]string{
+		BoolEq:              PgBoolFuncEqFormat,
+		BoolNeq:             PgBoolFuncNeqFormat,
+		BoolGt:              PgBoolFuncGtFormat,
+		BoolGte:             PgBoolFuncGteFormat,
+		BoolLt:              PgBoolFuncLtFormat,
+		BoolLte:             PgBoolFuncLteFormat,
+		PgBoolFuncIsNull:    PgBoolFuncIsNullFormat,
+		PgBoolFuncIsNotNull: PgBoolFuncIsNotNullFormat,
+		PgBoolFuncBetween:   PgBoolFuncBetweenFormat,
 	}
 )
 

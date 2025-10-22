@@ -72,9 +72,11 @@
         "CALL_TYPE_INNER",
         "CALL_TYPE_CUSTOM",
         "CALL_TYPE_ARITH",
-        "CALL_TYPE_LITERAL"
+        "CALL_TYPE_LITERAL",
+        "CALL_TYPE_BOOLEAN"
       ],
-      "default": "CALL_TYPE_UNSPECIFIED"
+      "default": "CALL_TYPE_UNSPECIFIED",
+      "title": "- CALL_TYPE_ARITH: e.g. + - / * %\n - CALL_TYPE_BOOLEAN: e.g.  =, !=, \u003c, \u003e, \u003c=, \u003e=, between, is null, is not null, etc"
     },
     "protoCaseWhen": {
       "type": "object",
@@ -255,8 +257,7 @@
           "$ref": "#/definitions/protoJoinType"
         },
         "table": {
-          "$ref": "#/definitions/protoMixTable",
-          "title": "todo Table -\u003e MixTable"
+          "$ref": "#/definitions/protoMixTable"
         },
         "joinCond": {
           "type": "array",
@@ -511,8 +512,7 @@
       "type": "object",
       "properties": {
         "from": {
-          "$ref": "#/definitions/protoMixTable",
-          "title": "todo Table -\u003e MixTable, 或者使用 optional 兼容参考 LogicGroup"
+          "$ref": "#/definitions/protoMixTable"
         },
         "join": {
           "type": "array",
