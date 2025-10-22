@@ -37,7 +37,7 @@ const (
 
 const (
 	BoolEq  = "="
-	BoolNeq = "!="
+	BoolNeq = "<>"
 	BoolGt  = ">"
 	BoolGte = ">="
 	BoolLt  = "<"
