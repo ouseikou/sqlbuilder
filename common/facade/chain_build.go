@@ -443,6 +443,11 @@ func buildJoinItemByProto(builder *xorm.Builder, join *pb.Join, ctx *ModelBuilde
 	joinCond := buildJoinCondByProto(join.GetJoinCond(), ctx)
 	joinSchemaTable := buildJoinSchemaTableByProto(join, ctx)
 
+	// 由于 xorm 强制要求 join 必须有 on, 因此针对 joinCond = 空数组时，默认使用 1=1 绕过
+	if joinCond == nil || strings.TrimSpace(fmt.Sprint(joinCond)) == "" {
+		joinCond = xorm.Expr("1=1")
+	}
+
 	switch join.GetType() {
 	case pb.JoinType_JOIN_TYPE_LEFT:
 		return builder.LeftJoin(joinSchemaTable, joinCond)

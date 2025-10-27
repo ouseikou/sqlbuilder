@@ -65,6 +65,7 @@ func TestXORMSQLBuilder(t *testing.T) {
 	builderWhere := xorm.Dialect(xorm.POSTGRES).
 		Select(`"t1"."category"`).
 		From(`"sample_data"."products"`, "t1").
+		InnerJoin("table2", xorm.Expr("1=1")). // 1=1 处理 JOIN-ON 强制要求 ON 的问题
 		//Where(xorm.Or(xorm.Eq{"c": 3, "a": "asda"}, xorm.Eq{"d": 4}))  // WHERE (a='asda' AND c=3) OR d=4 => 如果And和Or平级无法控制逻辑, 建议每块之间是And, 组内正常处理
 		//Where(xorm.Expr("c >1 and d = 6 or (q between 1 and 3)")) // expr 允许一切原生写法
 		//Where(xorm.Expr("c >1 and d = ? or (q between 1 and 3)", "asd")) // expr 还有 fmt.Sprintf() 效果
