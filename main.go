@@ -45,7 +45,3 @@ func main() {
 		logger.Fatal("Failed to start server: %v", err)
 	}
 }
-
-func SetLogger(log *logger.LocalLogger) {
-	logger.SetDefaultLogger(log)
-}

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/forhsd/logger"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -177,4 +178,8 @@ func AnalyzeAdditionByProto(c *gin.Context) {
 
 	c.JSON(http.StatusOK, resp)
 
+}
+
+func SetLogger(log *logger.LocalLogger) {
+	logger.SetDefaultLogger(log)
 }
