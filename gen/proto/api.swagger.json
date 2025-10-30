@@ -259,12 +259,8 @@
         "table": {
           "$ref": "#/definitions/protoMixTable"
         },
-        "joinCond": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/protoJoinCond"
-          }
+        "joinCondition": {
+          "$ref": "#/definitions/protoJoinCondition"
         }
       }
     },
@@ -276,6 +272,30 @@
         },
         "onCond": {
           "$ref": "#/definitions/protoCondition"
+        }
+      }
+    },
+    "protoJoinCondMulti": {
+      "type": "object",
+      "properties": {
+        "joinCond": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protoJoinCond"
+          }
+        }
+      }
+    },
+    "protoJoinCondition": {
+      "type": "object",
+      "properties": {
+        "multi_cond": {
+          "$ref": "#/definitions/protoJoinCondMulti"
+        },
+        "cond_literal": {
+          "$ref": "#/definitions/protoStringLiteral",
+          "title": "字面量可能包含多个on条件"
         }
       }
     },

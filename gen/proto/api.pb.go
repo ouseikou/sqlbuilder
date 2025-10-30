@@ -1006,7 +1006,7 @@ type Join struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Type          JoinType               `protobuf:"varint,1,opt,name=type,proto3,enum=proto.JoinType" json:"type,omitempty"`
 	Table         *MixTable              `protobuf:"bytes,2,opt,name=table,proto3" json:"table,omitempty"`
-	JoinCond      []*JoinCond            `protobuf:"bytes,3,rep,name=joinCond,proto3" json:"joinCond,omitempty"`
+	JoinCondition *JoinCondition         `protobuf:"bytes,3,opt,name=joinCondition,proto3" json:"joinCondition,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1055,7 +1055,134 @@ func (x *Join) GetTable() *MixTable {
 	return nil
 }
 
-func (x *Join) GetJoinCond() []*JoinCond {
+func (x *Join) GetJoinCondition() *JoinCondition {
+	if x != nil {
+		return x.JoinCondition
+	}
+	return nil
+}
+
+type JoinCondition struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Jc:
+	//
+	//	*JoinCondition_MultiCond
+	//	*JoinCondition_CondLiteral
+	Jc            isJoinCondition_Jc `protobuf_oneof:"jc"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *JoinCondition) Reset() {
+	*x = JoinCondition{}
+	mi := &file_proto_api_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *JoinCondition) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*JoinCondition) ProtoMessage() {}
+
+func (x *JoinCondition) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_api_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use JoinCondition.ProtoReflect.Descriptor instead.
+func (*JoinCondition) Descriptor() ([]byte, []int) {
+	return file_proto_api_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *JoinCondition) GetJc() isJoinCondition_Jc {
+	if x != nil {
+		return x.Jc
+	}
+	return nil
+}
+
+func (x *JoinCondition) GetMultiCond() *JoinCondMulti {
+	if x != nil {
+		if x, ok := x.Jc.(*JoinCondition_MultiCond); ok {
+			return x.MultiCond
+		}
+	}
+	return nil
+}
+
+func (x *JoinCondition) GetCondLiteral() *StringLiteral {
+	if x != nil {
+		if x, ok := x.Jc.(*JoinCondition_CondLiteral); ok {
+			return x.CondLiteral
+		}
+	}
+	return nil
+}
+
+type isJoinCondition_Jc interface {
+	isJoinCondition_Jc()
+}
+
+type JoinCondition_MultiCond struct {
+	MultiCond *JoinCondMulti `protobuf:"bytes,1,opt,name=multi_cond,json=multiCond,proto3,oneof"`
+}
+
+type JoinCondition_CondLiteral struct {
+	// 字面量可能包含多个on条件
+	CondLiteral *StringLiteral `protobuf:"bytes,2,opt,name=cond_literal,json=condLiteral,proto3,oneof"`
+}
+
+func (*JoinCondition_MultiCond) isJoinCondition_Jc() {}
+
+func (*JoinCondition_CondLiteral) isJoinCondition_Jc() {}
+
+type JoinCondMulti struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	JoinCond      []*JoinCond            `protobuf:"bytes,1,rep,name=joinCond,proto3" json:"joinCond,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *JoinCondMulti) Reset() {
+	*x = JoinCondMulti{}
+	mi := &file_proto_api_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *JoinCondMulti) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*JoinCondMulti) ProtoMessage() {}
+
+func (x *JoinCondMulti) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_api_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use JoinCondMulti.ProtoReflect.Descriptor instead.
+func (*JoinCondMulti) Descriptor() ([]byte, []int) {
+	return file_proto_api_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *JoinCondMulti) GetJoinCond() []*JoinCond {
 	if x != nil {
 		return x.JoinCond
 	}
@@ -1075,7 +1202,7 @@ type JoinCond struct {
 
 func (x *JoinCond) Reset() {
 	*x = JoinCond{}
-	mi := &file_proto_api_proto_msgTypes[10]
+	mi := &file_proto_api_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1087,7 +1214,7 @@ func (x *JoinCond) String() string {
 func (*JoinCond) ProtoMessage() {}
 
 func (x *JoinCond) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[10]
+	mi := &file_proto_api_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1100,7 +1227,7 @@ func (x *JoinCond) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinCond.ProtoReflect.Descriptor instead.
 func (*JoinCond) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{10}
+	return file_proto_api_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *JoinCond) GetMix() isJoinCond_Mix {
@@ -1156,7 +1283,7 @@ type OnField struct {
 
 func (x *OnField) Reset() {
 	*x = OnField{}
-	mi := &file_proto_api_proto_msgTypes[11]
+	mi := &file_proto_api_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1168,7 +1295,7 @@ func (x *OnField) String() string {
 func (*OnField) ProtoMessage() {}
 
 func (x *OnField) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[11]
+	mi := &file_proto_api_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1181,7 +1308,7 @@ func (x *OnField) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OnField.ProtoReflect.Descriptor instead.
 func (*OnField) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{11}
+	return file_proto_api_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *OnField) GetLeft() *MixField {
@@ -1222,7 +1349,7 @@ type OrderBy struct {
 
 func (x *OrderBy) Reset() {
 	*x = OrderBy{}
-	mi := &file_proto_api_proto_msgTypes[12]
+	mi := &file_proto_api_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1234,7 +1361,7 @@ func (x *OrderBy) String() string {
 func (*OrderBy) ProtoMessage() {}
 
 func (x *OrderBy) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[12]
+	mi := &file_proto_api_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1247,7 +1374,7 @@ func (x *OrderBy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OrderBy.ProtoReflect.Descriptor instead.
 func (*OrderBy) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{12}
+	return file_proto_api_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *OrderBy) GetDependent() *MixField {
@@ -1274,7 +1401,7 @@ type Limit struct {
 
 func (x *Limit) Reset() {
 	*x = Limit{}
-	mi := &file_proto_api_proto_msgTypes[13]
+	mi := &file_proto_api_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1286,7 +1413,7 @@ func (x *Limit) String() string {
 func (*Limit) ProtoMessage() {}
 
 func (x *Limit) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[13]
+	mi := &file_proto_api_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1299,7 +1426,7 @@ func (x *Limit) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Limit.ProtoReflect.Descriptor instead.
 func (*Limit) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{13}
+	return file_proto_api_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *Limit) GetLimitN() int32 {
@@ -1330,7 +1457,7 @@ type Column struct {
 
 func (x *Column) Reset() {
 	*x = Column{}
-	mi := &file_proto_api_proto_msgTypes[14]
+	mi := &file_proto_api_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1342,7 +1469,7 @@ func (x *Column) String() string {
 func (*Column) ProtoMessage() {}
 
 func (x *Column) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[14]
+	mi := &file_proto_api_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1355,7 +1482,7 @@ func (x *Column) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Column.ProtoReflect.Descriptor instead.
 func (*Column) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{14}
+	return file_proto_api_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *Column) GetField() string {
@@ -1418,7 +1545,7 @@ type Expression struct {
 
 func (x *Expression) Reset() {
 	*x = Expression{}
-	mi := &file_proto_api_proto_msgTypes[15]
+	mi := &file_proto_api_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1430,7 +1557,7 @@ func (x *Expression) String() string {
 func (*Expression) ProtoMessage() {}
 
 func (x *Expression) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[15]
+	mi := &file_proto_api_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1443,7 +1570,7 @@ func (x *Expression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Expression.ProtoReflect.Descriptor instead.
 func (*Expression) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{15}
+	return file_proto_api_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *Expression) GetCall() string {
@@ -1514,7 +1641,7 @@ type MixVars struct {
 
 func (x *MixVars) Reset() {
 	*x = MixVars{}
-	mi := &file_proto_api_proto_msgTypes[16]
+	mi := &file_proto_api_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1526,7 +1653,7 @@ func (x *MixVars) String() string {
 func (*MixVars) ProtoMessage() {}
 
 func (x *MixVars) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[16]
+	mi := &file_proto_api_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1539,7 +1666,7 @@ func (x *MixVars) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MixVars.ProtoReflect.Descriptor instead.
 func (*MixVars) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{16}
+	return file_proto_api_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *MixVars) GetVars() isMixVars_Vars {
@@ -1690,7 +1817,7 @@ type MixField struct {
 
 func (x *MixField) Reset() {
 	*x = MixField{}
-	mi := &file_proto_api_proto_msgTypes[17]
+	mi := &file_proto_api_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1702,7 +1829,7 @@ func (x *MixField) String() string {
 func (*MixField) ProtoMessage() {}
 
 func (x *MixField) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[17]
+	mi := &file_proto_api_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1715,7 +1842,7 @@ func (x *MixField) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MixField.ProtoReflect.Descriptor instead.
 func (*MixField) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{17}
+	return file_proto_api_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *MixField) GetMix() isMixField_Mix {
@@ -1786,7 +1913,7 @@ type CaseWhen struct {
 
 func (x *CaseWhen) Reset() {
 	*x = CaseWhen{}
-	mi := &file_proto_api_proto_msgTypes[18]
+	mi := &file_proto_api_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1798,7 +1925,7 @@ func (x *CaseWhen) String() string {
 func (*CaseWhen) ProtoMessage() {}
 
 func (x *CaseWhen) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[18]
+	mi := &file_proto_api_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1811,7 +1938,7 @@ func (x *CaseWhen) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CaseWhen.ProtoReflect.Descriptor instead.
 func (*CaseWhen) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{18}
+	return file_proto_api_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *CaseWhen) GetConditions() []*CaseWhenItem {
@@ -1853,7 +1980,7 @@ type CaseWhenItem struct {
 
 func (x *CaseWhenItem) Reset() {
 	*x = CaseWhenItem{}
-	mi := &file_proto_api_proto_msgTypes[19]
+	mi := &file_proto_api_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1865,7 +1992,7 @@ func (x *CaseWhenItem) String() string {
 func (*CaseWhenItem) ProtoMessage() {}
 
 func (x *CaseWhenItem) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[19]
+	mi := &file_proto_api_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1878,7 +2005,7 @@ func (x *CaseWhenItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CaseWhenItem.ProtoReflect.Descriptor instead.
 func (*CaseWhenItem) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{19}
+	return file_proto_api_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *CaseWhenItem) GetWhen() []*MixWhere {
@@ -1905,7 +2032,7 @@ type MultiCondition struct {
 
 func (x *MultiCondition) Reset() {
 	*x = MultiCondition{}
-	mi := &file_proto_api_proto_msgTypes[20]
+	mi := &file_proto_api_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1917,7 +2044,7 @@ func (x *MultiCondition) String() string {
 func (*MultiCondition) ProtoMessage() {}
 
 func (x *MultiCondition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[20]
+	mi := &file_proto_api_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1930,7 +2057,7 @@ func (x *MultiCondition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MultiCondition.ProtoReflect.Descriptor instead.
 func (*MultiCondition) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{20}
+	return file_proto_api_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *MultiCondition) GetConditions() []*MixWhere {
@@ -1953,7 +2080,7 @@ type LogicNode struct {
 
 func (x *LogicNode) Reset() {
 	*x = LogicNode{}
-	mi := &file_proto_api_proto_msgTypes[21]
+	mi := &file_proto_api_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1965,7 +2092,7 @@ func (x *LogicNode) String() string {
 func (*LogicNode) ProtoMessage() {}
 
 func (x *LogicNode) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[21]
+	mi := &file_proto_api_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1978,7 +2105,7 @@ func (x *LogicNode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogicNode.ProtoReflect.Descriptor instead.
 func (*LogicNode) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{21}
+	return file_proto_api_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *LogicNode) GetNode() isLogicNode_Node {
@@ -2033,7 +2160,7 @@ type LogicGroup struct {
 
 func (x *LogicGroup) Reset() {
 	*x = LogicGroup{}
-	mi := &file_proto_api_proto_msgTypes[22]
+	mi := &file_proto_api_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2045,7 +2172,7 @@ func (x *LogicGroup) String() string {
 func (*LogicGroup) ProtoMessage() {}
 
 func (x *LogicGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[22]
+	mi := &file_proto_api_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2058,7 +2185,7 @@ func (x *LogicGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogicGroup.ProtoReflect.Descriptor instead.
 func (*LogicGroup) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{22}
+	return file_proto_api_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *LogicGroup) GetLogic() Logic {
@@ -2095,7 +2222,7 @@ type MixWhere struct {
 
 func (x *MixWhere) Reset() {
 	*x = MixWhere{}
-	mi := &file_proto_api_proto_msgTypes[23]
+	mi := &file_proto_api_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2107,7 +2234,7 @@ func (x *MixWhere) String() string {
 func (*MixWhere) ProtoMessage() {}
 
 func (x *MixWhere) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[23]
+	mi := &file_proto_api_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2120,7 +2247,7 @@ func (x *MixWhere) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MixWhere.ProtoReflect.Descriptor instead.
 func (*MixWhere) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{23}
+	return file_proto_api_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *MixWhere) GetFilter() isMixWhere_Filter {
@@ -2180,7 +2307,7 @@ type Condition struct {
 
 func (x *Condition) Reset() {
 	*x = Condition{}
-	mi := &file_proto_api_proto_msgTypes[24]
+	mi := &file_proto_api_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2192,7 +2319,7 @@ func (x *Condition) String() string {
 func (*Condition) ProtoMessage() {}
 
 func (x *Condition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[24]
+	mi := &file_proto_api_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2205,7 +2332,7 @@ func (x *Condition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Condition.ProtoReflect.Descriptor instead.
 func (*Condition) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{24}
+	return file_proto_api_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *Condition) GetField() *MixField {
@@ -2274,7 +2401,7 @@ type StringLiteral struct {
 
 func (x *StringLiteral) Reset() {
 	*x = StringLiteral{}
-	mi := &file_proto_api_proto_msgTypes[25]
+	mi := &file_proto_api_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2286,7 +2413,7 @@ func (x *StringLiteral) String() string {
 func (*StringLiteral) ProtoMessage() {}
 
 func (x *StringLiteral) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[25]
+	mi := &file_proto_api_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2299,7 +2426,7 @@ func (x *StringLiteral) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StringLiteral.ProtoReflect.Descriptor instead.
 func (*StringLiteral) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{25}
+	return file_proto_api_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *StringLiteral) GetLiteral() string {
@@ -2325,7 +2452,7 @@ type BasicData struct {
 
 func (x *BasicData) Reset() {
 	*x = BasicData{}
-	mi := &file_proto_api_proto_msgTypes[26]
+	mi := &file_proto_api_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2337,7 +2464,7 @@ func (x *BasicData) String() string {
 func (*BasicData) ProtoMessage() {}
 
 func (x *BasicData) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[26]
+	mi := &file_proto_api_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2350,7 +2477,7 @@ func (x *BasicData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BasicData.ProtoReflect.Descriptor instead.
 func (*BasicData) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{26}
+	return file_proto_api_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *BasicData) GetData() isBasicData_Data {
@@ -2448,7 +2575,7 @@ type BasicDataArr struct {
 
 func (x *BasicDataArr) Reset() {
 	*x = BasicDataArr{}
-	mi := &file_proto_api_proto_msgTypes[27]
+	mi := &file_proto_api_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2460,7 +2587,7 @@ func (x *BasicDataArr) String() string {
 func (*BasicDataArr) ProtoMessage() {}
 
 func (x *BasicDataArr) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[27]
+	mi := &file_proto_api_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2473,7 +2600,7 @@ func (x *BasicDataArr) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BasicDataArr.ProtoReflect.Descriptor instead.
 func (*BasicDataArr) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{27}
+	return file_proto_api_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *BasicDataArr) GetArgs() []*BasicData {
@@ -2499,7 +2626,7 @@ type TemplateArg struct {
 
 func (x *TemplateArg) Reset() {
 	*x = TemplateArg{}
-	mi := &file_proto_api_proto_msgTypes[28]
+	mi := &file_proto_api_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2511,7 +2638,7 @@ func (x *TemplateArg) String() string {
 func (*TemplateArg) ProtoMessage() {}
 
 func (x *TemplateArg) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[28]
+	mi := &file_proto_api_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2524,7 +2651,7 @@ func (x *TemplateArg) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TemplateArg.ProtoReflect.Descriptor instead.
 func (*TemplateArg) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{28}
+	return file_proto_api_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *TemplateArg) GetData() isTemplateArg_Data {
@@ -2623,7 +2750,7 @@ type AnalyzeTemplateRequest struct {
 
 func (x *AnalyzeTemplateRequest) Reset() {
 	*x = AnalyzeTemplateRequest{}
-	mi := &file_proto_api_proto_msgTypes[29]
+	mi := &file_proto_api_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2635,7 +2762,7 @@ func (x *AnalyzeTemplateRequest) String() string {
 func (*AnalyzeTemplateRequest) ProtoMessage() {}
 
 func (x *AnalyzeTemplateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[29]
+	mi := &file_proto_api_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2648,7 +2775,7 @@ func (x *AnalyzeTemplateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AnalyzeTemplateRequest.ProtoReflect.Descriptor instead.
 func (*AnalyzeTemplateRequest) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{29}
+	return file_proto_api_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *AnalyzeTemplateRequest) GetTmpl() string {
@@ -2674,7 +2801,7 @@ type AnalyzeAdditionRequest struct {
 
 func (x *AnalyzeAdditionRequest) Reset() {
 	*x = AnalyzeAdditionRequest{}
-	mi := &file_proto_api_proto_msgTypes[30]
+	mi := &file_proto_api_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2686,7 +2813,7 @@ func (x *AnalyzeAdditionRequest) String() string {
 func (*AnalyzeAdditionRequest) ProtoMessage() {}
 
 func (x *AnalyzeAdditionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_proto_msgTypes[30]
+	mi := &file_proto_api_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2699,7 +2826,7 @@ func (x *AnalyzeAdditionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AnalyzeAdditionRequest.ProtoReflect.Descriptor instead.
 func (*AnalyzeAdditionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_api_proto_rawDescGZIP(), []int{30}
+	return file_proto_api_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *AnalyzeAdditionRequest) GetTmpl() string {
@@ -2764,11 +2891,18 @@ const file_proto_api_proto_rawDesc = "" +
 	"\bMixTable\x121\n" +
 	"\fnormal_table\x18\x01 \x01(\v2\f.proto.TableH\x00R\vnormalTable\x12:\n" +
 	"\rliteral_table\x18\x02 \x01(\v2\x13.proto.LiteralTableH\x00R\fliteralTableB\x04\n" +
-	"\x02mt\"\x7f\n" +
+	"\x02mt\"\x8e\x01\n" +
 	"\x04Join\x12#\n" +
 	"\x04type\x18\x01 \x01(\x0e2\x0f.proto.JoinTypeR\x04type\x12%\n" +
-	"\x05table\x18\x02 \x01(\v2\x0f.proto.MixTableR\x05table\x12+\n" +
-	"\bjoinCond\x18\x03 \x03(\v2\x0f.proto.JoinCondR\bjoinCond\"i\n" +
+	"\x05table\x18\x02 \x01(\v2\x0f.proto.MixTableR\x05table\x12:\n" +
+	"\rjoinCondition\x18\x03 \x01(\v2\x14.proto.JoinConditionR\rjoinCondition\"\x87\x01\n" +
+	"\rJoinCondition\x125\n" +
+	"\n" +
+	"multi_cond\x18\x01 \x01(\v2\x14.proto.JoinCondMultiH\x00R\tmultiCond\x129\n" +
+	"\fcond_literal\x18\x02 \x01(\v2\x14.proto.StringLiteralH\x00R\vcondLiteralB\x04\n" +
+	"\x02jc\"<\n" +
+	"\rJoinCondMulti\x12+\n" +
+	"\bjoinCond\x18\x01 \x03(\v2\x0f.proto.JoinCondR\bjoinCond\"i\n" +
 	"\bJoinCond\x12*\n" +
 	"\aonField\x18\x01 \x01(\v2\x0e.proto.OnFieldH\x00R\aonField\x12*\n" +
 	"\x06onCond\x18\x02 \x01(\v2\x10.proto.ConditionH\x00R\x06onCondB\x05\n" +
@@ -2964,7 +3098,7 @@ func file_proto_api_proto_rawDescGZIP() []byte {
 }
 
 var file_proto_api_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_proto_api_proto_msgTypes = make([]protoimpl.MessageInfo, 34)
+var file_proto_api_proto_msgTypes = make([]protoimpl.MessageInfo, 36)
 var file_proto_api_proto_goTypes = []any{
 	(Driver)(0),                    // 0: proto.Driver
 	(BuilderStrategy)(0),           // 1: proto.BuilderStrategy
@@ -2982,104 +3116,109 @@ var file_proto_api_proto_goTypes = []any{
 	(*LiteralTable)(nil),           // 13: proto.LiteralTable
 	(*MixTable)(nil),               // 14: proto.MixTable
 	(*Join)(nil),                   // 15: proto.Join
-	(*JoinCond)(nil),               // 16: proto.JoinCond
-	(*OnField)(nil),                // 17: proto.OnField
-	(*OrderBy)(nil),                // 18: proto.OrderBy
-	(*Limit)(nil),                  // 19: proto.Limit
-	(*Column)(nil),                 // 20: proto.Column
-	(*Expression)(nil),             // 21: proto.Expression
-	(*MixVars)(nil),                // 22: proto.MixVars
-	(*MixField)(nil),               // 23: proto.MixField
-	(*CaseWhen)(nil),               // 24: proto.CaseWhen
-	(*CaseWhenItem)(nil),           // 25: proto.CaseWhenItem
-	(*MultiCondition)(nil),         // 26: proto.MultiCondition
-	(*LogicNode)(nil),              // 27: proto.LogicNode
-	(*LogicGroup)(nil),             // 28: proto.LogicGroup
-	(*MixWhere)(nil),               // 29: proto.MixWhere
-	(*Condition)(nil),              // 30: proto.Condition
-	(*StringLiteral)(nil),          // 31: proto.StringLiteral
-	(*BasicData)(nil),              // 32: proto.BasicData
-	(*BasicDataArr)(nil),           // 33: proto.BasicDataArr
-	(*TemplateArg)(nil),            // 34: proto.TemplateArg
-	(*AnalyzeTemplateRequest)(nil), // 35: proto.AnalyzeTemplateRequest
-	(*AnalyzeAdditionRequest)(nil), // 36: proto.AnalyzeAdditionRequest
-	nil,                            // 37: proto.CommonResponse.DataEntry
-	nil,                            // 38: proto.SqlText.ArgsEntry
-	nil,                            // 39: proto.AnalyzeTemplateRequest.ArgsEntry
+	(*JoinCondition)(nil),          // 16: proto.JoinCondition
+	(*JoinCondMulti)(nil),          // 17: proto.JoinCondMulti
+	(*JoinCond)(nil),               // 18: proto.JoinCond
+	(*OnField)(nil),                // 19: proto.OnField
+	(*OrderBy)(nil),                // 20: proto.OrderBy
+	(*Limit)(nil),                  // 21: proto.Limit
+	(*Column)(nil),                 // 22: proto.Column
+	(*Expression)(nil),             // 23: proto.Expression
+	(*MixVars)(nil),                // 24: proto.MixVars
+	(*MixField)(nil),               // 25: proto.MixField
+	(*CaseWhen)(nil),               // 26: proto.CaseWhen
+	(*CaseWhenItem)(nil),           // 27: proto.CaseWhenItem
+	(*MultiCondition)(nil),         // 28: proto.MultiCondition
+	(*LogicNode)(nil),              // 29: proto.LogicNode
+	(*LogicGroup)(nil),             // 30: proto.LogicGroup
+	(*MixWhere)(nil),               // 31: proto.MixWhere
+	(*Condition)(nil),              // 32: proto.Condition
+	(*StringLiteral)(nil),          // 33: proto.StringLiteral
+	(*BasicData)(nil),              // 34: proto.BasicData
+	(*BasicDataArr)(nil),           // 35: proto.BasicDataArr
+	(*TemplateArg)(nil),            // 36: proto.TemplateArg
+	(*AnalyzeTemplateRequest)(nil), // 37: proto.AnalyzeTemplateRequest
+	(*AnalyzeAdditionRequest)(nil), // 38: proto.AnalyzeAdditionRequest
+	nil,                            // 39: proto.CommonResponse.DataEntry
+	nil,                            // 40: proto.SqlText.ArgsEntry
+	nil,                            // 41: proto.AnalyzeTemplateRequest.ArgsEntry
 }
 var file_proto_api_proto_depIdxs = []int32{
-	37, // 0: proto.CommonResponse.data:type_name -> proto.CommonResponse.DataEntry
+	39, // 0: proto.CommonResponse.data:type_name -> proto.CommonResponse.DataEntry
 	8,  // 1: proto.BuilderRequest.builders:type_name -> proto.DeepWrapper
 	0,  // 2: proto.BuilderRequest.driver:type_name -> proto.Driver
 	1,  // 3: proto.BuilderRequest.strategy:type_name -> proto.BuilderStrategy
 	9,  // 4: proto.DeepWrapper.sql:type_name -> proto.MixSql
 	11, // 5: proto.MixSql.model:type_name -> proto.SqlReference
 	10, // 6: proto.MixSql.template:type_name -> proto.SqlText
-	38, // 7: proto.SqlText.args:type_name -> proto.SqlText.ArgsEntry
+	40, // 7: proto.SqlText.args:type_name -> proto.SqlText.ArgsEntry
 	14, // 8: proto.SqlReference.from:type_name -> proto.MixTable
 	15, // 9: proto.SqlReference.join:type_name -> proto.Join
-	29, // 10: proto.SqlReference.where:type_name -> proto.MixWhere
-	23, // 11: proto.SqlReference.group_by:type_name -> proto.MixField
-	21, // 12: proto.SqlReference.aggregation:type_name -> proto.Expression
-	23, // 13: proto.SqlReference.select:type_name -> proto.MixField
-	18, // 14: proto.SqlReference.order_by:type_name -> proto.OrderBy
-	19, // 15: proto.SqlReference.limit:type_name -> proto.Limit
-	28, // 16: proto.SqlReference.logic_where:type_name -> proto.LogicGroup
-	31, // 17: proto.LiteralTable.sub_literal:type_name -> proto.StringLiteral
+	31, // 10: proto.SqlReference.where:type_name -> proto.MixWhere
+	25, // 11: proto.SqlReference.group_by:type_name -> proto.MixField
+	23, // 12: proto.SqlReference.aggregation:type_name -> proto.Expression
+	25, // 13: proto.SqlReference.select:type_name -> proto.MixField
+	20, // 14: proto.SqlReference.order_by:type_name -> proto.OrderBy
+	21, // 15: proto.SqlReference.limit:type_name -> proto.Limit
+	30, // 16: proto.SqlReference.logic_where:type_name -> proto.LogicGroup
+	33, // 17: proto.LiteralTable.sub_literal:type_name -> proto.StringLiteral
 	12, // 18: proto.MixTable.normal_table:type_name -> proto.Table
 	13, // 19: proto.MixTable.literal_table:type_name -> proto.LiteralTable
 	3,  // 20: proto.Join.type:type_name -> proto.JoinType
 	14, // 21: proto.Join.table:type_name -> proto.MixTable
-	16, // 22: proto.Join.joinCond:type_name -> proto.JoinCond
-	17, // 23: proto.JoinCond.onField:type_name -> proto.OnField
-	30, // 24: proto.JoinCond.onCond:type_name -> proto.Condition
-	23, // 25: proto.OnField.left:type_name -> proto.MixField
-	23, // 26: proto.OnField.right:type_name -> proto.MixField
-	5,  // 27: proto.OnField.on:type_name -> proto.Op
-	4,  // 28: proto.OnField.logic:type_name -> proto.Logic
-	23, // 29: proto.OrderBy.dependent:type_name -> proto.MixField
-	2,  // 30: proto.Expression.call_type:type_name -> proto.CallType
-	22, // 31: proto.Expression.vars:type_name -> proto.MixVars
-	31, // 32: proto.Expression.str_literal:type_name -> proto.StringLiteral
-	20, // 33: proto.MixVars.column:type_name -> proto.Column
-	21, // 34: proto.MixVars.expression:type_name -> proto.Expression
-	26, // 35: proto.MixVars.multi_condition:type_name -> proto.MultiCondition
-	28, // 36: proto.MixVars.logic_condition:type_name -> proto.LogicGroup
-	31, // 37: proto.MixVars.str_literal:type_name -> proto.StringLiteral
-	20, // 38: proto.MixField.column:type_name -> proto.Column
-	21, // 39: proto.MixField.expression:type_name -> proto.Expression
-	24, // 40: proto.MixField.case_when:type_name -> proto.CaseWhen
-	25, // 41: proto.CaseWhen.conditions:type_name -> proto.CaseWhenItem
-	32, // 42: proto.CaseWhen.else_value:type_name -> proto.BasicData
-	29, // 43: proto.CaseWhenItem.when:type_name -> proto.MixWhere
-	32, // 44: proto.CaseWhenItem.then:type_name -> proto.BasicData
-	29, // 45: proto.MultiCondition.conditions:type_name -> proto.MixWhere
-	28, // 46: proto.LogicNode.group:type_name -> proto.LogicGroup
-	29, // 47: proto.LogicNode.leaf:type_name -> proto.MixWhere
-	4,  // 48: proto.LogicGroup.logic:type_name -> proto.Logic
-	27, // 49: proto.LogicGroup.children:type_name -> proto.LogicNode
-	30, // 50: proto.MixWhere.condition:type_name -> proto.Condition
-	21, // 51: proto.MixWhere.expression:type_name -> proto.Expression
-	23, // 52: proto.Condition.field:type_name -> proto.MixField
-	32, // 53: proto.Condition.args:type_name -> proto.BasicData
-	5,  // 54: proto.Condition.operator:type_name -> proto.Op
-	4,  // 55: proto.Condition.logic:type_name -> proto.Logic
-	31, // 56: proto.Condition.literal_cond:type_name -> proto.StringLiteral
-	31, // 57: proto.BasicData.str_literal:type_name -> proto.StringLiteral
-	32, // 58: proto.BasicDataArr.args:type_name -> proto.BasicData
-	33, // 59: proto.TemplateArg.val_items:type_name -> proto.BasicDataArr
-	39, // 60: proto.AnalyzeTemplateRequest.args:type_name -> proto.AnalyzeTemplateRequest.ArgsEntry
-	34, // 61: proto.SqlText.ArgsEntry.value:type_name -> proto.TemplateArg
-	34, // 62: proto.AnalyzeTemplateRequest.ArgsEntry.value:type_name -> proto.TemplateArg
-	7,  // 63: proto.SqlBuilderApi.Generate:input_type -> proto.BuilderRequest
-	35, // 64: proto.SqlBuilderApi.AnalyzeTemplate:input_type -> proto.AnalyzeTemplateRequest
-	6,  // 65: proto.SqlBuilderApi.Generate:output_type -> proto.CommonResponse
-	6,  // 66: proto.SqlBuilderApi.AnalyzeTemplate:output_type -> proto.CommonResponse
-	65, // [65:67] is the sub-list for method output_type
-	63, // [63:65] is the sub-list for method input_type
-	63, // [63:63] is the sub-list for extension type_name
-	63, // [63:63] is the sub-list for extension extendee
-	0,  // [0:63] is the sub-list for field type_name
+	16, // 22: proto.Join.joinCondition:type_name -> proto.JoinCondition
+	17, // 23: proto.JoinCondition.multi_cond:type_name -> proto.JoinCondMulti
+	33, // 24: proto.JoinCondition.cond_literal:type_name -> proto.StringLiteral
+	18, // 25: proto.JoinCondMulti.joinCond:type_name -> proto.JoinCond
+	19, // 26: proto.JoinCond.onField:type_name -> proto.OnField
+	32, // 27: proto.JoinCond.onCond:type_name -> proto.Condition
+	25, // 28: proto.OnField.left:type_name -> proto.MixField
+	25, // 29: proto.OnField.right:type_name -> proto.MixField
+	5,  // 30: proto.OnField.on:type_name -> proto.Op
+	4,  // 31: proto.OnField.logic:type_name -> proto.Logic
+	25, // 32: proto.OrderBy.dependent:type_name -> proto.MixField
+	2,  // 33: proto.Expression.call_type:type_name -> proto.CallType
+	24, // 34: proto.Expression.vars:type_name -> proto.MixVars
+	33, // 35: proto.Expression.str_literal:type_name -> proto.StringLiteral
+	22, // 36: proto.MixVars.column:type_name -> proto.Column
+	23, // 37: proto.MixVars.expression:type_name -> proto.Expression
+	28, // 38: proto.MixVars.multi_condition:type_name -> proto.MultiCondition
+	30, // 39: proto.MixVars.logic_condition:type_name -> proto.LogicGroup
+	33, // 40: proto.MixVars.str_literal:type_name -> proto.StringLiteral
+	22, // 41: proto.MixField.column:type_name -> proto.Column
+	23, // 42: proto.MixField.expression:type_name -> proto.Expression
+	26, // 43: proto.MixField.case_when:type_name -> proto.CaseWhen
+	27, // 44: proto.CaseWhen.conditions:type_name -> proto.CaseWhenItem
+	34, // 45: proto.CaseWhen.else_value:type_name -> proto.BasicData
+	31, // 46: proto.CaseWhenItem.when:type_name -> proto.MixWhere
+	34, // 47: proto.CaseWhenItem.then:type_name -> proto.BasicData
+	31, // 48: proto.MultiCondition.conditions:type_name -> proto.MixWhere
+	30, // 49: proto.LogicNode.group:type_name -> proto.LogicGroup
+	31, // 50: proto.LogicNode.leaf:type_name -> proto.MixWhere
+	4,  // 51: proto.LogicGroup.logic:type_name -> proto.Logic
+	29, // 52: proto.LogicGroup.children:type_name -> proto.LogicNode
+	32, // 53: proto.MixWhere.condition:type_name -> proto.Condition
+	23, // 54: proto.MixWhere.expression:type_name -> proto.Expression
+	25, // 55: proto.Condition.field:type_name -> proto.MixField
+	34, // 56: proto.Condition.args:type_name -> proto.BasicData
+	5,  // 57: proto.Condition.operator:type_name -> proto.Op
+	4,  // 58: proto.Condition.logic:type_name -> proto.Logic
+	33, // 59: proto.Condition.literal_cond:type_name -> proto.StringLiteral
+	33, // 60: proto.BasicData.str_literal:type_name -> proto.StringLiteral
+	34, // 61: proto.BasicDataArr.args:type_name -> proto.BasicData
+	35, // 62: proto.TemplateArg.val_items:type_name -> proto.BasicDataArr
+	41, // 63: proto.AnalyzeTemplateRequest.args:type_name -> proto.AnalyzeTemplateRequest.ArgsEntry
+	36, // 64: proto.SqlText.ArgsEntry.value:type_name -> proto.TemplateArg
+	36, // 65: proto.AnalyzeTemplateRequest.ArgsEntry.value:type_name -> proto.TemplateArg
+	7,  // 66: proto.SqlBuilderApi.Generate:input_type -> proto.BuilderRequest
+	37, // 67: proto.SqlBuilderApi.AnalyzeTemplate:input_type -> proto.AnalyzeTemplateRequest
+	6,  // 68: proto.SqlBuilderApi.Generate:output_type -> proto.CommonResponse
+	6,  // 69: proto.SqlBuilderApi.AnalyzeTemplate:output_type -> proto.CommonResponse
+	68, // [68:70] is the sub-list for method output_type
+	66, // [66:68] is the sub-list for method input_type
+	66, // [66:66] is the sub-list for extension type_name
+	66, // [66:66] is the sub-list for extension extendee
+	0,  // [0:66] is the sub-list for field type_name
 }
 
 func init() { file_proto_api_proto_init() }
@@ -3097,11 +3236,15 @@ func file_proto_api_proto_init() {
 		(*MixTable_LiteralTable)(nil),
 	}
 	file_proto_api_proto_msgTypes[10].OneofWrappers = []any{
+		(*JoinCondition_MultiCond)(nil),
+		(*JoinCondition_CondLiteral)(nil),
+	}
+	file_proto_api_proto_msgTypes[12].OneofWrappers = []any{
 		(*JoinCond_OnField)(nil),
 		(*JoinCond_OnCond)(nil),
 	}
-	file_proto_api_proto_msgTypes[15].OneofWrappers = []any{}
-	file_proto_api_proto_msgTypes[16].OneofWrappers = []any{
+	file_proto_api_proto_msgTypes[17].OneofWrappers = []any{}
+	file_proto_api_proto_msgTypes[18].OneofWrappers = []any{
 		(*MixVars_Column)(nil),
 		(*MixVars_Expression)(nil),
 		(*MixVars_MultiCondition)(nil),
@@ -3111,28 +3254,28 @@ func file_proto_api_proto_init() {
 		(*MixVars_DoubleNum)(nil),
 		(*MixVars_StrLiteral)(nil),
 	}
-	file_proto_api_proto_msgTypes[17].OneofWrappers = []any{
+	file_proto_api_proto_msgTypes[19].OneofWrappers = []any{
 		(*MixField_Column)(nil),
 		(*MixField_Expression)(nil),
 		(*MixField_CaseWhen)(nil),
 	}
-	file_proto_api_proto_msgTypes[21].OneofWrappers = []any{
+	file_proto_api_proto_msgTypes[23].OneofWrappers = []any{
 		(*LogicNode_Group)(nil),
 		(*LogicNode_Leaf)(nil),
 	}
-	file_proto_api_proto_msgTypes[23].OneofWrappers = []any{
+	file_proto_api_proto_msgTypes[25].OneofWrappers = []any{
 		(*MixWhere_Condition)(nil),
 		(*MixWhere_Expression)(nil),
 	}
-	file_proto_api_proto_msgTypes[24].OneofWrappers = []any{}
-	file_proto_api_proto_msgTypes[26].OneofWrappers = []any{
+	file_proto_api_proto_msgTypes[26].OneofWrappers = []any{}
+	file_proto_api_proto_msgTypes[28].OneofWrappers = []any{
 		(*BasicData_IntVal)(nil),
 		(*BasicData_DoubleVal)(nil),
 		(*BasicData_StrVal)(nil),
 		(*BasicData_Logic)(nil),
 		(*BasicData_StrLiteral)(nil),
 	}
-	file_proto_api_proto_msgTypes[28].OneofWrappers = []any{
+	file_proto_api_proto_msgTypes[30].OneofWrappers = []any{
 		(*TemplateArg_IntVal)(nil),
 		(*TemplateArg_DoubleVal)(nil),
 		(*TemplateArg_StrVal)(nil),
@@ -3145,7 +3288,7 @@ func file_proto_api_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_api_proto_rawDesc), len(file_proto_api_proto_rawDesc)),
 			NumEnums:      6,
-			NumMessages:   34,
+			NumMessages:   36,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -138,7 +138,19 @@ enum JoinType {
 message Join {
   JoinType type = 1;
   MixTable table = 2;
-  repeated JoinCond joinCond = 3;
+  JoinCondition joinCondition = 3;
+}
+
+message JoinCondition {
+  oneof jc {
+    JoinCondMulti multi_cond = 1;
+    // 字面量可能包含多个on条件
+    StringLiteral cond_literal = 2;
+  }
+}
+
+message JoinCondMulti {
+  repeated JoinCond joinCond = 1;
 }
 
 message JoinCond {

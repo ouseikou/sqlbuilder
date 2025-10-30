@@ -440,7 +440,7 @@ func buildJoinByProto(builder *xorm.Builder, sqlRef *pb.SqlReference, ctx *Model
 }
 
 func buildJoinItemByProto(builder *xorm.Builder, join *pb.Join, ctx *ModelBuilderCtx) *xorm.Builder {
-	joinCond := buildJoinCondByProto(join.GetJoinCond(), ctx)
+	joinCond := buildJoinCondByProtoOuter(join.GetJoinCondition(), ctx)
 	joinSchemaTable := buildJoinSchemaTableByProto(join, ctx)
 
 	// 由于 xorm 强制要求 join 必须有 on, 因此针对 joinCond = 空数组时，默认使用 1=1 绕过
@@ -479,6 +479,18 @@ func buildJoinSchemaTableByProto(join *pb.Join, ctx *ModelBuilderCtx) interface{
 	default:
 		panic("未知Join-Table类型")
 	}
+}
+
+func buildJoinCondByProtoOuter(joinCondProto *pb.JoinCondition, ctx *ModelBuilderCtx) interface{} {
+	switch jc := joinCondProto.GetJc().(type) {
+	case *pb.JoinCondition_MultiCond:
+		multiCond := jc.MultiCond
+		return buildJoinCondByProto(multiCond.GetJoinCond(), ctx)
+	case *pb.JoinCondition_CondLiteral:
+		literalOn := jc.CondLiteral
+		return xorm.Expr(literalOn.GetLiteral())
+	}
+	return "1=1"
 }
 
 func buildJoinCondByProto(joinCondProto []*pb.JoinCond, ctx *ModelBuilderCtx) interface{} {
