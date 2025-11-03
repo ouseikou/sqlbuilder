@@ -162,7 +162,9 @@ func createBasicArgsByProto(sqlRef *pb.SqlReference, ctx *ModelBuilderCtx) ([]st
 	case *pb.MixTable_LiteralTable:
 		literalTable := v.LiteralTable
 		// 第二个参数是子查询字面量加小括号，第三个参数是别名
-		return selects, fmt.Sprintf(clause.PntFormat, literalTable.GetSubLiteral().GetLiteral()), fmt.Sprintf(string1LiteralSafeFormat, literalTable.GetLiteralAlias())
+		return selects,
+			fmt.Sprintf(clause.PntFormat, literalTable.GetSubLiteral().GetLiteral()),
+			fmt.Sprintf(string1LiteralSafeFormat, literalTable.GetLiteralAlias())
 	default:
 		panic("未知Table类型")
 	}
@@ -280,7 +282,7 @@ func getExpressionFuncFormatByProto(expression *pb.Expression, ctx *ModelBuilder
 
 	// 是否使用 as 别名
 	// Expression 表达式只有在select关键字使用alias
-	asFormat := ctx.AsFormatLiteralSafeMap
+	asFormat := ctx.AsFormatLiteralSafeFormat
 	if expression.UseAs {
 		finalFormat = fmt.Sprintf(asFormat, finalFormat)
 	}
@@ -443,9 +445,9 @@ func buildJoinItemByProto(builder *xorm.Builder, join *pb.Join, ctx *ModelBuilde
 	joinCond := buildJoinCondByProtoOuter(join.GetJoinCondition(), ctx)
 	joinSchemaTable := buildJoinSchemaTableByProto(join, ctx)
 
-	// 由于 xorm 强制要求 join 必须有 on, 因此针对 joinCond = 空数组时，默认使用 1=1 绕过
+	// 由于 xorm 强制要求 join 必须有 on, 因此针对 joinCond = 空数组时，builder 中填充 [on 特殊字符串]，在 toSql 时去掉 [on 特殊字符串]
 	if joinCond == nil || strings.TrimSpace(fmt.Sprint(joinCond)) == "" {
-		joinCond = xorm.Expr("1=1")
+		joinCond = xorm.Expr(clause.CrossJoinPlaceholder)
 	}
 
 	switch join.GetType() {
@@ -475,7 +477,10 @@ func buildJoinSchemaTableByProto(join *pb.Join, ctx *ModelBuilderCtx) interface{
 		return joinSchemaTable
 	case *pb.MixTable_LiteralTable:
 		literalTable := v.LiteralTable
-		return xorm.As(fmt.Sprintf(clause.PntFormat, literalTable.GetSubLiteral().GetLiteral()), literalTable.GetLiteralAlias())
+		literalTableFormat := ctx.TableLiteralAsFormatLiteralSafeFormat
+		// 坑1: 原生As不会根据方言带引号, 只能代码自己format处理别名引号; 坑2: 一次性format只需要%s就行，但是format(str,带占位符strX)其中strX必须是%%s
+		return fmt.Sprintf(literalTableFormat, literalTable.GetSubLiteral().GetLiteral(), literalTable.GetLiteralAlias())
+
 	default:
 		panic("未知Join-Table类型")
 	}

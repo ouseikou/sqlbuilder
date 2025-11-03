@@ -16,6 +16,9 @@ const (
 	InnerJoinXorm string = "INNER"
 	FullJoinXorm  string = "FULL"
 	CrossJoinXorm string = "CROSS"
+
+	CrossJoinPlaceholder      = "/*__XORM_CROSS_JOIN__*/"
+	CrossJoinPlaceholderRegex = `(?i)\s*ON\s*/\*__XORM_CROSS_JOIN__\*/`
 )
 
 // OnFieldFormat e.g. InnerJoin("table3", "table2.id = table3.tid")

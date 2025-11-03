@@ -2,6 +2,7 @@ package facade
 
 import (
 	"errors"
+	"regexp"
 
 	"github.com/ouseikou/sqlbuilder/common/clause"
 	pb "github.com/ouseikou/sqlbuilder/gen/proto"
@@ -35,6 +36,12 @@ var (
 		pb.Driver_DRIVER_DORIS:    clause.MYSQLAsFormat,
 	}
 
+	TableLiteralAsFormatLiteralSafeMap = map[pb.Driver]string{
+		pb.Driver_DRIVER_POSTGRES: clause.PGLiteralTableAsFormat,
+		pb.Driver_DRIVER_MYSQL:    clause.MYSQLLiteralTableAsFormat,
+		pb.Driver_DRIVER_DORIS:    clause.MYSQLLiteralTableAsFormat,
+	}
+
 	DriverMap = map[pb.Driver]clause.Driver{
 		pb.Driver_DRIVER_POSTGRES: clause.DriverPostgres,
 		pb.Driver_DRIVER_MYSQL:    clause.DriverMysql,
@@ -55,11 +62,12 @@ var (
 )
 
 type ModelBuilderCtx struct {
-	String1LiteralSafeFormat   string
-	String2LiteralSafeFormat   string
-	String2LiteralAsSafeFormat string
-	AsFormatLiteralSafeMap     string
-	Driver                     clause.Driver
+	String1LiteralSafeFormat              string
+	String2LiteralSafeFormat              string
+	String2LiteralAsSafeFormat            string
+	AsFormatLiteralSafeFormat             string
+	TableLiteralAsFormatLiteralSafeFormat string
+	Driver                                clause.Driver
 }
 
 // -----------------------------------------------   代码结构对比 java 如下  --------------------------------------------
@@ -194,6 +202,10 @@ func (abs *AbstractModelBuilderFacade) Execute(request *pb.BuilderRequest) (stri
 		return "", err
 	}
 
+	// 替换掉 CROSS JOIN 的 ON /*__XORM_CROSS_JOIN__*/
+	re := regexp.MustCompile(clause.CrossJoinPlaceholderRegex)
+	boundSQL = re.ReplaceAllString(boundSQL, "")
+
 	return boundSQL, nil
 }
 
@@ -205,11 +217,12 @@ func (abs *AbstractModelBuilderFacade) Execute(request *pb.BuilderRequest) (stri
 //   - 返回 *ModelBuilderCtx
 func (abs *AbstractModelBuilderFacade) BuildCtx(request *pb.BuilderRequest) *ModelBuilderCtx {
 	return &ModelBuilderCtx{
-		String1LiteralSafeFormat:   String1LiteralSafeMap[request.Driver],
-		String2LiteralSafeFormat:   String2LiteralSafeMap[request.Driver],
-		String2LiteralAsSafeFormat: String2LiteralSafeAsMap[request.Driver],
-		AsFormatLiteralSafeMap:     AsFormatLiteralSafeMap[request.Driver],
-		Driver:                     DriverMap[request.Driver],
+		String1LiteralSafeFormat:              String1LiteralSafeMap[request.Driver],
+		String2LiteralSafeFormat:              String2LiteralSafeMap[request.Driver],
+		String2LiteralAsSafeFormat:            String2LiteralSafeAsMap[request.Driver],
+		AsFormatLiteralSafeFormat:             AsFormatLiteralSafeMap[request.Driver],
+		TableLiteralAsFormatLiteralSafeFormat: TableLiteralAsFormatLiteralSafeMap[request.Driver],
+		Driver:                                DriverMap[request.Driver],
 	}
 }
 

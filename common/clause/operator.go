@@ -55,11 +55,13 @@ const (
 const (
 	PntFormat = `(%s)`
 
-	PGAsFormat = `%s as "%%s"`
-	PGAsAppend = ` as "%%s"`
+	PGAsFormat             = `%s as "%%s"`
+	PGLiteralTableAsFormat = `(%s) as "%s"`
+	PGAsAppend             = ` as "%%s"`
 
-	MYSQLAsFormat = "%s as `%%s`"
-	MYSQLAsAppend = " as `%%s`"
+	MYSQLAsFormat             = "%s as `%%s`"
+	MYSQLLiteralTableAsFormat = "(%s) as `%s`"
+	MYSQLAsAppend             = " as `%%s`"
 
 	PgBoolFuncEqFormat        = "(%s = %s)"
 	PgBoolFuncNeqFormat       = "(%s != %s)"
