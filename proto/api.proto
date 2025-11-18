@@ -231,7 +231,7 @@ message MixField {
 
 message CaseWhen {
   repeated CaseWhenItem conditions = 1;
-  BasicData else_value = 2;
+  optional BasicData else_value = 2;
   string alias = 3;
   bool use_as = 4;
 }

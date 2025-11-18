@@ -208,10 +208,13 @@ func formatCaseWhenByProto(caseWhen *pb.CaseWhen, ctx *ModelBuilderCtx) string {
 	// proto -> struct(case-when) -> string
 	caseWhenThens := formatCaseWhenItemByProto(caseWhen, ctx)
 
+	// 存在 case-when 的 else 分支才提取值并填充 else 分支
+	ev := util.Ternary(caseWhen.ElseValue == nil, nil, ExtraArgItemValue(caseWhen.ElseValue))
+
 	caseWhenStruct := clause.CaseWhen{
 		Conditions: caseWhenThens,
 		// case-when 默认没有 else 分支
-		ElseValue: "",
+		ElseValue: ev,
 		Alias:     caseWhen.Alias,
 		UseAs:     caseWhen.UseAs,
 	}
