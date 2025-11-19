@@ -9,13 +9,18 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
+// Marshal 仅暴露生成方法，无状态
+type Marshal struct{}
+
+var MarshalTool = Marshal{} // 全局可复用，没有内存负担
+
 // ProtoJsonOperate proto 序列化保留零值和枚举零值
 var ProtoJsonOperate = protojson.MarshalOptions{
 	EmitUnpopulated: true,
 	// UseEnumNumbers:  true,
 }
 
-func Serialize(data interface{}) ([]byte, error) {
+func (Marshal) Serialize(data interface{}) ([]byte, error) {
 	serialized, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -23,7 +28,7 @@ func Serialize(data interface{}) ([]byte, error) {
 	return serialized, nil
 }
 
-func Deserialize(serialized []byte, target interface{}) error {
+func (Marshal) Deserialize(serialized []byte, target interface{}) error {
 	err := json.Unmarshal(serialized, target)
 	if err != nil {
 		return err

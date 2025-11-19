@@ -1634,6 +1634,7 @@ type MixVars struct {
 	//	*MixVars_Number
 	//	*MixVars_DoubleNum
 	//	*MixVars_StrLiteral
+	//	*MixVars_Cw
 	Vars          isMixVars_Vars `protobuf_oneof:"vars"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1748,6 +1749,15 @@ func (x *MixVars) GetStrLiteral() *StringLiteral {
 	return nil
 }
 
+func (x *MixVars) GetCw() *CaseWhen {
+	if x != nil {
+		if x, ok := x.Vars.(*MixVars_Cw); ok {
+			return x.Cw
+		}
+	}
+	return nil
+}
+
 type isMixVars_Vars interface {
 	isMixVars_Vars()
 }
@@ -1785,6 +1795,10 @@ type MixVars_StrLiteral struct {
 	StrLiteral *StringLiteral `protobuf:"bytes,9,opt,name=str_literal,json=strLiteral,proto3,oneof"` // 字符串字面量不会默认加单引号
 }
 
+type MixVars_Cw struct {
+	Cw *CaseWhen `protobuf:"bytes,10,opt,name=cw,proto3,oneof"`
+}
+
 func (*MixVars_Column) isMixVars_Vars() {}
 
 func (*MixVars_Expression) isMixVars_Vars() {}
@@ -1800,6 +1814,8 @@ func (*MixVars_Number) isMixVars_Vars() {}
 func (*MixVars_DoubleNum) isMixVars_Vars() {}
 
 func (*MixVars_StrLiteral) isMixVars_Vars() {}
+
+func (*MixVars_Cw) isMixVars_Vars() {}
 
 // todo  未处理: 添加 Condition 会导致递归嵌套
 // SELECT array_length(array_column, 1) > 0 FROM my_table; SELECT NOT column_name FROM my_table; => Condition
@@ -2935,7 +2951,7 @@ const file_proto_api_proto_rawDesc = "" +
 	"\ause_pnt\x18\x06 \x01(\bR\x06usePnt\x12:\n" +
 	"\vstr_literal\x18\a \x01(\v2\x14.proto.StringLiteralH\x00R\n" +
 	"strLiteral\x88\x01\x01B\x0e\n" +
-	"\f_str_literal\"\xff\x02\n" +
+	"\f_str_literal\"\xa2\x03\n" +
 	"\aMixVars\x12'\n" +
 	"\x06column\x18\x01 \x01(\v2\r.proto.ColumnH\x00R\x06column\x123\n" +
 	"\n" +
@@ -2948,7 +2964,9 @@ const file_proto_api_proto_rawDesc = "" +
 	"\n" +
 	"double_num\x18\b \x01(\x01H\x00R\tdoubleNum\x127\n" +
 	"\vstr_literal\x18\t \x01(\v2\x14.proto.StringLiteralH\x00R\n" +
-	"strLiteralB\x06\n" +
+	"strLiteral\x12!\n" +
+	"\x02cw\x18\n" +
+	" \x01(\v2\x0f.proto.CaseWhenH\x00R\x02cwB\x06\n" +
 	"\x04vars\"\x9f\x01\n" +
 	"\bMixField\x12'\n" +
 	"\x06column\x18\x01 \x01(\v2\r.proto.ColumnH\x00R\x06column\x123\n" +
@@ -3186,40 +3204,41 @@ var file_proto_api_proto_depIdxs = []int32{
 	28, // 38: proto.MixVars.multi_condition:type_name -> proto.MultiCondition
 	30, // 39: proto.MixVars.logic_condition:type_name -> proto.LogicGroup
 	33, // 40: proto.MixVars.str_literal:type_name -> proto.StringLiteral
-	22, // 41: proto.MixField.column:type_name -> proto.Column
-	23, // 42: proto.MixField.expression:type_name -> proto.Expression
-	26, // 43: proto.MixField.case_when:type_name -> proto.CaseWhen
-	27, // 44: proto.CaseWhen.conditions:type_name -> proto.CaseWhenItem
-	34, // 45: proto.CaseWhen.else_value:type_name -> proto.BasicData
-	31, // 46: proto.CaseWhenItem.when:type_name -> proto.MixWhere
-	34, // 47: proto.CaseWhenItem.then:type_name -> proto.BasicData
-	31, // 48: proto.MultiCondition.conditions:type_name -> proto.MixWhere
-	30, // 49: proto.LogicNode.group:type_name -> proto.LogicGroup
-	31, // 50: proto.LogicNode.leaf:type_name -> proto.MixWhere
-	4,  // 51: proto.LogicGroup.logic:type_name -> proto.Logic
-	29, // 52: proto.LogicGroup.children:type_name -> proto.LogicNode
-	32, // 53: proto.MixWhere.condition:type_name -> proto.Condition
-	23, // 54: proto.MixWhere.expression:type_name -> proto.Expression
-	25, // 55: proto.Condition.field:type_name -> proto.MixField
-	34, // 56: proto.Condition.args:type_name -> proto.BasicData
-	5,  // 57: proto.Condition.operator:type_name -> proto.Op
-	4,  // 58: proto.Condition.logic:type_name -> proto.Logic
-	33, // 59: proto.Condition.literal_cond:type_name -> proto.StringLiteral
-	33, // 60: proto.BasicData.str_literal:type_name -> proto.StringLiteral
-	34, // 61: proto.BasicDataArr.args:type_name -> proto.BasicData
-	35, // 62: proto.TemplateArg.val_items:type_name -> proto.BasicDataArr
-	41, // 63: proto.AnalyzeTemplateRequest.args:type_name -> proto.AnalyzeTemplateRequest.ArgsEntry
-	36, // 64: proto.SqlText.ArgsEntry.value:type_name -> proto.TemplateArg
-	36, // 65: proto.AnalyzeTemplateRequest.ArgsEntry.value:type_name -> proto.TemplateArg
-	7,  // 66: proto.SqlBuilderApi.Generate:input_type -> proto.BuilderRequest
-	37, // 67: proto.SqlBuilderApi.AnalyzeTemplate:input_type -> proto.AnalyzeTemplateRequest
-	6,  // 68: proto.SqlBuilderApi.Generate:output_type -> proto.CommonResponse
-	6,  // 69: proto.SqlBuilderApi.AnalyzeTemplate:output_type -> proto.CommonResponse
-	68, // [68:70] is the sub-list for method output_type
-	66, // [66:68] is the sub-list for method input_type
-	66, // [66:66] is the sub-list for extension type_name
-	66, // [66:66] is the sub-list for extension extendee
-	0,  // [0:66] is the sub-list for field type_name
+	26, // 41: proto.MixVars.cw:type_name -> proto.CaseWhen
+	22, // 42: proto.MixField.column:type_name -> proto.Column
+	23, // 43: proto.MixField.expression:type_name -> proto.Expression
+	26, // 44: proto.MixField.case_when:type_name -> proto.CaseWhen
+	27, // 45: proto.CaseWhen.conditions:type_name -> proto.CaseWhenItem
+	34, // 46: proto.CaseWhen.else_value:type_name -> proto.BasicData
+	31, // 47: proto.CaseWhenItem.when:type_name -> proto.MixWhere
+	34, // 48: proto.CaseWhenItem.then:type_name -> proto.BasicData
+	31, // 49: proto.MultiCondition.conditions:type_name -> proto.MixWhere
+	30, // 50: proto.LogicNode.group:type_name -> proto.LogicGroup
+	31, // 51: proto.LogicNode.leaf:type_name -> proto.MixWhere
+	4,  // 52: proto.LogicGroup.logic:type_name -> proto.Logic
+	29, // 53: proto.LogicGroup.children:type_name -> proto.LogicNode
+	32, // 54: proto.MixWhere.condition:type_name -> proto.Condition
+	23, // 55: proto.MixWhere.expression:type_name -> proto.Expression
+	25, // 56: proto.Condition.field:type_name -> proto.MixField
+	34, // 57: proto.Condition.args:type_name -> proto.BasicData
+	5,  // 58: proto.Condition.operator:type_name -> proto.Op
+	4,  // 59: proto.Condition.logic:type_name -> proto.Logic
+	33, // 60: proto.Condition.literal_cond:type_name -> proto.StringLiteral
+	33, // 61: proto.BasicData.str_literal:type_name -> proto.StringLiteral
+	34, // 62: proto.BasicDataArr.args:type_name -> proto.BasicData
+	35, // 63: proto.TemplateArg.val_items:type_name -> proto.BasicDataArr
+	41, // 64: proto.AnalyzeTemplateRequest.args:type_name -> proto.AnalyzeTemplateRequest.ArgsEntry
+	36, // 65: proto.SqlText.ArgsEntry.value:type_name -> proto.TemplateArg
+	36, // 66: proto.AnalyzeTemplateRequest.ArgsEntry.value:type_name -> proto.TemplateArg
+	7,  // 67: proto.SqlBuilderApi.Generate:input_type -> proto.BuilderRequest
+	37, // 68: proto.SqlBuilderApi.AnalyzeTemplate:input_type -> proto.AnalyzeTemplateRequest
+	6,  // 69: proto.SqlBuilderApi.Generate:output_type -> proto.CommonResponse
+	6,  // 70: proto.SqlBuilderApi.AnalyzeTemplate:output_type -> proto.CommonResponse
+	69, // [69:71] is the sub-list for method output_type
+	67, // [67:69] is the sub-list for method input_type
+	67, // [67:67] is the sub-list for extension type_name
+	67, // [67:67] is the sub-list for extension extendee
+	0,  // [0:67] is the sub-list for field type_name
 }
 
 func init() { file_proto_api_proto_init() }
@@ -3254,6 +3273,7 @@ func file_proto_api_proto_init() {
 		(*MixVars_Number)(nil),
 		(*MixVars_DoubleNum)(nil),
 		(*MixVars_StrLiteral)(nil),
+		(*MixVars_Cw)(nil),
 	}
 	file_proto_api_proto_msgTypes[19].OneofWrappers = []any{
 		(*MixField_Column)(nil),

@@ -376,6 +376,11 @@ func calExpressionVarsFormatStringsByProto(expr *pb.Expression, ctx *ModelBuilde
 			varMultiCondItemStr := formatExprVarMultiCond2Str(exprMultiCondition.GetConditions(), ctx)
 			varIndexTypeMap[index] = false
 			expressions = append(expressions, varMultiCondItemStr)
+		case *pb.MixVars_Cw:
+			cw := v.Cw
+			cwStr := formatCaseWhenByProto(cw, ctx)
+			varIndexTypeMap[index] = false
+			expressions = append(expressions, cwStr)
 		default:
 			continue
 		}

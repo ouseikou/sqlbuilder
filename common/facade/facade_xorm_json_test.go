@@ -2,11 +2,12 @@ package facade
 
 import (
 	"fmt"
+	"github.com/ouseikou/sqlbuilder/util"
 	"testing"
 
 	"github.com/forhsd/logger"
 	"github.com/ouseikou/sqlbuilder/common/clause"
-	"github.com/ouseikou/sqlbuilder/util"
+	_ "github.com/ouseikou/sqlbuilder/util"
 )
 
 /**
@@ -261,7 +262,7 @@ func TestXORMSQLBuilderSelect(t *testing.T) {
 		SQLBuilders: []clause.DeepWrapper{{Deep: 0, Sql: sqlRef}},
 	}
 
-	serialize, _ := util.Serialize(request)
+	serialize, _ := util.MarshalTool.Serialize(request)
 	fmt.Println(string(serialize))
 
 	builder, bErr := RunBuilder(request)

@@ -446,6 +446,9 @@
         "str_literal": {
           "$ref": "#/definitions/protoStringLiteral",
           "title": "字符串字面量不会默认加单引号"
+        },
+        "cw": {
+          "$ref": "#/definitions/protoCaseWhen"
         }
       }
     },

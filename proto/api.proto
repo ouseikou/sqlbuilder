@@ -216,6 +216,7 @@ message MixVars {
     int64 number = 7;
     double double_num = 8;
     StringLiteral str_literal = 9; // 字符串字面量不会默认加单引号
+    CaseWhen cw = 10;
   }
 }
 
