@@ -60,6 +60,7 @@ func (info *SimpleUpdate) BuildSimpleSql() string {
 
 	finalWhereStr := strings.Join(tempWhereArr, ",")
 	strBuf.WriteString(finalWhereStr)
+	strBuf.WriteString(";")
 
 	return strBuf.String()
 }
