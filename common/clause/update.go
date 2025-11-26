@@ -58,7 +58,7 @@ func (info *SimpleUpdate) BuildSimpleSql() string {
 		tempWhereArr = append(tempWhereArr, fmt.Sprintf(leftEqRightFormat, left, fmt.Sprintf("%v", value)))
 	}
 
-	finalWhereStr := strings.Join(tempWhereArr, ",")
+	finalWhereStr := strings.Join(tempWhereArr, " and ")
 	strBuf.WriteString(finalWhereStr)
 	strBuf.WriteString(";")
 
