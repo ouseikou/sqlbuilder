@@ -41,7 +41,7 @@ func (info *SimpleUpdate) BuildSimpleSql() string {
 	// 构建 set
 	var tempSetArr []string
 	for field, value := range info.Sets {
-		left := fmt.Sprintf(str2Format, info.Table, fmt.Sprintf("%v", field))
+		left := updateSetByDriver(info, field, str2Format)
 		tempSetArr = append(tempSetArr, fmt.Sprintf(leftEqRightFormat, left, fmt.Sprintf("%v", value)))
 	}
 
@@ -63,4 +63,12 @@ func (info *SimpleUpdate) BuildSimpleSql() string {
 	strBuf.WriteString(";")
 
 	return strBuf.String()
+}
+
+func updateSetByDriver(info *SimpleUpdate, field string, str2Format string) string {
+	// pg 的 update-set 不能有表名
+	if info.Driver == DriverPostgres {
+		return fmt.Sprintf(PGStringLiteralSafe, fmt.Sprintf("%v", field))
+	}
+	return fmt.Sprintf(str2Format, info.Table, fmt.Sprintf("%v", field))
 }
