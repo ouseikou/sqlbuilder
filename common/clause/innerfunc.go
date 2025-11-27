@@ -42,6 +42,14 @@ const (
 // mysql/doris
 const (
 	MysqlIfNull InnerFunc = "ifnull"
+
+	Year    InnerFunc = "year"
+	Quarter InnerFunc = "quarter"
+	Month   InnerFunc = "month"
+	Week    InnerFunc = "week"
+	Day     InnerFunc = "day"
+	Hour    InnerFunc = "hour"
+	Minute  InnerFunc = "minute"
 )
 
 // pg
@@ -50,6 +58,7 @@ const (
 	CallPGToChar      InnerFunc = "to_char"
 	CallPgToDate      InnerFunc = "to_date"
 	CallPgToTimestamp InnerFunc = "to_timestamp"
+	CallPgDatePart    InnerFunc = "date_part"
 
 	Cbrt       InnerFunc = "cbrt"
 	Trunc      InnerFunc = "trunc"
@@ -130,12 +139,21 @@ const (
 // mysql format
 const (
 	MysqlIfNullFormat = `ifnull(%s, %s)`
+
+	YearFormat    = `year(%s)`
+	QuarterFormat = `quarter(%s)`
+	MonthFormat   = `month(%s)`
+	WeekFormat    = `week(%s)`
+	DayFormat     = `day(%s)`
+	HourFormat    = `hour(%s)`
+	MinuteFormat  = `minute(%s)`
 )
 
 // pg format
 const (
 	// PgDateTruncFormat PgDateTruncAsFormat 转换为离散时间, 最终返回是timestamp类型
 	PgDateTruncFormat = `date_trunc(%v, %s)`
+	PgDatePartFormat  = `date_part(%v, %s)`
 
 	PgDateTruncDayFormat   = `date_trunc('day', %s)`
 	PgDateTruncMonthFormat = `date_trunc('month', %s)`
@@ -217,9 +235,18 @@ var (
 
 		MysqlIfNull: MysqlIfNullFormat,
 
+		Year:    YearFormat,
+		Quarter: QuarterFormat,
+		Month:   MonthFormat,
+		Week:    WeekFormat,
+		Day:     DayFormat,
+		Hour:    HourFormat,
+		Minute:  MinuteFormat,
+
 		// pg
 
 		CallPgDateTrunc: PgDateTruncFormat,
+		CallPgDatePart:  PgDatePartFormat,
 
 		CallPgDateTruncDay:   PgDateTruncDayFormat,
 		CallPgDateTruncMonth: PgDateTruncMonthFormat,
